@@ -102,4 +102,58 @@ Correr de nuevo `./scripts/privacyidea-verify.sh`. Debe terminar con `Todo OK` e
 
 ## Enrolar un token TOTP con FreeOTP
 
-Pendiente de documentar en la fase siguiente.
+El enrolamiento del token se hace una sola vez desde la interfaz web (porque produce un código QR que el usuario escanea con su teléfono). Después se valida desde la línea de comandos con `scripts/privacyidea-validate-otp.sh`, que usa el mismo endpoint `/validate/check` que invocará OwnCloud en la fase siguiente.
+
+### Prerrequisito en el teléfono
+
+Instalar **FreeOTP Authenticator** en el móvil:
+
+- Android: [Play Store](https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp)
+- iOS: [App Store](https://apps.apple.com/us/app/freeotp-authenticator/id872559395)
+
+### Enrolar el token desde la UI
+
+1. Abrir `http://localhost:8080` e iniciar sesión como `admin`.
+2. Ir a *Tokens*, luego *Enroll Token*.
+3. Rellenar los campos:
+
+| Campo | Valor |
+|---|---|
+| Token type | `TOTP` |
+| Realm | `sia` |
+| User | `usuario.desarrollo1` (o el usuario que se quiera enrolar) |
+| OTP length | `6` |
+| Hash algorithm | `SHA1` |
+| Time step | `30` |
+
+4. Hacer clic en *Enroll Token*. PrivacyIDEA genera un secreto, lo asocia al usuario y muestra un código QR.
+5. Abrir FreeOTP en el móvil, tocar el ícono de agregar y escanear el QR. El token queda agregado con el nombre del usuario y empieza a generar códigos de 6 dígitos que rotan cada 30 segundos.
+
+### Validar el primer código
+
+Desde la laptop del proyecto, con el código que muestra FreeOTP en el móvil:
+
+```bash
+./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 287543
+```
+
+Se espera:
+
+```
+==> Validando OTP para 'usuario.desarrollo1@sia' contra http://localhost:8080
+OK: PrivacyIDEA aceptó el OTP.
+```
+
+Exit 0 quiere decir que PrivacyIDEA aceptó el token; exit 1 significa que el código no coincidía (típicamente porque ya pasó la ventana de 30 segundos o el token no está asociado al usuario).
+
+### Qué está pasando por detrás
+
+El endpoint `POST /validate/check` recibe `user`, `realm` y `pass`, busca al usuario en el resolver (`sia-ldap` sobre OpenLDAP), localiza los tokens asignados y valida el código TOTP contra el secreto que se guardó al momento del enrolamiento. **Es el mismo endpoint** que invocará el plugin `twofactor_privacyidea` de OwnCloud en la Fase 5: cuando en la demo final un usuario teclee su OTP en OwnCloud, OwnCloud estará haciendo la misma llamada que hace este script.
+
+### Casos de error útiles para la auditoría
+
+Todos los intentos, correctos o fallidos, se escriben en la bitácora de PrivacyIDEA (`/var/log/privacyidea/privacyidea.log` dentro del contenedor y en la tabla `pidea_audit` de la base de datos). Un par de pruebas que vale la pena mostrar en la demo:
+
+- Usuario sin token enrolado: `./scripts/privacyidea-validate-otp.sh usuario.desarrollo2 123456` devuelve rechazo con `authentication: REJECT`.
+- OTP mal tecleado: se rechaza igual, pero aparece en auditoría con el usuario correcto y el motivo.
+- Usuario inexistente en el LDAP: `./scripts/privacyidea-validate-otp.sh intruso 123456` devuelve rechazo por resolver que no encuentra al usuario.

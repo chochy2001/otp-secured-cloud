@@ -56,7 +56,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 |---|---|---|
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
 | ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
-| iii. Emisión de token OTP desde FreeOTP | Siguiente fase | Falta enrolar y validar TOTP |
+| iii. Emisión de token OTP desde FreeOTP | Casi listo | Falta el enrolamiento manual en el móvil; validación vía API ya lista en `scripts/privacyidea-validate-otp.sh` |
 | iv. Implementación de OwnCloud | Bloqueado | Espera decisión 10 vs OCIS |
 | v. Integración 2FA LDAP + OTP | Bloqueado | Depende de iii y iv |
 
@@ -85,7 +85,9 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Configuración del resolver LDAP y realm por API con `scripts/privacyidea-configure.sh`
 - [x] Validación de servicio, admin, resolver, conteo de 6 usuarios y realm con `scripts/privacyidea-verify.sh`
 - [x] Documentar el how-to en `privacyidea/README.md` (requisitos, arranque, verificación, configuración automatizada y alternativa por UI)
-- [ ] Enrolar un token TOTP desde FreeOTP y verificar contra la API
+- [x] Script `scripts/privacyidea-validate-otp.sh` que valida un OTP contra `POST /validate/check`, el mismo endpoint que usará OwnCloud
+- [x] Documentar el flujo de enrolamiento del token TOTP desde la UI y el escaneo del QR con FreeOTP
+- [ ] Enrolar el token demo en un móvil del equipo (paso manual, se hace una sola vez antes de la exposición)
 
 ### Fase 4: Certificados TLS (CA propia)
 - [ ] Script en `scripts/` que genera CA + certs de cada servicio
