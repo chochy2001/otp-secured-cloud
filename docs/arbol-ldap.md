@@ -58,6 +58,7 @@ Buenas prácticas aplicadas:
 - No se reutiliza `cn=admin` (que tiene permisos de escritura).
 - Se separa del árbol de usuarios humanos para evitar confusiones de conteo y de autorización.
 - No usa `inetOrgPerson`, para que no aparezca en búsquedas de usuarios humanos.
+- La ACL `00-acl-service-read.ldif` le permite leer usuarios, pero no leer `userPassword`.
 - Un solo `svc-owncloud` sirve para ambas aplicaciones porque sus permisos de lectura son idénticos.
 
 ### Grupos LDAP: *pendiente* de decisión con el profesor

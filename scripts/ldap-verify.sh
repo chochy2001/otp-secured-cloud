@@ -86,7 +86,18 @@ docker exec "$CONTAINER" ldapwhoami -x \
   -w "${LDAP_SERVICE_PASSWORD}"
 
 echo
-echo "==> 6. Contraseña incorrecta se rechaza"
+echo "==> 6. Cuenta de servicio puede leer exactamente 6 usuarios humanos"
+SERVICE_USER_COUNT="$(docker exec "$CONTAINER" ldapsearch -x -LLL \
+  -H ldap://localhost \
+  -b "${LDAP_BASE_DN}" \
+  -D "cn=svc-owncloud,ou=Servicios,${LDAP_BASE_DN}" \
+  -w "${LDAP_SERVICE_PASSWORD}" \
+  "(objectClass=inetOrgPerson)" dn | grep -c '^dn: ' || true)"
+assert_count "lectura de servicio" "6" "$SERVICE_USER_COUNT"
+echo "OK: la cuenta de servicio puede leer los usuarios esperados."
+
+echo
+echo "==> 7. Contraseña incorrecta se rechaza"
 set +e
 docker exec "$CONTAINER" ldapwhoami -x \
   -H ldap://localhost \

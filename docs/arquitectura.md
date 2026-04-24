@@ -66,7 +66,7 @@ El principio fundamental del diseño es que **OpenLDAP es la única fuente de id
 | Servicio | Puerto interno | Puerto expuesto |
 |---|---|---|
 | OpenLDAP | 389 (ldap), 636 (ldaps) | 389; 636 queda pendiente hasta activar TLS |
-| PrivacyIDEA | 80/443 | *pendiente* |
+| PrivacyIDEA | 8080 | 8080 |
 | OwnCloud | 80/443 | 443 (tras TLS) |
 
 Todos los servicios TLS usarán certificados autofirmados generados por una CA del proyecto en `certs/`.

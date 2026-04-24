@@ -39,7 +39,7 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 
 - [x] Estructura del repositorio y documentación base
 - [x] OpenLDAP con dos unidades organizacionales (Desarrollo, Seguridad) y usuarios sembrados
-- [ ] PrivacyIDEA integrado con el LDAP como *resolver*
+- [x] PrivacyIDEA integrado con el LDAP como *resolver*
 - [ ] Token TOTP enrolado desde FreeOTP
 - [ ] OwnCloud integrado con LDAP y doble factor
 - [ ] Cifrado de archivos compartidos activado

@@ -13,7 +13,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Repositorio en GitHub | Operativo | `chochy2001/otp-secured-cloud`, rama `main` sincronizada con `origin/main` |
 | Colaboradores del equipo | En progreso | Arely aceptada; Mauricio, María Elena, Esteban y Luis Iván pendientes |
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
-| PrivacyIDEA | Por implementar | Pendiente |
+| PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
 | Certificados TLS (CA propia) | Por implementar | Pendiente |
 | OwnCloud | Bloqueado | Depende de respuesta del profesor (versión 10 vs OCIS) |
 | Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
@@ -55,8 +55,8 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Validación | Estado | Notas |
 |---|---|---|
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
-| ii. Integración con PrivacyIDEA | Siguiente fase | Pendiente |
-| iii. Emisión de token OTP desde FreeOTP | Pendiente | Depende de PrivacyIDEA |
+| ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
+| iii. Emisión de token OTP desde FreeOTP | Siguiente fase | Falta enrolar y validar TOTP |
 | iv. Implementación de OwnCloud | Bloqueado | Espera decisión 10 vs OCIS |
 | v. Integración 2FA LDAP + OTP | Bloqueado | Depende de iii y iv |
 
@@ -73,15 +73,19 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] OU Desarrollo + 3 usuarios
 - [x] OU Seguridad + 3 usuarios
 - [x] OU Servicios + cuenta `svc-owncloud` de solo lectura, separada del filtro de usuarios humanos
-- [x] Script `scripts/ldap-verify.sh` que valida admin, conteo de usuarios, servicio y rechazo de credenciales inválidas
+- [x] ACL de lectura para la cuenta de servicio, sin exponer `userPassword`
+- [x] Script `scripts/ldap-verify.sh` que valida admin, conteo de usuarios, lectura de servicio y rechazo de credenciales inválidas
 - [x] Documentación del diseño del árbol (`docs/arbol-ldap.md`)
 - [x] Guía para el equipo (`docs/guia-equipo.md`)
 
 ### Fase 3: PrivacyIDEA
-- [ ] Servicio en `docker-compose.yml` apuntando al mismo LDAP como *user resolver*
-- [ ] Configuración del resolver y *realm* desde la administración web
-- [ ] Enrolar un token TOTP y verificar contra la API CLI
-- [ ] Documentar el how-to
+- [x] Servicio en `docker-compose.yml`
+- [x] Imagen propia reproducible con `PRIVACYIDEA_VERSION=3.10.2`
+- [x] Bootstrap idempotente de llaves, base SQLite y admin inicial
+- [x] Configuración del resolver LDAP y realm por API con `scripts/privacyidea-configure.sh`
+- [x] Validación de servicio, admin, resolver, conteo de 6 usuarios y realm con `scripts/privacyidea-verify.sh`
+- [x] Documentar el how-to en `privacyidea/README.md` (requisitos, arranque, verificación, configuración automatizada y alternativa por UI)
+- [ ] Enrolar un token TOTP desde FreeOTP y verificar contra la API
 
 ### Fase 4: Certificados TLS (CA propia)
 - [ ] Script en `scripts/` que genera CA + certs de cada servicio
@@ -163,7 +167,8 @@ Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
 - Cuenta de servicio `svc-owncloud` reclasificada a `simpleSecurityObject` y `organizationalRole` para que no aparezca en búsquedas de usuarios humanos con filtro `(objectClass=inetOrgPerson)`.
 - `scripts/ldap-verify.sh` endurecido: ahora valida conteos exactos (3 en Desarrollo, 3 en Seguridad, 6 humanos en total) y rechazo de contraseña inválida.
 - Agregados `README.md` placeholder en `certs/`, `owncloud/` y `privacyidea/` para documentar el rol de cada carpeta antes de tener su contenido final.
+- PrivacyIDEA agregado al `docker-compose.yml` con imagen propia, configuración reproducible y resolver LDAP funcional.
 
 ## 6. Próximo hito objetivo
 
-**Construir PrivacyIDEA apuntando al LDAP y enrolar un token TOTP exitoso**, sin depender de ninguna respuesta del profesor. Esto desbloquea la validación del componente ii (integración PrivacyIDEA) y el iii (emisión de OTP) de la evaluación de funcionamiento.
+**Enrolar un token TOTP en PrivacyIDEA y validarlo con FreeOTP**, sin depender de ninguna respuesta del profesor. Esto desbloquea la validación del componente iii (emisión de OTP) de la evaluación de funcionamiento.
