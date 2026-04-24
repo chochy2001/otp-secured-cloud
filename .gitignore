@@ -1,0 +1,50 @@
+# ------------------------------------------------------------------
+# Proyecto académico: las credenciales de .env SÍ se commitean para
+# que el equipo pueda levantar el entorno fácilmente. Ver la sección
+# "Aviso de seguridad" del README.md antes de copiar este enfoque.
+# ------------------------------------------------------------------
+
+# Materiales del profesor y documentos de consulta interna
+# (no se redistribuyen en el repo público)
+Poyecto_Final_OTP-2026-2.pdf
+preguntas_profesor.html
+preguntas_profesor.pdf
+preguntas_profesor_v2.html
+preguntas_profesor_v2.pdf
+
+# Certificados y llaves privadas generados localmente
+certs/*.key
+certs/*.pem
+certs/*.crt
+certs/*.p12
+certs/*.pfx
+!certs/README.md
+!certs/openssl.cnf
+
+# Volúmenes Docker (datos persistentes)
+volumes/
+data/
+ldap_data/
+ldap_config/
+
+# Backups
+*.bak
+*.backup
+*.dump
+*.ldif.bak
+
+# Sistemas operativos
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs locales
+*.log
+logs/
