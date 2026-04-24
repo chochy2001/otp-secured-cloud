@@ -6,6 +6,7 @@ Los archivos LDIF de este directorio se cargan automáticamente la primera vez q
 
 | Archivo | Qué crea |
 |---|---|
+| `00-acl-service-read.ldif` | ACL que permite a la cuenta de servicio leer usuarios sin exponer contraseñas |
 | `01-ous.ldif` | Unidades organizacionales `Desarrollo`, `Seguridad` y `Servicios` |
 | `02-users-desarrollo.ldif` | Tres usuarios bajo `ou=Desarrollo` |
 | `03-users-seguridad.ldif` | Tres usuarios bajo `ou=Seguridad` |

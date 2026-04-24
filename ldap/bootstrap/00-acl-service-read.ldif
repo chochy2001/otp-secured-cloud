@@ -1,0 +1,6 @@
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: {0}to * by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth manage by * break
+olcAccess: {1}to attrs=userPassword,shadowLastChange by self write by dn="cn=admin,dc=sia,dc=unam,dc=mx" write by anonymous auth by * none
+olcAccess: {2}to * by self read by dn.exact="cn=svc-owncloud,ou=Servicios,dc=sia,dc=unam,dc=mx" read by dn="cn=admin,dc=sia,dc=unam,dc=mx" write by * none
