@@ -4,21 +4,21 @@
 
 ```
 dc=sia,dc=unam,dc=mx                          (base DN raíz)
-│
-├── cn=admin                                   (admin del directorio)
-│
-├── ou=Desarrollo                              (OU exigida por el anexo)
-│   ├── uid=usuario.desarrollo1
-│   ├── uid=usuario.desarrollo2
-│   └── uid=usuario.desarrollo3
-│
-├── ou=Seguridad                               (OU exigida por el anexo)
-│   ├── uid=usuario.seguridad1
-│   ├── uid=usuario.seguridad2
-│   └── uid=usuario.seguridad3
-│
-└── ou=Servicios                               (cuentas no-humanas)
-    └── cn=svc-owncloud                        (bind DN para aplicaciones)
+|
+|-- cn=admin                                   (admin del directorio)
+|
+|-- ou=Desarrollo                              (OU exigida por el anexo)
+|   |-- uid=usuario.desarrollo1
+|   |-- uid=usuario.desarrollo2
+|   `-- uid=usuario.desarrollo3
+|
+|-- ou=Seguridad                               (OU exigida por el anexo)
+|   |-- uid=usuario.seguridad1
+|   |-- uid=usuario.seguridad2
+|   `-- uid=usuario.seguridad3
+|
+`-- ou=Servicios                               (cuentas no humanas)
+    `-- cn=svc-owncloud                        (bind DN para aplicaciones)
 ```
 
 ## Valores que esperan OwnCloud y PrivacyIDEA
@@ -57,6 +57,7 @@ Las aplicaciones (OwnCloud, PrivacyIDEA) necesitan hacer *bind* contra el direct
 Buenas prácticas aplicadas:
 - No se reutiliza `cn=admin` (que tiene permisos de escritura).
 - Se separa del árbol de usuarios humanos para evitar confusiones de conteo y de autorización.
+- No usa `inetOrgPerson`, para que no aparezca en búsquedas de usuarios humanos.
 - Un solo `svc-owncloud` sirve para ambas aplicaciones porque sus permisos de lectura son idénticos.
 
 ### Grupos LDAP: *pendiente* de decisión con el profesor
@@ -67,8 +68,8 @@ Si se opta por grupos, la rama esperada sería:
 
 ```
 ou=Grupos,dc=sia,dc=unam,dc=mx
-├── cn=desarrollo (memberOf de los usuarios de Desarrollo)
-└── cn=seguridad (memberOf de los usuarios de Seguridad)
+|-- cn=desarrollo (grupo con miembros de Desarrollo)
+`-- cn=seguridad (grupo con miembros de Seguridad)
 ```
 
 ## Cómo verificar el árbol

@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------
-# Proyecto académico: las credenciales de .env SÍ se commitean para
+# Proyecto académico: las credenciales de .env SÍ se versionan para
 # que el equipo pueda levantar el entorno fácilmente. Ver la sección
 # "Aviso de seguridad" del README.md antes de copiar este enfoque.
 # ------------------------------------------------------------------
@@ -7,6 +7,7 @@
 # Materiales del profesor y documentos de consulta interna
 # (no se redistribuyen en el repo público)
 Poyecto_Final_OTP-2026-2.pdf
+Proyecto_Final_OTP-2026-2.pdf
 preguntas_profesor.html
 preguntas_profesor.pdf
 preguntas_profesor_v2.html

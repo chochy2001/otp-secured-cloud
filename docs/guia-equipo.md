@@ -1,4 +1,4 @@
-# Guía para el equipo — cómo levantar el proyecto
+# Guía para el equipo: cómo levantar el proyecto
 
 Esta guía describe el procedimiento paso a paso para clonar el repositorio, levantar el entorno y verificar que todo funciona en tu máquina. Está pensada para que cualquiera del equipo (y cualquier evaluador del curso) pueda reproducir el entorno sin depender de otra persona.
 
@@ -83,7 +83,7 @@ Si alguno de los pasos falla, revisa la sección [Problemas comunes](#7-problema
 
 ## 6. Pruebas manuales útiles
 
-### Validar el segundo factor desde la terminal (login de usuario)
+### Validar el primer factor desde la terminal (login de usuario)
 
 Simular lo que hará OwnCloud al autenticar al usuario:
 
@@ -129,11 +129,11 @@ Osixia solo ejecuta los LDIFs de `ldap/bootstrap/` **una vez**, en el primer arr
 
 ```bash
 cd compose
-docker compose down -v    # ← la -v borra volúmenes y datos del LDAP
+docker compose down -v    # la -v borra volúmenes y datos del LDAP
 docker compose --env-file ../.env up -d openldap
 ```
 
-⚠️ Esto borra todos los datos actuales del LDAP. En desarrollo no importa; en producción sería catastrófico.
+Atención: esto borra todos los datos actuales del LDAP. En desarrollo no importa; en producción sería catastrófico.
 
 ### `docker info` da error de socket
 

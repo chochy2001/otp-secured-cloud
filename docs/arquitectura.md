@@ -9,41 +9,48 @@
 | FreeOTP | App Android/iOS | Cliente que genera el código TOTP en el móvil del usuario |
 | OwnCloud | *pendiente (10 vs OCIS)* | Servicio de almacenamiento con integración 2FA |
 
-Los servicios corren como contenedores sobre una red Docker compartida (`otpsec`). El acceso del usuario final es únicamente por HTTPS a OwnCloud; las comunicaciones internas entre OwnCloud ↔ PrivacyIDEA ↔ OpenLDAP son locales en la red Docker.
+Los servicios corren como contenedores sobre una red Docker compartida (`otpsec`). El acceso del usuario final es únicamente por HTTPS a OwnCloud; las comunicaciones internas entre OwnCloud, PrivacyIDEA y OpenLDAP son locales en la red Docker.
 
 ## Flujo de autenticación 2FA
 
 ```
-   ┌──────────┐                    ┌──────────┐
-   │ Usuario  │                    │ FreeOTP  │   (móvil)
-   └────┬─────┘                    └────┬─────┘
-        │ 1. pwd                        │ 6. genera TOTP
-        │                               │
-        ▼                               ▼
-   ┌────────────────────────────────────────────┐
-   │                OwnCloud                    │
-   │                                            │
-   │   2. bind LDAP              4. valida OTP  │
-   └──────┬──────────────────────────┬──────────┘
-          │                          │
-          ▼                          ▼
-   ┌──────────────┐         ┌───────────────────┐
-   │   OpenLDAP   │◄────────┤   PrivacyIDEA     │
-   │              │ 5.      │                   │
-   │  usuarios    │ resolve │  tokens asociados │
-   │  contraseñas │ user    │  al UID del LDAP  │
-   └──────────────┘         └───────────────────┘
+Usuario
+  |
+  | 1. usuario y contraseña
+  v
+OwnCloud
+  | 2. bind LDAP
+  v
+OpenLDAP
+
+FreeOTP
+  |
+  | 3. genera TOTP
+  v
+Usuario
+  |
+  | 4. captura OTP en OwnCloud
+  v
+OwnCloud
+  |
+  | 5. valida OTP
+  v
+PrivacyIDEA
+  |
+  | 6. resuelve usuario por UID
+  v
+OpenLDAP
 ```
 
 ### Pasos del flujo
 
 1. El usuario entrega usuario + contraseña al portal web de OwnCloud.
-2. OwnCloud hace `bind` contra OpenLDAP con esas credenciales → **primer factor validado** (capa *autenticación / conozco*).
+2. OwnCloud hace `bind` contra OpenLDAP con esas credenciales. Si el bind es correcto queda validado el **primer factor** (capa *autenticación / conozco*).
 3. OwnCloud invoca el plugin `twofactor_privacyidea` y redirige al usuario a una pantalla de OTP.
 4. El usuario abre **FreeOTP** en el móvil, obtiene el código TOTP de 6 dígitos, y lo introduce.
 5. `twofactor_privacyidea` llama a la API de PrivacyIDEA con (`user`, `otpvalue`).
 6. PrivacyIDEA resuelve al usuario contra su *resolver LDAP* (apunta al mismo OpenLDAP), localiza el token enrolado, y valida el código.
-7. Respuesta OK → OwnCloud inicia sesión → **segundo factor validado** (capa *autenticación / tengo*).
+7. Si PrivacyIDEA responde OK, OwnCloud inicia sesión y queda validado el **segundo factor** (capa *autenticación / tengo*).
 8. A partir de aquí, la capa de **autorización** la aplica OwnCloud sobre las carpetas según permisos, y la capa de **auditoría** se escribe a los logs de OwnCloud y PrivacyIDEA.
 
 ## Fuente de identidad única
@@ -58,7 +65,7 @@ El principio fundamental del diseño es que **OpenLDAP es la única fuente de id
 
 | Servicio | Puerto interno | Puerto expuesto |
 |---|---|---|
-| OpenLDAP | 389 (ldap), 636 (ldaps) | 389, 636 |
+| OpenLDAP | 389 (ldap), 636 (ldaps) | 389; 636 queda pendiente hasta activar TLS |
 | PrivacyIDEA | 80/443 | *pendiente* |
 | OwnCloud | 80/443 | 443 (tras TLS) |
 

@@ -17,7 +17,7 @@ En estos LDIFs las contraseñas están en texto plano por claridad del ejemplo a
 
 ```bash
 slappasswd -s "contrasena"
-# → {SSHA}xxxxx...
+# genera una cadena con formato {SSHA}xxxxx...
 ```
 
 y reemplazar el valor de `userPassword` por la cadena resultante.

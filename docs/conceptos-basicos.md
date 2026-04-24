@@ -54,14 +54,14 @@ En este proyecto: los logs de OpenLDAP (bind exitoso/fallido), PrivacyIDEA (vali
 
 Un **OTP** es una contraseña que sirve **una sola vez**. Si un atacante la intercepta, ya expiró cuando intente reutilizarla. Hay dos variantes principales:
 
-### 2.1 HOTP — HMAC-based One Time Password (RFC 4226)
+### 2.1 HOTP: HMAC-based One Time Password (RFC 4226)
 
 El código se deriva de un **contador**. Cliente y servidor empiezan con el mismo contador y lo incrementan en cada uso.
 
 - Pro: no depende del reloj.
 - Contra: si el contador se desincroniza (usuario genera códigos que no usa), hay que resincronizarlo.
 
-### 2.2 TOTP — Time-based One Time Password (RFC 6238)
+### 2.2 TOTP: Time-based One Time Password (RFC 6238)
 
 El código se deriva del **tiempo actual**, típicamente en ventanas de 30 segundos.
 
@@ -94,7 +94,7 @@ La clave conceptual: **el LDAP es la única fuente de identidad**, tanto para Ow
 
 ## 4. Referencias
 
-- RFC 4226 — HOTP
-- RFC 6238 — TOTP
+- RFC 4226: HOTP
+- RFC 6238: TOTP
 - Documentación de PrivacyIDEA: <https://privacyidea.readthedocs.io/>
 - Documentación de OwnCloud (user_ldap y twofactor): <https://doc.owncloud.com/>
