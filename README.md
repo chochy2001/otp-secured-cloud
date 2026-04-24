@@ -63,14 +63,14 @@ Si el script termina con `Todo OK` significa que el directorio está operativo y
 
 ```
 otp-secured-cloud/
-├── compose/              docker-compose.yml con todos los servicios
-├── ldap/
-│   └── bootstrap/        LDIFs que siembran el directorio al primer arranque
-├── privacyidea/          Configuración del servicio de OTP (pendiente, con README)
-├── owncloud/             Configuración del servicio de almacenamiento (pendiente, con README)
-├── certs/                Certificados TLS autofirmados del proyecto (con README)
-├── scripts/              Utilidades (pruebas, regenerar certs, etc.)
-└── docs/                 Memoria técnica, diagramas, conceptos básicos
+|-- compose/              docker-compose.yml con todos los servicios
+|-- ldap/
+|   `-- bootstrap/        LDIFs que siembran el directorio al primer arranque
+|-- privacyidea/          Configuración del servicio de OTP (pendiente, con README)
+|-- owncloud/             Configuración del servicio de almacenamiento (pendiente, con README)
+|-- certs/                Certificados TLS autofirmados del proyecto (con README)
+|-- scripts/              Utilidades (pruebas, regenerar certs, etc.)
+`-- docs/                 Memoria técnica, diagramas, conceptos básicos
 ```
 
 ## Documentación

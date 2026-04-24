@@ -44,7 +44,7 @@ Refleja el contexto académico: **S**eguridad **I**nformática **A**vanzada en l
 
 ### Atributo de inicio de sesión `uid`
 
-Es la convención histórica en OpenLDAP con `inetOrgPerson`. Active Directory usa `sAMAccountName`; como estamos en OpenLDAP, `uid` es lo natural y lo que esperan los asistentes de OwnCloud y PrivacyIDEA por defecto.
+Es la convención histórica en OpenLDAP con `inetOrgPerson`. Active Directory usa `sAMAccountName`; como estamos en OpenLDAP, `uid` es lo natural y lo que esperan las pantallas de configuración de OwnCloud y PrivacyIDEA por defecto.
 
 ### ObjectClass `inetOrgPerson`
 
