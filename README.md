@@ -37,6 +37,8 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 
 ## Estado del proyecto
 
+El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado-proyecto.md`](docs/estado-proyecto.md), que se actualiza en cada avance. Resumen actual:
+
 - [x] Estructura del repositorio y documentación base
 - [x] OpenLDAP con dos unidades organizacionales (Desarrollo, Seguridad) y usuarios sembrados
 - [ ] PrivacyIDEA integrado con el LDAP como *resolver*
@@ -75,6 +77,7 @@ otp-secured-cloud/
 
 ## Documentación
 
+- [Estado del proyecto](docs/estado-proyecto.md) — documento vivo con avance, bloqueadores y plan por fases
 - [Guía paso a paso para el equipo](docs/guia-equipo.md) — cómo clonar y probar el proyecto en tu máquina
 - [Conceptos básicos de 2FA y OTP](docs/conceptos-basicos.md)
 - [Arquitectura del sistema](docs/arquitectura.md)
