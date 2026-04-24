@@ -28,9 +28,32 @@ services:
       - otpsec
     restart: unless-stopped
 
+  privacyidea:
+    build:
+      context: ../privacyidea
+      args:
+        PRIVACYIDEA_VERSION: "3.10.2"
+    container_name: otpsec-privacyidea
+    hostname: privacyidea
+    depends_on:
+      - openldap
+    environment:
+      PI_ADMIN_USERNAME: "${PI_ADMIN_USERNAME}"
+      PI_ADMIN_PASSWORD: "${PI_ADMIN_PASSWORD}"
+      PI_PEPPER: "${PI_PEPPER}"
+      PI_SECRET_KEY: "${PI_SECRET_KEY}"
+    ports:
+      - "8080:8080"
+    volumes:
+      - privacyidea_data:/data
+    networks:
+      - otpsec
+    restart: unless-stopped
+
 volumes:
   ldap_data:
   ldap_config:
+  privacyidea_data:
 
 networks:
   otpsec:

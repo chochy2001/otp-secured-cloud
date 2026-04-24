@@ -42,6 +42,7 @@ desktop.ini
 # Editores
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 *~
