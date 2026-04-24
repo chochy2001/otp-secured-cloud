@@ -1,0 +1,35 @@
+dn: uid=usuario.seguridad1,ou=Seguridad,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.seguridad1
+cn: Usuario Seguridad Uno
+sn: Seguridad
+givenName: Usuario Uno
+mail: usuario.seguridad1@sia.unam.mx
+userPassword: sia-user-2026
+
+dn: uid=usuario.seguridad2,ou=Seguridad,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.seguridad2
+cn: Usuario Seguridad Dos
+sn: Seguridad
+givenName: Usuario Dos
+mail: usuario.seguridad2@sia.unam.mx
+userPassword: sia-user-2026
+
+dn: uid=usuario.seguridad3,ou=Seguridad,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.seguridad3
+cn: Usuario Seguridad Tres
+sn: Seguridad
+givenName: Usuario Tres
+mail: usuario.seguridad3@sia.unam.mx
+userPassword: sia-user-2026

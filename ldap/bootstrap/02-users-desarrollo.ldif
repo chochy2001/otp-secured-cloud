@@ -1,0 +1,35 @@
+dn: uid=usuario.desarrollo1,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.desarrollo1
+cn: Usuario Desarrollo Uno
+sn: Desarrollo
+givenName: Usuario Uno
+mail: usuario.desarrollo1@sia.unam.mx
+userPassword: sia-user-2026
+
+dn: uid=usuario.desarrollo2,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.desarrollo2
+cn: Usuario Desarrollo Dos
+sn: Desarrollo
+givenName: Usuario Dos
+mail: usuario.desarrollo2@sia.unam.mx
+userPassword: sia-user-2026
+
+dn: uid=usuario.desarrollo3,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.desarrollo3
+cn: Usuario Desarrollo Tres
+sn: Desarrollo
+givenName: Usuario Tres
+mail: usuario.desarrollo3@sia.unam.mx
+userPassword: sia-user-2026

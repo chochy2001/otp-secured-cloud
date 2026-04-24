@@ -1,0 +1,14 @@
+dn: ou=Desarrollo,dc=sia,dc=unam,dc=mx
+objectClass: organizationalUnit
+ou: Desarrollo
+description: Unidad organizacional de Desarrollo
+
+dn: ou=Seguridad,dc=sia,dc=unam,dc=mx
+objectClass: organizationalUnit
+ou: Seguridad
+description: Unidad organizacional de Seguridad
+
+dn: ou=Servicios,dc=sia,dc=unam,dc=mx
+objectClass: organizationalUnit
+ou: Servicios
+description: Cuentas de servicio usadas por aplicaciones (OwnCloud, PrivacyIDEA)
