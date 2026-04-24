@@ -137,6 +137,26 @@ Desde la laptop del proyecto, con el código que muestra FreeOTP en el móvil:
 ./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 287543
 ```
 
+### Prueba reproducible sin teléfono
+
+Para validar que el flujo de 2FA funciona de punta a punta sin depender de un teléfono (útil para CI, para un compañero del equipo que no tenga FreeOTP instalado, y para diagnosticar la integración cuando algo falla), está el script `scripts/privacyidea-enroll-test-token.sh`:
+
+```bash
+./scripts/privacyidea-enroll-test-token.sh            # usuario.desarrollo1 por defecto
+./scripts/privacyidea-enroll-test-token.sh usuario.seguridad2
+```
+
+Qué hace:
+
+1. Se autentica como admin.
+2. Borra el token de prueba previo (serial `TOTP_<usuario>`) si existe.
+3. Llama a `POST /token/init` con `genkey=1`, de modo que la semilla la genera PrivacyIDEA (no hay secretos hardcodeados en el repo).
+4. Imprime la URL `otpauth://` para que el equipo pueda escanear el QR con FreeOTP si quiere usarla en la demo.
+5. Calcula el TOTP actual con Python estándar (`hmac`, `hashlib`, `struct`, `time`) a partir de la misma semilla.
+6. Llama a `POST /validate/check` con `user`, `realm` y el OTP calculado. Si PrivacyIDEA acepta el código, el script termina con exit 0.
+
+**Atención:** cada ejecución genera una semilla nueva. Si ya escaneaste el QR con FreeOTP, no vuelvas a correr el script para ese mismo usuario, porque invalidará el token que tiene el teléfono.
+
 Se espera:
 
 ```

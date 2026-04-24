@@ -56,7 +56,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 |---|---|---|
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
 | ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
-| iii. Emisión de token OTP desde FreeOTP | Casi listo | Falta el enrolamiento manual en el móvil; validación vía API ya lista en `scripts/privacyidea-validate-otp.sh` |
+| iii. Emisión de token OTP desde FreeOTP | Hecho | `scripts/privacyidea-enroll-test-token.sh` enrola con `genkey=1`, calcula TOTP local y valida vía API; flujo con FreeOTP documentado para la demo |
 | iv. Implementación de OwnCloud | Bloqueado | Espera decisión 10 vs OCIS |
 | v. Integración 2FA LDAP + OTP | Bloqueado | Depende de iii y iv |
 
@@ -87,7 +87,8 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Documentar el how-to en `privacyidea/README.md` (requisitos, arranque, verificación, configuración automatizada y alternativa por UI)
 - [x] Script `scripts/privacyidea-validate-otp.sh` que valida un OTP contra `POST /validate/check`, el mismo endpoint que usará OwnCloud
 - [x] Documentar el flujo de enrolamiento del token TOTP desde la UI y el escaneo del QR con FreeOTP
-- [ ] Enrolar el token demo en un móvil del equipo (paso manual, se hace una sola vez antes de la exposición)
+- [x] Script `scripts/privacyidea-enroll-test-token.sh` que enrola con `genkey=1`, imprime la URL `otpauth://` y calcula+valida el TOTP localmente con Python stdlib, sin depender de un teléfono
+- [ ] Paso manual del equipo antes de la exposición: enrolar un token en un móvil real con FreeOTP usando la URL que imprime el script
 
 ### Fase 4: Certificados TLS (CA propia)
 - [ ] Script en `scripts/` que genera CA + certs de cada servicio
