@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-04-24
+**Última actualización:** 2026-04-25
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -14,7 +14,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Colaboradores del equipo | En progreso | Arely aceptada; Mauricio, María Elena, Esteban y Luis Iván pendientes |
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
-| Certificados TLS (CA propia) | Por implementar | Pendiente |
+| Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636 y HTTPS de privacyIDEA en 8443; `ldap-verify.sh` valida cadena contra la CA local |
 | OwnCloud | Bloqueado | Depende de respuesta del profesor (versión 10 vs OCIS) |
 | Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
@@ -91,10 +91,12 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [ ] Paso manual del equipo antes de la exposición: enrolar un token en un móvil real con FreeOTP usando la URL que imprime el script
 
 ### Fase 4: Certificados TLS (CA propia)
-- [ ] Script en `scripts/` que genera CA + certs de cada servicio
-- [ ] Activar LDAPS en el contenedor de OpenLDAP, publicar puerto 6636
-- [ ] Activar HTTPS en PrivacyIDEA con el cert del paso anterior
-- [ ] Documentar generación y confianza de la CA
+- [x] `scripts/generate-certs.sh` genera CA local + certs de servidor para `openldap` y `privacyidea` (idempotente, con `--force` para regenerar)
+- [x] Compose monta los certs en OpenLDAP, publica `6636:636` para LDAPS y mantiene `389` durante la transición
+- [x] PrivacyIDEA arranca en HTTPS sobre `8443` con `pi-manage run --cert --key`; healthcheck del Dockerfile prueba HTTPS y cae a HTTP solo como fallback
+- [x] Helper `scripts/lib-curl.sh` define `--cacert certs/ca.crt` para que los scripts confíen en la CA local
+- [x] `scripts/ldap-verify.sh` extendido con un paso 8 que valida la cadena de certificación de LDAPS
+- [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
 
 ### Fase 5: OwnCloud y 2FA
 Bloqueado por las preguntas abiertas al profesor. Ver [`preguntas-abiertas.md`](preguntas-abiertas.md).
@@ -172,6 +174,11 @@ Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
 - Agregados `README.md` placeholder en `certs/`, `owncloud/` y `privacyidea/` para documentar el rol de cada carpeta antes de tener su contenido final.
 - PrivacyIDEA agregado al `docker-compose.yml` con imagen propia, configuración reproducible y resolver LDAP funcional.
 
+### 2026-04-25
+- Script `scripts/privacyidea-enroll-test-token.sh` que enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP y valida el código localmente con Python stdlib contra `POST /validate/check`. Cierra técnicamente la validación iii (emisión de OTP) sin depender de un teléfono.
+- Script `scripts/privacyidea-validate-otp.sh` para probar OTPs reales contra la API; mismo endpoint que usará OwnCloud en la Fase 5.
+- Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, scripts adaptados para confiar en la CA con `--cacert`. `ldap-verify.sh` y `privacyidea-*.sh` validan toda la cadena.
+
 ## 6. Próximo hito objetivo
 
-**Enrolar un token TOTP en PrivacyIDEA y validarlo con FreeOTP**, sin depender de ninguna respuesta del profesor. Esto desbloquea la validación del componente iii (emisión de OTP) de la evaluación de funcionamiento.
+**Cerrar la documentación final del entregable** (portada, introducción, glosario, bibliografía, índice de figuras) y, en paralelo, completar el enrolamiento manual del token de demo en un teléfono del equipo con FreeOTP. La Fase 5 (OwnCloud) sigue bloqueada por las cuatro respuestas pendientes del profesor.

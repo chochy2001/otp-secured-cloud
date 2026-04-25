@@ -40,24 +40,35 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] Estructura del repositorio y documentación base
 - [x] OpenLDAP con dos unidades organizacionales (Desarrollo, Seguridad) y usuarios sembrados
 - [x] PrivacyIDEA integrado con el LDAP como *resolver*
-- [ ] Token TOTP enrolado desde FreeOTP
+- [x] Token TOTP enrolado y validado contra la API (`scripts/privacyidea-enroll-test-token.sh`)
+- [x] CA local del proyecto, LDAPS en 6636 y HTTPS de PrivacyIDEA en 8443
 - [ ] OwnCloud integrado con LDAP y doble factor
 - [ ] Cifrado de archivos compartidos activado
 - [ ] Memoria técnica y presentación final
 
-## Arranque rápido (LDAP)
+## Arranque rápido
 
 ```bash
-# 1. Levantar OpenLDAP
-cd compose
-docker compose --env-file ../.env up -d openldap
+# 1. Generar la CA local y los certs de servidor
+./scripts/generate-certs.sh
 
-# 2. Verificar que los 6 usuarios + la cuenta de servicio quedaron bien
+# 2. Levantar todo el stack
+cd compose
+docker compose --env-file ../.env up -d
 cd ..
+
+# 3. Verificar OpenLDAP (incluye prueba de LDAPS contra la CA)
 ./scripts/ldap-verify.sh
+
+# 4. Configurar resolver y realm en privacyIDEA y verificarlo
+./scripts/privacyidea-configure.sh
+./scripts/privacyidea-verify.sh
+
+# 5. Enrolar un TOTP de prueba y validarlo de extremo a extremo
+./scripts/privacyidea-enroll-test-token.sh
 ```
 
-Si el script termina con `Todo OK` significa que el directorio está operativo y listo para que PrivacyIDEA y OwnCloud lo consuman.
+Si los cuatro scripts terminan con `Todo OK` (o el mensaje equivalente del último), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS y validación de OTP funcionando contra el resolver LDAP del proyecto.
 
 ## Estructura del repositorio
 
