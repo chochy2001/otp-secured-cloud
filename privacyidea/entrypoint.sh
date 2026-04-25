@@ -41,10 +41,22 @@ else
   echo "[init] Admin '${PI_ADMIN_USERNAME}' ya existe, no se recrea."
 fi
 
+SSL_DIR="/etc/privacyidea/ssl"
+SSL_CRT="${SSL_DIR}/server.crt"
+SSL_KEY="${SSL_DIR}/server.key"
+
 case "${1:-serve}" in
   serve)
-    echo "[run] Levantando servidor en 0.0.0.0:8080"
-    exec pi-manage run -h 0.0.0.0 -p 8080
+    if [[ -f "${SSL_CRT}" ]] && [[ -f "${SSL_KEY}" ]]; then
+      echo "[run] Levantando servidor HTTPS en 0.0.0.0:8443"
+      exec pi-manage run \
+        -h 0.0.0.0 -p 8443 \
+        --cert="${SSL_CRT}" \
+        --key="${SSL_KEY}"
+    else
+      echo "[run] No se encontro cert TLS en ${SSL_DIR}; arrancando HTTP en 0.0.0.0:8080"
+      exec pi-manage run -h 0.0.0.0 -p 8080
+    fi
     ;;
   manage)
     shift

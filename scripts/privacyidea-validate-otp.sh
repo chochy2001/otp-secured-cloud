@@ -35,13 +35,15 @@ fi
 
 # shellcheck disable=SC1091
 source "$ROOT_DIR/.env"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/lib-curl.sh"
 
-PI_URL="${PI_URL:-http://localhost:8080}"
+PI_URL="${PI_URL:-https://localhost:8443}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
 
 echo "==> Validando OTP para '${USER}@${REALM_NAME}' contra ${PI_URL}"
 
-RESPONSE="$(curl -fsS -X POST "${PI_URL}/validate/check" \
+RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/validate/check" \
   --data-urlencode "user=${USER}" \
   --data-urlencode "realm=${REALM_NAME}" \
   --data-urlencode "pass=${OTP}" \

@@ -12,16 +12,27 @@ services:
       LDAP_CONFIG_PASSWORD: "${LDAP_CONFIG_PASSWORD}"
       LDAP_RFC2307BIS_SCHEMA: "true"
       LDAP_REMOVE_CONFIG_AFTER_SETUP: "false"
-      LDAP_TLS: "false"
+      # TLS habilitado con certificados de la CA del proyecto.
+      # Los certs vienen montados desde ../certs y los nombres de archivo
+      # se le indican al contenedor con las variables LDAP_TLS_*_FILENAME.
+      LDAP_TLS: "true"
+      LDAP_TLS_CRT_FILENAME: "openldap.crt"
+      LDAP_TLS_KEY_FILENAME: "openldap.key"
+      LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+      LDAP_TLS_VERIFY_CLIENT: "never"
+      # ENFORCE=false permite mantener LDAP plano en 389 durante la
+      # transición. Los clientes nuevos deben preferir LDAPS en 6636.
+      LDAP_TLS_ENFORCE: "false"
     command: ["--copy-service"]
     ports:
-      # LDAPS (636) aún no se mapea: queda disponible solo dentro de la red
-      # Docker. Se publicará en el host cuando se active TLS en una fase
-      # posterior, usando un puerto alterno (p.ej. 6636) para evitar
-      # colisiones con otros servicios LDAPS del equipo.
+      # 389: LDAP plano, se mantiene durante la transición a TLS para
+      #      no romper integraciones aún sin actualizar.
+      # 6636 -> 636: LDAPS, lo que recomendamos usar de aquí en adelante.
       - "389:389"
+      - "6636:636"
     volumes:
       - ../ldap/bootstrap:/container/service/slapd/assets/config/bootstrap/ldif/custom:ro
+      - ../certs:/container/service/slapd/assets/certs:ro
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
     networks:
@@ -43,9 +54,14 @@ services:
       PI_PEPPER: "${PI_PEPPER}"
       PI_SECRET_KEY: "${PI_SECRET_KEY}"
     ports:
-      - "8080:8080"
+      # HTTPS solamente. El plain HTTP en 8080 se elimina con esta fase.
+      - "8443:8443"
     volumes:
       - privacyidea_data:/data
+      # Solo se montan los archivos necesarios, en lugar del directorio
+      # completo, para que el contenedor no vea el resto de los certs.
+      - ../certs/privacyidea.crt:/etc/privacyidea/ssl/server.crt:ro
+      - ../certs/privacyidea.key:/etc/privacyidea/ssl/server.key:ro
     networks:
       - otpsec
     restart: unless-stopped

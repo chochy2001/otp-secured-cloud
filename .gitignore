@@ -17,6 +17,9 @@ preguntas_profesor_v2.pdf
 certs/*.key
 certs/*.pem
 certs/*.crt
+certs/*.csr
+certs/*.srl
+certs/*.ext
 certs/*.p12
 certs/*.pfx
 !certs/README.md

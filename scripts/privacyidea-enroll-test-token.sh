@@ -32,8 +32,10 @@ fi
 
 # shellcheck disable=SC1091
 source "$ROOT_DIR/.env"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/lib-curl.sh"
 
-PI_URL="${PI_URL:-http://localhost:8080}"
+PI_URL="${PI_URL:-https://localhost:8443}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
 TEST_USER="${1:-usuario.desarrollo1}"
 # PrivacyIDEA exige serial con regex ^[0-9a-zA-Z\-_]+$ (sin puntos).
@@ -41,7 +43,7 @@ TEST_USER="${1:-usuario.desarrollo1}"
 TEST_SERIAL="TOTP_$(printf '%s' "${TEST_USER}" | tr -c '[:alnum:]-_' '_')"
 
 echo "==> 1. Autenticando admin contra ${PI_URL}"
-TOKEN_RESP="$(curl -fsS -X POST "${PI_URL}/auth" \
+TOKEN_RESP="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/auth" \
   --data-urlencode "username=${PI_ADMIN_USERNAME}" \
   --data-urlencode "password=${PI_ADMIN_PASSWORD}")"
 
@@ -60,7 +62,7 @@ AUTH_HEADER="Authorization: ${ADMIN_TOKEN}"
 
 echo
 echo "==> 2. Borrando token previo con serial '${TEST_SERIAL}' (si existe)"
-if curl -fsS -X DELETE "${PI_URL}/token/${TEST_SERIAL}" -H "${AUTH_HEADER}" >/dev/null 2>&1; then
+if curl "${PI_CURL_OPTS[@]}" -fsS -X DELETE "${PI_URL}/token/${TEST_SERIAL}" -H "${AUTH_HEADER}" >/dev/null 2>&1; then
   echo "Token previo eliminado."
 else
   echo "No había token previo, sigo adelante."
@@ -68,7 +70,7 @@ fi
 
 echo
 echo "==> 3. Enrolando TOTP nuevo con genkey=1 para '${TEST_USER}@${REALM_NAME}'"
-INIT_RESP="$(curl -fsS -X POST "${PI_URL}/token/init" \
+INIT_RESP="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/token/init" \
   -H "${AUTH_HEADER}" \
   --data-urlencode "type=totp" \
   --data-urlencode "user=${TEST_USER}" \
@@ -125,7 +127,7 @@ echo "OTP calculado: ${CURRENT_OTP}"
 
 echo
 echo "==> 5. Validando el OTP contra POST /validate/check (mismo endpoint que OwnCloud)"
-VALIDATE_RESP="$(curl -fsS -X POST "${PI_URL}/validate/check" \
+VALIDATE_RESP="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/validate/check" \
   --data-urlencode "user=${TEST_USER}" \
   --data-urlencode "realm=${REALM_NAME}" \
   --data-urlencode "pass=${CURRENT_OTP}")"

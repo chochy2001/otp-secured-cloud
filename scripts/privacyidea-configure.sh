@@ -14,8 +14,10 @@ fi
 
 # shellcheck disable=SC1091
 source "$ROOT_DIR/.env"
+# shellcheck disable=SC1091
+source "$ROOT_DIR/scripts/lib-curl.sh"
 
-PI_URL="${PI_URL:-http://localhost:8080}"
+PI_URL="${PI_URL:-https://localhost:8443}"
 RESOLVER_NAME="${PI_RESOLVER_NAME:-sia-ldap}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
 LDAP_FILTER="(objectClass=inetOrgPerson)"
@@ -39,12 +41,12 @@ sys.exit(0 if result.get("status") is True else 1)
 }
 
 echo "==> 1. privacyIDEA responde en ${PI_URL}"
-curl -fsS "${PI_URL}/" -o /dev/null
+curl "${PI_CURL_OPTS[@]}" -fsS "${PI_URL}/" -o /dev/null
 echo "OK"
 
 echo
 echo "==> 2. Autenticando admin '${PI_ADMIN_USERNAME}'"
-AUTH_RESPONSE="$(curl -fsS -X POST "${PI_URL}/auth" \
+AUTH_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/auth" \
   --data-urlencode "username=${PI_ADMIN_USERNAME}" \
   --data-urlencode "password=${PI_ADMIN_PASSWORD}")"
 
@@ -65,7 +67,7 @@ AUTH_HEADERS=(-H "Authorization: ${TOKEN}" -H "PI-Authorization: ${TOKEN}")
 
 echo
 echo "==> 3. Creando o actualizando resolver LDAP '${RESOLVER_NAME}'"
-RESOLVER_RESPONSE="$(curl -fsS -X POST "${PI_URL}/resolver/${RESOLVER_NAME}" \
+RESOLVER_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/resolver/${RESOLVER_NAME}" \
   "${AUTH_HEADERS[@]}" \
   --data-urlencode "type=ldapresolver" \
   --data-urlencode "LDAPURI=ldap://openldap" \
@@ -89,7 +91,7 @@ echo "OK"
 
 echo
 echo "==> 4. Creando o actualizando realm '${REALM_NAME}'"
-REALM_RESPONSE="$(curl -fsS -X POST "${PI_URL}/realm/${REALM_NAME}" \
+REALM_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/realm/${REALM_NAME}" \
   "${AUTH_HEADERS[@]}" \
   --data-urlencode "resolvers=${RESOLVER_NAME}" \
   --data-urlencode "priority.${RESOLVER_NAME}=1")"
@@ -98,7 +100,7 @@ echo "OK"
 
 echo
 echo "==> 5. Marcando '${REALM_NAME}' como realm por defecto"
-DEFAULT_RESPONSE="$(curl -fsS -X POST "${PI_URL}/defaultrealm/${REALM_NAME}" \
+DEFAULT_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/defaultrealm/${REALM_NAME}" \
   "${AUTH_HEADERS[@]}")"
 require_success "configuración del realm por defecto" "$DEFAULT_RESPONSE"
 echo "OK"
