@@ -1,12 +1,22 @@
-dn: ou=Desarrollo,dc=sia,dc=unam,dc=mx
+dn: ou=Usuarios,dc=sia,dc=unam,dc=mx
+objectClass: organizationalUnit
+ou: Usuarios
+description: Contenedor de las unidades organizacionales de usuarios humanos
+
+dn: ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: organizationalUnit
 ou: Desarrollo
 description: Unidad organizacional de Desarrollo
 
-dn: ou=Seguridad,dc=sia,dc=unam,dc=mx
+dn: ou=Seguridad,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: organizationalUnit
 ou: Seguridad
 description: Unidad organizacional de Seguridad
+
+dn: ou=Grupos,dc=sia,dc=unam,dc=mx
+objectClass: organizationalUnit
+ou: Grupos
+description: Grupos sincronizados a OwnCloud cuando se requieran
 
 dn: ou=Servicios,dc=sia,dc=unam,dc=mx
 objectClass: organizationalUnit

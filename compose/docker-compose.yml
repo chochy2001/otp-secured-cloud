@@ -113,6 +113,8 @@ services:
       OWNCLOUD_REDIS_HOST: owncloud-redis
       OWNCLOUD_ADMIN_USERNAME: "${OC_ADMIN_USERNAME}"
       OWNCLOUD_ADMIN_PASSWORD: "${OC_ADMIN_PASSWORD}"
+      OWNCLOUD_MYSQL_UTF8MB4: "true"
+      LDAPTLS_REQCERT: demand
       # OwnCloud está detrás de Caddy haciendo TLS termination, hay que
       # decirle que la URL pública es HTTPS para que genere enlaces
       # correctos.
@@ -121,7 +123,8 @@ services:
       - owncloud_data:/mnt/data
       # CA local montada para que el backend LDAP pueda validar LDAPS
       # contra OpenLDAP cuando se configure user_ldap.
-      - ../certs/ca.crt:/etc/ssl/certs/otp-secured-cloud-ca.crt:ro
+      - ../certs/ca.crt:/usr/local/share/ca-certificates/otp-secured-cloud-ca.crt:ro
+      - ../owncloud/10-trust-project-ca.sh:/etc/entrypoint.d/10-trust-project-ca.sh:ro
     networks:
       - otpsec
     restart: unless-stopped

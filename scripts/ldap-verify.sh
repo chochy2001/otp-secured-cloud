@@ -65,13 +65,13 @@ docker exec "$CONTAINER" ldapsearch -x -LLL \
 
 echo
 echo "==> 2. Usuarios de Desarrollo"
-ldap_search "ou=Desarrollo,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)" uid cn mail
-assert_count "Desarrollo" "3" "$(count_entries "ou=Desarrollo,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)")"
+ldap_search "ou=Desarrollo,ou=Usuarios,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)" uid cn mail
+assert_count "Desarrollo" "3" "$(count_entries "ou=Desarrollo,ou=Usuarios,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)")"
 
 echo
 echo "==> 3. Usuarios de Seguridad"
-ldap_search "ou=Seguridad,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)" uid cn mail
-assert_count "Seguridad" "3" "$(count_entries "ou=Seguridad,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)")"
+ldap_search "ou=Seguridad,ou=Usuarios,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)" uid cn mail
+assert_count "Seguridad" "3" "$(count_entries "ou=Seguridad,ou=Usuarios,${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)")"
 
 echo
 echo "==> 4. Filtro de usuarios humanos no incluye cuentas de servicio"
@@ -101,7 +101,7 @@ echo "==> 7. Contraseña incorrecta se rechaza"
 set +e
 docker exec "$CONTAINER" ldapwhoami -x \
   -H ldap://localhost \
-  -D "uid=usuario.desarrollo1,ou=Desarrollo,${LDAP_BASE_DN}" \
+  -D "uid=usuario.desarrollo1,ou=Desarrollo,ou=Usuarios,${LDAP_BASE_DN}" \
   -w "contrasena-incorrecta" >/dev/null 2>&1
 INVALID_STATUS=$?
 set -e

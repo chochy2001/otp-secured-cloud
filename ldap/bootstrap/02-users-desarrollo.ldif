@@ -1,4 +1,4 @@
-dn: uid=usuario.desarrollo1,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+dn: uid=usuario.desarrollo1,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
@@ -10,7 +10,7 @@ givenName: Usuario Uno
 mail: usuario.desarrollo1@sia.unam.mx
 userPassword: sia-user-2026
 
-dn: uid=usuario.desarrollo2,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+dn: uid=usuario.desarrollo2,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
@@ -22,7 +22,7 @@ givenName: Usuario Dos
 mail: usuario.desarrollo2@sia.unam.mx
 userPassword: sia-user-2026
 
-dn: uid=usuario.desarrollo3,ou=Desarrollo,dc=sia,dc=unam,dc=mx
+dn: uid=usuario.desarrollo3,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person

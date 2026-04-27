@@ -7,15 +7,19 @@ dc=sia,dc=unam,dc=mx                          (base DN raíz)
 |
 |-- cn=admin                                   (admin del directorio)
 |
-|-- ou=Desarrollo                              (OU exigida por el anexo)
-|   |-- uid=usuario.desarrollo1
-|   |-- uid=usuario.desarrollo2
-|   `-- uid=usuario.desarrollo3
+|-- ou=Usuarios                                (contenedor de OUs humanas)
+|   |
+|   |-- ou=Desarrollo                          (OU exigida por el anexo)
+|   |   |-- uid=usuario.desarrollo1
+|   |   |-- uid=usuario.desarrollo2
+|   |   `-- uid=usuario.desarrollo3
+|   |
+|   `-- ou=Seguridad                           (OU exigida por el anexo)
+|       |-- uid=usuario.seguridad1
+|       |-- uid=usuario.seguridad2
+|       `-- uid=usuario.seguridad3
 |
-|-- ou=Seguridad                               (OU exigida por el anexo)
-|   |-- uid=usuario.seguridad1
-|   |-- uid=usuario.seguridad2
-|   `-- uid=usuario.seguridad3
+|-- ou=Grupos                                  (groupOfNames si se sincronizan)
 |
 `-- ou=Servicios                               (cuentas no humanas)
     `-- cn=svc-owncloud                        (bind DN para aplicaciones)
@@ -29,10 +33,11 @@ Cuando se configura el *LDAP User Backend* o el *User Resolver*, cada aplicació
 |---|---|
 | Host | `openldap` (nombre del contenedor en la red Docker) |
 | Port | `636` dentro de Docker para LDAPS; `6636` desde el host; `389` queda disponible solo como transición |
-| Base DN | `dc=sia,dc=unam,dc=mx` |
+| Base DN raíz | `dc=sia,dc=unam,dc=mx` |
+| Base DN de usuarios | `ou=Usuarios,dc=sia,dc=unam,dc=mx` (cubre Desarrollo y Seguridad) |
+| Base DN de grupos | `ou=Grupos,dc=sia,dc=unam,dc=mx` |
 | Bind DN | `cn=svc-owncloud,ou=Servicios,dc=sia,dc=unam,dc=mx` |
 | Bind Password | valor de `LDAP_SERVICE_PASSWORD` en `.env` |
-| User Search Base | `dc=sia,dc=unam,dc=mx` (busca en ambas OUs) |
 | User Login Attribute | `uid` |
 | User Filter | `(objectClass=inetOrgPerson)` |
 
@@ -88,7 +93,7 @@ docker exec -it otpsec-openldap ldapsearch -x \
 # Solo usuarios de Desarrollo
 docker exec -it otpsec-openldap ldapsearch -x \
   -H ldap://localhost \
-  -b "ou=Desarrollo,dc=sia,dc=unam,dc=mx" \
+  -b "ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx" \
   -D "cn=admin,dc=sia,dc=unam,dc=mx" \
   -w "$LDAP_ADMIN_PASSWORD" \
   "(objectClass=inetOrgPerson)" uid cn mail

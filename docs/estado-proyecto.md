@@ -15,7 +15,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
 | Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
-| OwnCloud | En progreso | Versión 10.15 levantada con MariaDB + Redis + Caddy (TLS); falta backend LDAP, 2FA y cifrado |
+| OwnCloud | Funcional | Versión 10.15 con backend LDAP por LDAPS, plugin `twofactor_privacyidea` activo y Server Side Encryption con master key. `owncloud-verify.sh` pasa los 6 checks. |
 | Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
 | Presentación de 30 min | Por preparar | Pendiente |
@@ -57,8 +57,8 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
 | ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
 | iii. Emisión de token OTP desde FreeOTP | Hecho | `scripts/privacyidea-enroll-test-token.sh` enrola con `genkey=1`, calcula TOTP local y valida vía API; flujo con FreeOTP documentado para la demo |
-| iv. Implementación de OwnCloud | Bloqueado | Espera decisión 10 vs OCIS |
-| v. Integración 2FA LDAP + OTP | Bloqueado | Depende de iii y iv |
+| iv. Implementación de OwnCloud | Hecho | OwnCloud 10.15 con Caddy TLS, base de usuarios local + LDAP, app 2FA y encryption activos |
+| v. Integración 2FA LDAP + OTP | Hecho | `user_ldap` por LDAPS + `twofactor_privacyidea` apuntando a privacyIDEA HTTPS interno; verify pasa los 6 pasos |
 
 ## 3. Plan por fases
 
@@ -106,10 +106,12 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 - [x] Servicios MariaDB 10.11, Redis 7 y OwnCloud 10.15 en `docker-compose.yml`
 - [x] Caddy 2 como TLS terminator delante de OwnCloud, publicando 9443
 - [x] Cert `owncloud.crt` agregado a `scripts/generate-certs.sh` con SANs apropiados
-- [x] `scripts/owncloud-verify.sh` valida HTTPS, instalación, `occ status` y admin
-- [ ] Backend LDAP (`user_ldap`) apuntando a `ldaps://openldap:636` con CA local
-- [ ] Plugin `twofactor_privacyidea` instalado y configurado
-- [ ] Permisos sobre carpetas y archivos compartidos entre usuarios
+- [x] Restructura del árbol LDAP con `ou=Usuarios` y `ou=Grupos` para alinear con `ldapBaseUsers` y `ldapBaseGroups` de user_ldap
+- [x] `scripts/owncloud-configure.sh` automatiza user_ldap (LDAPS), `twofactor_privacyidea` y cifrado master key
+- [x] `scripts/owncloud-verify.sh` valida HTTPS, instalación, configuración LDAP, 6 usuarios, app 2FA y cifrado activo
+- [x] Hook `owncloud/10-trust-project-ca.sh` registra la CA local en el trust store del contenedor antes del arranque
+- [x] `owncloud/ldap.conf` exige verificación de cert contra la CA del proyecto en el cliente OpenLDAP de PHP
+- [ ] Permisos y carpetas compartidas entre usuarios para la demo (puede hacerse a mano desde la UI o automatizarse después)
 
 ### Fase 6: Cifrado de archivos compartidos
 - [ ] Activar módulo *Server Side Encryption* modo *master key* (AES-256)

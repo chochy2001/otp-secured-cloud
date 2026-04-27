@@ -43,7 +43,8 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] Token TOTP enrolado y validado contra la API (`scripts/privacyidea-enroll-test-token.sh`)
 - [x] CA local del proyecto, LDAPS en 6636 y HTTPS de PrivacyIDEA en 8443
 - [x] OwnCloud 10.15 levantado con MariaDB, Redis y Caddy (TLS en 9443)
-- [ ] OwnCloud integrado con backend LDAP y doble factor
+- [x] OwnCloud integrado con backend LDAP por LDAPS y plugin `twofactor_privacyidea`
+- [x] Cifrado de archivos compartidos activado (Server Side Encryption, master key)
 - [ ] Cifrado de archivos compartidos activado
 - [ ] Memoria técnica y presentación final
 
@@ -68,7 +69,8 @@ cd ..
 # 5. Enrolar un TOTP de prueba y validarlo de extremo a extremo
 ./scripts/privacyidea-enroll-test-token.sh
 
-# 6. Verificar OwnCloud (HTTPS, status.php, occ status, admin)
+# 6. Configurar OwnCloud (LDAP backend + 2FA + encryption) y validar
+./scripts/owncloud-configure.sh
 ./scripts/owncloud-verify.sh
 ```
 
