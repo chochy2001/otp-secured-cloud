@@ -42,7 +42,8 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] PrivacyIDEA integrado con el LDAP como *resolver*
 - [x] Token TOTP enrolado y validado contra la API (`scripts/privacyidea-enroll-test-token.sh`)
 - [x] CA local del proyecto, LDAPS en 6636 y HTTPS de PrivacyIDEA en 8443
-- [ ] OwnCloud integrado con LDAP y doble factor
+- [x] OwnCloud 10.15 levantado con MariaDB, Redis y Caddy (TLS en 9443)
+- [ ] OwnCloud integrado con backend LDAP y doble factor
 - [ ] Cifrado de archivos compartidos activado
 - [ ] Memoria técnica y presentación final
 
@@ -66,9 +67,12 @@ cd ..
 
 # 5. Enrolar un TOTP de prueba y validarlo de extremo a extremo
 ./scripts/privacyidea-enroll-test-token.sh
+
+# 6. Verificar OwnCloud (HTTPS, status.php, occ status, admin)
+./scripts/owncloud-verify.sh
 ```
 
-Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS y validación de OTP funcionando contra el resolver LDAP del proyecto.
+Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS, validación de OTP funcionando y OwnCloud accesible vía HTTPS detrás de Caddy. La integración LDAP + 2FA dentro de OwnCloud se documenta y configura en las fases siguientes.
 
 ## Estructura del repositorio
 

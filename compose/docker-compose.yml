@@ -67,10 +67,91 @@ services:
       - otpsec
     restart: unless-stopped
 
+  owncloud-db:
+    image: mariadb:10.11
+    container_name: otpsec-owncloud-db
+    hostname: owncloud-db
+    environment:
+      MYSQL_ROOT_PASSWORD: "${OC_DB_ROOT_PASSWORD}"
+      MYSQL_DATABASE: owncloud
+      MYSQL_USER: owncloud
+      MYSQL_PASSWORD: "${OC_DB_PASSWORD}"
+    command:
+      - --max-allowed-packet=128M
+      - --innodb-log-file-size=64M
+    volumes:
+      - owncloud_db_data:/var/lib/mysql
+    networks:
+      - otpsec
+    restart: unless-stopped
+
+  owncloud-redis:
+    image: redis:7-alpine
+    container_name: otpsec-owncloud-redis
+    hostname: owncloud-redis
+    networks:
+      - otpsec
+    restart: unless-stopped
+
+  owncloud-server:
+    image: owncloud/server:10.15
+    container_name: otpsec-owncloud-server
+    hostname: owncloud-server
+    depends_on:
+      - owncloud-db
+      - owncloud-redis
+      - openldap
+    environment:
+      OWNCLOUD_DOMAIN: "localhost:9443"
+      OWNCLOUD_TRUSTED_DOMAINS: "localhost,owncloud-server,owncloud-proxy"
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_DB_NAME: owncloud
+      OWNCLOUD_DB_USERNAME: owncloud
+      OWNCLOUD_DB_PASSWORD: "${OC_DB_PASSWORD}"
+      OWNCLOUD_DB_HOST: owncloud-db
+      OWNCLOUD_REDIS_ENABLED: "true"
+      OWNCLOUD_REDIS_HOST: owncloud-redis
+      OWNCLOUD_ADMIN_USERNAME: "${OC_ADMIN_USERNAME}"
+      OWNCLOUD_ADMIN_PASSWORD: "${OC_ADMIN_PASSWORD}"
+      # OwnCloud está detrás de Caddy haciendo TLS termination, hay que
+      # decirle que la URL pública es HTTPS para que genere enlaces
+      # correctos.
+      OWNCLOUD_OVERWRITE_PROTOCOL: https
+    volumes:
+      - owncloud_data:/mnt/data
+      # CA local montada para que el backend LDAP pueda validar LDAPS
+      # contra OpenLDAP cuando se configure user_ldap.
+      - ../certs/ca.crt:/etc/ssl/certs/otp-secured-cloud-ca.crt:ro
+    networks:
+      - otpsec
+    restart: unless-stopped
+
+  owncloud-proxy:
+    image: caddy:2-alpine
+    container_name: otpsec-owncloud-proxy
+    hostname: owncloud-proxy
+    depends_on:
+      - owncloud-server
+    ports:
+      - "9443:9443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../certs/owncloud.crt:/etc/caddy/certs/owncloud.crt:ro
+      - ../certs/owncloud.key:/etc/caddy/certs/owncloud.key:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - otpsec
+    restart: unless-stopped
+
 volumes:
   ldap_data:
   ldap_config:
   privacyidea_data:
+  owncloud_data:
+  owncloud_db_data:
+  caddy_data:
+  caddy_config:
 
 networks:
   otpsec:

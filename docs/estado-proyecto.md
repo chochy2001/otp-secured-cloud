@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-04-25
+**Última actualización:** 2026-04-27
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -15,7 +15,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
 | Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
-| OwnCloud | Bloqueado | Depende de respuesta del profesor (versión 10 vs OCIS) |
+| OwnCloud | En progreso | Versión 10.15 levantada con MariaDB + Redis + Caddy (TLS); falta backend LDAP, 2FA y cifrado |
 | Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
 | Presentación de 30 min | Por preparar | Pendiente |
@@ -100,14 +100,16 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
 
 ### Fase 5: OwnCloud y 2FA
-Bloqueado por las preguntas abiertas al profesor. Ver [`preguntas-abiertas.md`](preguntas-abiertas.md).
+El profesor no respondió las preguntas abiertas. Se avanza con los supuestos declarados en [`preguntas-abiertas.md`](preguntas-abiertas.md): OwnCloud 10 Server, demo solo en navegador web, permisos administrados en OwnCloud (sin grupos LDAP por ahora).
 
-- [ ] Respuesta a versión: 10 Server vs OCIS
-- [ ] Respuesta a modelo de autorización: grupos LDAP vs permisos OwnCloud
-- [ ] Respuesta a alcance del cliente: solo web vs también escritorio/móvil
-- [ ] Implementar OwnCloud con el backend LDAP
-- [ ] Integrar `twofactor_privacyidea`
-- [ ] Configurar permisos y compartir archivos entre usuarios
+- [x] Decisión: OwnCloud 10.15 Server con `twofactor_privacyidea`, demo solo web
+- [x] Servicios MariaDB 10.11, Redis 7 y OwnCloud 10.15 en `docker-compose.yml`
+- [x] Caddy 2 como TLS terminator delante de OwnCloud, publicando 9443
+- [x] Cert `owncloud.crt` agregado a `scripts/generate-certs.sh` con SANs apropiados
+- [x] `scripts/owncloud-verify.sh` valida HTTPS, instalación, `occ status` y admin
+- [ ] Backend LDAP (`user_ldap`) apuntando a `ldaps://openldap:636` con CA local
+- [ ] Plugin `twofactor_privacyidea` instalado y configurado
+- [ ] Permisos sobre carpetas y archivos compartidos entre usuarios
 
 ### Fase 6: Cifrado de archivos compartidos
 - [ ] Activar módulo *Server Side Encryption* modo *master key* (AES-256)
@@ -180,6 +182,13 @@ Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
 - Script `scripts/privacyidea-validate-otp.sh` para probar OTPs reales contra la API; mismo endpoint que usará OwnCloud en la Fase 5.
 - Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, resolver LDAP interno usando LDAPS y scripts adaptados para confiar en la CA con `--cacert`.
 
+### 2026-04-27
+- Como el profesor no respondió las preguntas abiertas, se avanza con los supuestos declarados.
+- Fase 5 arrancada: OwnCloud 10.15 Server levantado con MariaDB 10.11, Redis 7 y Caddy 2 como terminador TLS sobre el puerto 9443.
+- Cert `owncloud.crt` añadido a `scripts/generate-certs.sh` con SANs `owncloud`, `owncloud-server`, `owncloud-proxy`, `localhost`, `127.0.0.1`, `::1`.
+- `scripts/owncloud-verify.sh` valida cadena TLS, `/status.php`, `occ status` y existencia del admin inicial.
+- Falta integración con LDAP (`user_ldap`), 2FA (`twofactor_privacyidea`) y cifrado *master key*.
+
 ## 6. Próximo hito objetivo
 
-**Cerrar la documentación final del entregable** (portada, introducción, glosario, bibliografía, índice de figuras) y, en paralelo, completar el enrolamiento manual del token de demo en un teléfono del equipo con FreeOTP. La Fase 5 (OwnCloud) sigue bloqueada por las cuatro respuestas pendientes del profesor.
+**Configurar el backend LDAP de OwnCloud** (módulo `user_ldap`) apuntando a `ldaps://openldap:636` con verificación contra la CA local, de modo que los seis usuarios del directorio puedan iniciar sesión en OwnCloud con su contraseña. Después se instala y configura `twofactor_privacyidea` para encadenar el segundo factor. Eso desbloquea las validaciones iv y v de la evaluación de funcionamiento.

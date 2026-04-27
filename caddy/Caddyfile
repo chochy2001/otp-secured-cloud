@@ -1,0 +1,32 @@
+# Caddy actúa como terminador TLS para OwnCloud.
+#
+# El servicio owncloud/server escucha en HTTP plano dentro de la red
+# Docker. Caddy expone HTTPS al host en el puerto 9443 con el cert
+# firmado por la CA local del proyecto y reenvía las peticiones al
+# contenedor de OwnCloud por HTTP interno.
+#
+# auto_https off porque manejamos TLS manualmente con tls <crt> <key>.
+# admin off para no exponer la API administrativa de Caddy.
+
+{
+	auto_https off
+	admin off
+}
+
+:9443 {
+	tls /etc/caddy/certs/owncloud.crt /etc/caddy/certs/owncloud.key
+
+	reverse_proxy owncloud-server:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Host {host}
+	}
+
+	encode gzip
+
+	log {
+		output stdout
+		format console
+	}
+}

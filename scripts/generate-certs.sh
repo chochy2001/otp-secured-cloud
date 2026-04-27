@@ -86,6 +86,7 @@ EOF
 
 generate_server_cert "openldap"    "DNS:openldap,DNS:localhost,IP:127.0.0.1,IP:::1"
 generate_server_cert "privacyidea" "DNS:privacyidea,DNS:localhost,IP:127.0.0.1,IP:::1"
+generate_server_cert "owncloud"    "DNS:owncloud,DNS:owncloud-server,DNS:owncloud-proxy,DNS:localhost,IP:127.0.0.1,IP:::1"
 
 echo
 echo "Resumen:"
