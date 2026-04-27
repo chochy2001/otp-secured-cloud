@@ -7,7 +7,10 @@
 | OpenLDAP | `osixia/openldap:1.5.0` | Directorio de usuarios, autenticación de primer factor |
 | PrivacyIDEA | `privacyIDEA 3.10.2` | Emisión y validación de tokens OTP |
 | FreeOTP | App Android/iOS | Cliente que genera el código TOTP en el móvil del usuario |
-| OwnCloud | *pendiente (10 vs OCIS)* | Servicio de almacenamiento con integración 2FA |
+| OwnCloud | `owncloud/server:10.15` | Servicio de almacenamiento con integración LDAP y 2FA |
+| Caddy | `caddy:2-alpine` | Terminación TLS para OwnCloud en el puerto 9443 |
+| MariaDB | `mariadb:10.11` | Base de datos de OwnCloud |
+| Redis | `redis:7-alpine` | Cache y locking de OwnCloud |
 
 Los servicios corren como contenedores sobre una red Docker compartida (`otpsec`). El acceso del usuario final es únicamente por HTTPS a OwnCloud; las comunicaciones internas entre OwnCloud, PrivacyIDEA y OpenLDAP son locales en la red Docker.
 
@@ -67,10 +70,11 @@ El principio fundamental del diseño es que **OpenLDAP es la única fuente de id
 |---|---|---|
 | OpenLDAP | 389 (ldap), 636 (ldaps) | 389, 6636 |
 | PrivacyIDEA | 8443 (https) | 8443 |
-| OwnCloud | 80/443 | 443 (tras TLS) |
+| OwnCloud | 8080 (http interno) | No se expone directo |
+| Caddy para OwnCloud | 9443 (https) | 9443 |
 
-OpenLDAP y PrivacyIDEA usan certificados firmados por la CA local del proyecto en `certs/`. El resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` dentro de la red Docker.
+OpenLDAP, PrivacyIDEA y Caddy usan certificados firmados por la CA local del proyecto en `certs/`. El resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` dentro de la red Docker. OwnCloud también usa LDAPS hacia OpenLDAP y HTTPS interno hacia PrivacyIDEA.
 
 ## Diagrama detallado
 
-*(pendiente: se generará una versión renderizada del diagrama de flujo para el entregable; el diagrama ASCII de arriba es la versión de trabajo)*
+El diagrama ASCII de arriba es la versión de trabajo. Para el entregable final falta generar una versión renderizada y referenciada en el índice de figuras.

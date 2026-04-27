@@ -16,7 +16,7 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 
 compose() {
@@ -72,7 +72,7 @@ fi
 set_ldap_config ldapHost "ldaps://openldap"
 set_ldap_config ldapPort "636"
 set_ldap_config ldapBase "${LDAP_BASE_DN}"
-set_ldap_config ldapBaseUsers "${LDAP_BASE_DN}"
+set_ldap_config ldapBaseUsers "ou=Usuarios,${LDAP_BASE_DN}"
 set_ldap_config ldapBaseGroups "ou=Grupos,${LDAP_BASE_DN}"
 set_ldap_config ldapAgentName "cn=svc-owncloud,ou=Servicios,${LDAP_BASE_DN}"
 set_ldap_config ldapAgentPassword "${LDAP_SERVICE_PASSWORD}"

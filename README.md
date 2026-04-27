@@ -45,7 +45,6 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] OwnCloud 10.15 levantado con MariaDB, Redis y Caddy (TLS en 9443)
 - [x] OwnCloud integrado con backend LDAP por LDAPS y plugin `twofactor_privacyidea`
 - [x] Cifrado de archivos compartidos activado (Server Side Encryption, master key)
-- [ ] Cifrado de archivos compartidos activado
 - [ ] Memoria técnica y presentación final
 
 ## Arranque rápido
@@ -72,9 +71,12 @@ cd ..
 # 6. Configurar OwnCloud (LDAP backend + 2FA + encryption) y validar
 ./scripts/owncloud-configure.sh
 ./scripts/owncloud-verify.sh
+
+# 7. Probar login web LDAP + OTP y archivo cifrado en disco
+./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ```
 
-Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS, validación de OTP funcionando y OwnCloud accesible vía HTTPS detrás de Caddy. La integración LDAP + 2FA dentro de OwnCloud se documenta y configura en las fases siguientes.
+Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo y cifrado local verificado sobre un archivo real.
 
 ## Estructura del repositorio
 
@@ -84,7 +86,7 @@ otp-secured-cloud/
 |-- ldap/
 |   `-- bootstrap/        LDIFs que siembran el directorio al primer arranque
 |-- privacyidea/          Configuración del servicio de OTP
-|-- owncloud/             Configuración del servicio de almacenamiento (pendiente, con README)
+|-- owncloud/             Hooks y documentación del servicio OwnCloud
 |-- certs/                Certificados TLS autofirmados del proyecto (con README)
 |-- scripts/              Utilidades (pruebas, regenerar certs, etc.)
 `-- docs/                 Memoria técnica, diagramas, conceptos básicos

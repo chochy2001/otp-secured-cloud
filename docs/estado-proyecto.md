@@ -16,7 +16,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
 | Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
 | OwnCloud | Funcional | Versión 10.15 con backend LDAP por LDAPS, plugin `twofactor_privacyidea` activo y Server Side Encryption con master key. `owncloud-verify.sh` pasa los 6 checks. |
-| Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
+| Cifrado de archivos | Funcional | Server Side Encryption activo; `owncloud-login-verify.sh` sube un archivo y confirma que queda cifrado en el volumen |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
 | Presentación de 30 min | Por preparar | Pendiente |
 
@@ -36,7 +36,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Índice de figuras con referencia | Pendiente | Pendiente |
 | Conceptos básicos de 2FA mediante tokens OTP | Redactado | [`conceptos-basicos.md`](conceptos-basicos.md) |
 | Diagrama detallado de la solución | Diagrama de trabajo listo; falta versión renderizada | [`arquitectura.md`](arquitectura.md) |
-| Memoria técnica paso a paso | Parcial: LDAP, PrivacyIDEA y TLS documentados en archivos de trabajo; falta consolidar el PDF y documentar OwnCloud cuando se desbloquee | varios |
+| Memoria técnica paso a paso | Parcial: LDAP, PrivacyIDEA, TLS y OwnCloud documentados en archivos de trabajo; falta consolidar el PDF final | varios |
 | Conclusiones individuales y por equipo | Pendiente | Pendiente |
 | Bibliografía | Pendiente | Pendiente |
 | Glosario de términos | Pendiente | Pendiente |
@@ -57,8 +57,8 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
 | ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
 | iii. Emisión de token OTP desde FreeOTP | Hecho | `scripts/privacyidea-enroll-test-token.sh` enrola con `genkey=1`, calcula TOTP local y valida vía API; flujo con FreeOTP documentado para la demo |
-| iv. Implementación de OwnCloud | Hecho | OwnCloud 10.15 con Caddy TLS, base de usuarios local + LDAP, app 2FA y encryption activos |
-| v. Integración 2FA LDAP + OTP | Hecho | `user_ldap` por LDAPS + `twofactor_privacyidea` apuntando a privacyIDEA HTTPS interno; verify pasa los 6 pasos |
+| iv. Implementación de OwnCloud | Hecho | OwnCloud 10.15 con Caddy TLS, MariaDB, Redis, LDAP y encryption activos |
+| v. Integración 2FA LDAP + OTP | Hecho | `owncloud-login-verify.sh` valida login web con LDAP + OTP contra PrivacyIDEA |
 
 ## 3. Plan por fases
 
@@ -100,22 +100,22 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
 
 ### Fase 5: OwnCloud y 2FA
-El profesor no respondió las preguntas abiertas. Se avanza con los supuestos declarados en [`preguntas-abiertas.md`](preguntas-abiertas.md): OwnCloud 10 Server, demo solo en navegador web, permisos administrados en OwnCloud (sin grupos LDAP por ahora).
+El profesor no respondió las preguntas abiertas. Se avanza con los supuestos declarados en [`preguntas-abiertas.md`](preguntas-abiertas.md): OwnCloud 10 Server, demo en navegador web y permisos administrados en OwnCloud.
 
 - [x] Decisión: OwnCloud 10.15 Server con `twofactor_privacyidea`, demo solo web
 - [x] Servicios MariaDB 10.11, Redis 7 y OwnCloud 10.15 en `docker-compose.yml`
 - [x] Caddy 2 como TLS terminator delante de OwnCloud, publicando 9443
 - [x] Cert `owncloud.crt` agregado a `scripts/generate-certs.sh` con SANs apropiados
-- [x] Restructura del árbol LDAP con `ou=Usuarios` y `ou=Grupos` para alinear con `ldapBaseUsers` y `ldapBaseGroups` de user_ldap
+- [x] Árbol LDAP con `ou=Usuarios` y `ou=Grupos`, alineado con `ldapBaseUsers` y `ldapBaseGroups` de `user_ldap`
 - [x] `scripts/owncloud-configure.sh` automatiza user_ldap (LDAPS), `twofactor_privacyidea` y cifrado master key
 - [x] `scripts/owncloud-verify.sh` valida HTTPS, instalación, configuración LDAP, 6 usuarios, app 2FA y cifrado activo
 - [x] Hook `owncloud/10-trust-project-ca.sh` registra la CA local en el trust store del contenedor antes del arranque
-- [x] `owncloud/ldap.conf` exige verificación de cert contra la CA del proyecto en el cliente OpenLDAP de PHP
+- [x] `scripts/owncloud-login-verify.sh` valida login web LDAP + OTP, subida WebDAV y archivo cifrado en disco
 - [ ] Permisos y carpetas compartidas entre usuarios para la demo (puede hacerse a mano desde la UI o automatizarse después)
 
 ### Fase 6: Cifrado de archivos compartidos
-- [ ] Activar módulo *Server Side Encryption* modo *master key* (AES-256)
-- [ ] Demostrar archivos cifrados en disco
+- [x] Activar módulo *Server Side Encryption* con `OC_DEFAULT_MODULE`
+- [x] Demostrar archivos cifrados en disco con `scripts/owncloud-login-verify.sh`
 - [ ] Validar que el destinatario puede abrirlos al compartir
 
 ### Fase 7: Auditoría y bitácoras
@@ -151,7 +151,7 @@ Ver [`preguntas-abiertas.md`](preguntas-abiertas.md) para el detalle.
 3. Modelo de autorización: grupos LDAP vs permisos internos de OwnCloud.
 4. Auditoría en la demo: bitácoras en vivo vs solo descripción.
 
-Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
+Ya no bloquean el desarrollo porque se decidió avanzar con supuestos documentados. Si el profesor pide otro enfoque, se ajusta desde la base funcional actual.
 
 ### 4.2 Invitaciones de GitHub pendientes de aceptar (4)
 
@@ -186,11 +186,12 @@ Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
 
 ### 2026-04-27
 - Como el profesor no respondió las preguntas abiertas, se avanza con los supuestos declarados.
-- Fase 5 arrancada: OwnCloud 10.15 Server levantado con MariaDB 10.11, Redis 7 y Caddy 2 como terminador TLS sobre el puerto 9443.
+- Fase 5 cerrada técnicamente: OwnCloud 10.15 Server levantado con MariaDB 10.11, Redis 7 y Caddy 2 como terminador TLS sobre el puerto 9443.
 - Cert `owncloud.crt` añadido a `scripts/generate-certs.sh` con SANs `owncloud`, `owncloud-server`, `owncloud-proxy`, `localhost`, `127.0.0.1`, `::1`.
-- `scripts/owncloud-verify.sh` valida cadena TLS, `/status.php`, `occ status` y existencia del admin inicial.
-- Falta integración con LDAP (`user_ldap`), 2FA (`twofactor_privacyidea`) y cifrado *master key*.
+- `scripts/owncloud-configure.sh` automatiza `user_ldap`, `twofactor_privacyidea` y cifrado local.
+- `scripts/owncloud-verify.sh` valida HTTPS, `occ status`, LDAPS, 6 usuarios, plugin 2FA y encryption.
+- `scripts/owncloud-login-verify.sh` valida login web con LDAP + OTP, subida WebDAV y cifrado del archivo en disco.
 
 ## 6. Próximo hito objetivo
 
-**Configurar el backend LDAP de OwnCloud** (módulo `user_ldap`) apuntando a `ldaps://openldap:636` con verificación contra la CA local, de modo que los seis usuarios del directorio puedan iniciar sesión en OwnCloud con su contraseña. Después se instala y configura `twofactor_privacyidea` para encadenar el segundo factor. Eso desbloquea las validaciones iv y v de la evaluación de funcionamiento.
+**Preparar demo y documentación final.** La base técnica ya valida LDAP, PrivacyIDEA, TLS, OwnCloud, OTP y cifrado. Falta cerrar el flujo de carpetas compartidas para la demo, documentar auditoría con ejemplos de logs y consolidar la memoria técnica final.

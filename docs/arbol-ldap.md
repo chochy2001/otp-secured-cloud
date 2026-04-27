@@ -66,11 +66,11 @@ Buenas prácticas aplicadas:
 - La ACL `00-acl-service-read.ldif` le permite leer usuarios, pero no leer `userPassword`.
 - Un solo `svc-owncloud` sirve para ambas aplicaciones porque sus permisos de lectura son idénticos.
 
-### Grupos LDAP: *pendiente* de decisión con el profesor
+### Grupos LDAP
 
-El diseño actual **no incluye grupos LDAP todavía** (p. ej. `groupOfNames`). Está pendiente confirmar si el profesor espera que los permisos sobre carpetas en OwnCloud se modelen vía grupos sincronizados desde LDAP, o si basta con administrarlos dentro de OwnCloud una vez autenticado el usuario (ver `docs/preguntas-abiertas.md`).
+El árbol incluye `ou=Grupos` como contenedor preparado, pero el flujo actual no depende de grupos LDAP. Los permisos de carpetas se administran en OwnCloud para mantener el alcance de la demo simple y reproducible.
 
-Si se opta por grupos, la rama esperada sería:
+Si después se decide sincronizar grupos, la rama esperada sería:
 
 ```
 ou=Grupos,dc=sia,dc=unam,dc=mx

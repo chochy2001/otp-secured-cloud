@@ -14,7 +14,7 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090
 source "${ENV_FILE}"
 
 OC_URL="${OC_URL:-https://localhost:9443}"
@@ -65,7 +65,7 @@ if [[ "${LDAP_HOST}" != "ldaps://openldap" || "${LDAP_PORT}" != "636" ]]; then
   exit 1
 fi
 
-if [[ "${LDAP_BASE_USERS}" != "${LDAP_BASE_DN}" ]]; then
+if [[ "${LDAP_BASE_USERS}" != "ou=Usuarios,${LDAP_BASE_DN}" ]]; then
   echo "ERROR: ldapBaseUsers inesperado: ${LDAP_BASE_USERS}"
   exit 1
 fi
@@ -93,7 +93,7 @@ echo "OK"
 
 echo
 echo "==> 4. OwnCloud resuelve exactamente 6 usuarios LDAP"
-USER_COUNT="$(occ ldap:search "usuario" --limit=20 | grep -E '^Usuario ' | wc -l | tr -d ' ')"
+USER_COUNT="$(occ ldap:search "usuario" --limit=20 | grep -cE '^Usuario ' || true)"
 if [[ "${USER_COUNT}" != "6" ]]; then
   echo "ERROR: OwnCloud encontró ${USER_COUNT} usuarios LDAP, se esperaban 6."
   exit 1

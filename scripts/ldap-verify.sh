@@ -120,8 +120,8 @@ if [[ ! -f "${CA_BUNDLE}" ]]; then
   echo "AVISO: ${CA_BUNDLE} no existe. Genera los certs con scripts/generate-certs.sh para validar LDAPS."
 else
   TLS_OUTPUT="$(echo | openssl s_client -connect localhost:6636 -CAfile "${CA_BUNDLE}" -servername openldap -verify_hostname localhost 2>/dev/null)"
-  if echo "${TLS_OUTPUT}" | grep -q "Verify return code: 0 (ok)"; then
-    SUBJECT="$(echo "${TLS_OUTPUT}" | grep -m1 '^subject=' | sed 's/^subject=//')"
+  if [[ "${TLS_OUTPUT}" == *"Verify return code: 0 (ok)"* ]]; then
+    SUBJECT="$(awk '/^subject=/ {sub(/^subject=/, ""); print; exit}' <<< "${TLS_OUTPUT}")"
     echo "OK: LDAPS validado contra la CA local. Subject: ${SUBJECT}"
   else
     echo "ERROR: el cert presentado por LDAPS no validó contra ${CA_BUNDLE}."

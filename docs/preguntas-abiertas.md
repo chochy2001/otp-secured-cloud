@@ -2,12 +2,14 @@
 
 Estado al día del commit. El PDF enviado al profesor se mantiene fuera del repositorio porque es material de consulta interna.
 
-## Requieren respuesta explícita
+## Sin respuesta del profesor
 
-1. **Alcance del cliente en la demostración:** ¿solo web, o también escritorio/móvil? Bloquea decisiones de *app passwords* en OwnCloud.
-2. **Versión de OwnCloud:** ¿10 Server (PHP) o Infinite Scale (OCIS, Go)? Bloquea la implementación de la capa de almacenamiento.
-3. **Modelo de autorización:** ¿grupos LDAP sincronizados a OwnCloud, o permisos puros en OwnCloud? Bloquea el diseño de grupos en el árbol LDAP.
-4. **Auditoría en la demo:** ¿mostrar bitácoras en vivo o solo describirlas en el documento?
+El profesor no contestó estas preguntas. Para no detener el proyecto, se avanza con los supuestos de la siguiente sección. Si el profesor pide otro alcance, se ajusta sobre la base funcional actual.
+
+1. **Alcance del cliente en la demostración:** solo web, o también escritorio/móvil.
+2. **Versión de OwnCloud:** 10 Server (PHP) o Infinite Scale (OCIS, Go).
+3. **Modelo de autorización:** grupos LDAP sincronizados a OwnCloud, o permisos puros en OwnCloud.
+4. **Auditoría en la demo:** bitácoras en vivo o descripción en el documento.
 
 ## Supuestos declarados (veto del profesor si no aplican)
 
@@ -21,9 +23,11 @@ d. Tokens TOTP (RFC 6238) desde FreeOTP.
 
 e. Cifrado OwnCloud *Server Side Encryption* modo *master key* (AES-256).
 
-f. 1 a 2 usuarios extra fuera del mínimo de 6 para demostrar casos de error.
+f. Demo principal por navegador web. WebDAV se usa solo en scripts de verificación.
 
-g. Demo local en laptop + snapshot + grabación de respaldo.
+g. OwnCloud Server 10.15, MariaDB, Redis y Caddy TLS.
+
+h. Demo local en laptop + snapshot + grabación de respaldo.
 
 ## Ya confirmados en clase
 
@@ -32,13 +36,11 @@ g. Demo local en laptop + snapshot + grabación de respaldo.
 - Certificados TLS autofirmados aceptados.
 - Presentación de 30 minutos.
 
-## Qué avanzar mientras llegan las respuestas
+## Qué avanzar ahora
 
-Todo lo anterior a OwnCloud se puede construir sin bloqueo:
+La base técnica ya está implementada. Lo que sigue no depende de la respuesta del profesor:
 
-- OpenLDAP con el árbol completo y los 6 usuarios.
-- PrivacyIDEA con el *resolver* hacia LDAP y la capacidad de enrolar un token desde FreeOTP.
-- CA del proyecto + certificados autofirmados.
-- Documentación (conceptos básicos, árbol LDAP, arquitectura, glosario).
-
-Las decisiones sobre OwnCloud esperan a las respuestas 1 a 4 para evitar retrabajo.
+- Preparar carpetas y permisos de demo dentro de OwnCloud.
+- Documentar bitácoras y casos de auditoría.
+- Consolidar la memoria técnica final.
+- Preparar guion, slides, snapshot y grabación de respaldo.

@@ -1,6 +1,6 @@
 # Certificados
 
-CA local del proyecto y certificados de servidor para OpenLDAP y PrivacyIDEA. Toda esta carpeta excepto este `README.md` está ignorada por git: las llaves privadas y certificados se generan localmente con un script y nunca se versionan.
+CA local del proyecto y certificados de servidor para OpenLDAP, PrivacyIDEA y OwnCloud. Toda esta carpeta excepto este `README.md` está ignorada por git: las llaves privadas y certificados se generan localmente con un script y nunca se versionan.
 
 ## Generación
 
@@ -23,13 +23,15 @@ El script es idempotente: si los archivos ya existen y validan contra la CA actu
 | `ca.key`, `ca.crt` | Autoridad certificadora local del proyecto. RSA 4096, válida 10 años. |
 | `openldap.key`, `openldap.crt` | Certificado del servidor LDAP, firmado por la CA. SANs: `openldap`, `localhost`, `127.0.0.1`, `::1`. |
 | `privacyidea.key`, `privacyidea.crt` | Certificado del servidor de PrivacyIDEA, firmado por la CA. SANs: `privacyidea`, `localhost`, `127.0.0.1`, `::1`. |
+| `owncloud.key`, `owncloud.crt` | Certificado usado por Caddy para publicar OwnCloud en HTTPS. SANs: `owncloud`, `owncloud-server`, `owncloud-proxy`, `localhost`, `127.0.0.1`, `::1`. |
 | `ca.srl` | Número de serie incremental que mantiene OpenSSL. No es secreto pero no se versiona. |
 
 ## Cómo se usan
 
 - **OpenLDAP** monta toda la carpeta como `/container/service/slapd/assets/certs/` y se le pasa el nombre de archivo de cada cert vía variables de entorno (`LDAP_TLS_CRT_FILENAME`, `LDAP_TLS_KEY_FILENAME`, `LDAP_TLS_CA_CRT_FILENAME`).
 - **PrivacyIDEA** monta el certificado y llave del servidor (`privacyidea.crt`, `privacyidea.key`) y también `ca.crt` para validar LDAPS hacia OpenLDAP.
-- Los **scripts del proyecto** (`scripts/privacyidea-*.sh`) le pasan a `curl` el flag `--cacert certs/ca.crt` cuando hablan vía HTTPS, para que confíe en la CA local sin importar advertencias del sistema.
+- **OwnCloud** recibe la CA local mediante el hook `owncloud/10-trust-project-ca.sh`, y Caddy monta `owncloud.crt` y `owncloud.key` para exponer `https://localhost:9443`.
+- Los **scripts del proyecto** le pasan a `curl` el flag `--cacert certs/ca.crt` cuando hablan vía HTTPS, para que confíe en la CA local sin importar advertencias del sistema.
 
 ## Confiar en la CA desde otros clientes
 

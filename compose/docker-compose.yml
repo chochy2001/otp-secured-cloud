@@ -118,7 +118,9 @@ services:
       # OwnCloud está detrás de Caddy haciendo TLS termination, hay que
       # decirle que la URL pública es HTTPS para que genere enlaces
       # correctos.
+      OWNCLOUD_OVERWRITE_HOST: "localhost:9443"
       OWNCLOUD_OVERWRITE_PROTOCOL: https
+      OWNCLOUD_OVERWRITE_CLI_URL: "https://localhost:9443"
     volumes:
       - owncloud_data:/mnt/data
       # CA local montada para que el backend LDAP pueda validar LDAPS

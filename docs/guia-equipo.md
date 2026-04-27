@@ -42,42 +42,51 @@ Las credenciales siguen el patrón `sia-<rol>-2026`:
 | Admin de la configuración LDAP (`cn=admin,cn=config`) | `sia-config-2026` |
 | Cuenta de servicio (`cn=svc-owncloud,ou=Servicios`) | `sia-svc-2026` |
 | Cualquiera de los 6 usuarios de prueba | `sia-user-2026` |
+| Admin de PrivacyIDEA | `sia-pi-admin-2026` |
+| Admin de OwnCloud | `sia-oc-admin-2026` |
 
-## 4. Levantar OpenLDAP
+## 4. Levantar el stack
 
 Desde la raíz del repositorio:
 
 ```bash
+./scripts/generate-certs.sh
 cd compose
-docker compose --env-file ../.env up -d openldap
+docker compose --env-file ../.env up -d --build
 cd ..
 ```
 
-El primer arranque tarda un par de minutos porque descarga la imagen `osixia/openldap:1.5.0` (~200 MB). Los siguientes son inmediatos.
+El primer arranque puede tardar varios minutos porque descarga imágenes y construye PrivacyIDEA. Los siguientes son más rápidos.
 
 Para ver los logs del contenedor mientras arranca:
 
 ```bash
-docker logs -f otpsec-openldap
+docker compose -f compose/docker-compose.yml --env-file .env logs -f
 ```
 
 Ctrl-C para salir del `tail` (el contenedor sigue corriendo).
 
-## 5. Verificar que el directorio está operativo
+## 5. Configurar y verificar
 
-Corre el script de verificación:
+Corre los scripts en este orden desde la raíz del repo:
 
 ```bash
 ./scripts/ldap-verify.sh
+./scripts/privacyidea-configure.sh
+./scripts/privacyidea-verify.sh
+./scripts/privacyidea-enroll-test-token.sh
+./scripts/owncloud-configure.sh
+./scripts/owncloud-verify.sh
+./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ```
 
 Deberías ver:
 
-1. Una consulta con `dn: dc=sia,dc=unam,dc=mx`.
-2. Los 3 usuarios de `ou=Desarrollo` con su `uid`, `cn` y `mail`.
-3. Los 3 usuarios de `ou=Seguridad`.
-4. `dn:cn=svc-owncloud,ou=Servicios,...` que confirma que la cuenta de servicio puede hacer bind.
-5. La línea final `Todo OK`.
+1. LDAP con 6 usuarios humanos y LDAPS validado.
+2. PrivacyIDEA con resolver `sia-ldap`, realm `sia` y 6 usuarios.
+3. Token TOTP reproducible validado contra la API.
+4. OwnCloud en `https://localhost:9443`, LDAP por LDAPS, 2FA activo y cifrado del lado servidor.
+5. Login web real con usuario LDAP + OTP, subida WebDAV y archivo cifrado en disco.
 
 Si alguno de los pasos falla, revisa la sección [Problemas comunes](#7-problemas-comunes) más abajo.
 
@@ -90,7 +99,7 @@ Simular lo que hará OwnCloud al autenticar al usuario:
 ```bash
 docker exec -it otpsec-openldap ldapwhoami -x \
   -H ldap://localhost \
-  -D "uid=usuario.desarrollo1,ou=Desarrollo,dc=sia,dc=unam,dc=mx" \
+  -D "uid=usuario.desarrollo1,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx" \
   -w "sia-user-2026"
 ```
 
@@ -101,7 +110,7 @@ Debe responder con `dn:uid=usuario.desarrollo1,...`.
 ```bash
 docker exec -it otpsec-openldap ldapwhoami -x \
   -H ldap://localhost \
-  -D "uid=usuario.desarrollo1,ou=Desarrollo,dc=sia,dc=unam,dc=mx" \
+  -D "uid=usuario.desarrollo1,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx" \
   -w "contrasena-incorrecta"
 ```
 
@@ -119,9 +128,16 @@ docker exec -it otpsec-openldap ldapsearch -x \
 
 ## 7. Problemas comunes
 
-### El puerto 389 o 636 ya está en uso
+### El puerto 389, 6636, 8443 o 9443 ya está en uso
 
-macOS y algunos Linux traen servicios de directorio corriendo nativos (`opendirectoryd`, `slapd`) que pueden ocupar esos puertos. Solución rápida: cambiar el puerto publicado en `compose/docker-compose.yml`, por ejemplo `"1389:389"`. Luego todas las pruebas con `-H ldap://localhost` deben apuntar a `-H ldap://localhost:1389`.
+Revisa qué contenedor o proceso lo ocupa:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Ports}}'
+lsof -nP -iTCP -sTCP:LISTEN | grep -E '389|6636|8443|9443'
+```
+
+Si es un contenedor de otro proyecto, detén ese contenedor o cambia temporalmente el puerto publicado en `compose/docker-compose.yml`.
 
 ### Cambié un LDIF y mi cambio no aparece en el directorio
 
@@ -166,4 +182,4 @@ docker compose down -v       # apaga y borra los volúmenes (datos del LDAP)
 
 ## 9. Qué sigue
 
-El entorno actual ya levanta OpenLDAP, PrivacyIDEA y la CA local del proyecto. Mientras OwnCloud sigue bloqueado por las respuestas pendientes del profesor, el equipo debe mantener esta guía alineada con los scripts de verificación y preparar la documentación final del entregable.
+El entorno actual ya levanta OpenLDAP, PrivacyIDEA, OwnCloud, la CA local y la verificación end-to-end de OTP. Lo siguiente es preparar el guion de demo, documentar auditoría y consolidar la memoria técnica final.

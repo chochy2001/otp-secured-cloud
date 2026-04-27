@@ -1,50 +1,54 @@
 # OwnCloud
 
-Servicio de almacenamiento de archivos del proyecto. Aquí es donde el usuario final teclea su nombre de usuario y contraseña (primer factor, validados contra OpenLDAP) y luego un código TOTP (segundo factor, validado contra PrivacyIDEA), antes de poder ver, subir y compartir archivos.
+Servicio de almacenamiento del proyecto. Se usa OwnCloud Server 10.15 con MariaDB, Redis y Caddy como terminador TLS.
 
-## Versión y arquitectura
+## Decisiones asumidas
 
-Se usa **OwnCloud 10.15 Server** (imagen `owncloud/server:10.15`), que es la rama estable con el plugin oficial `twofactor_privacyidea` maduro y probado. Componentes del despliegue:
+El profesor no respondió las preguntas abiertas, así que se avanza con estos supuestos:
+
+1. OwnCloud Server 10 clásico, no OwnCloud Infinite Scale.
+2. La demo principal es por navegador web.
+3. LDAP es fuente de identidad y primer factor.
+4. PrivacyIDEA es el segundo factor vía el plugin `twofactor_privacyidea`.
+5. Los permisos de carpetas se gestionan en OwnCloud. Los grupos LDAP quedan preparados bajo `ou=Grupos`, pero no son obligatorios para la demo actual.
+
+## Servicios
 
 | Servicio | Imagen | Rol |
 |---|---|---|
-| `owncloud-db` | `mariadb:10.11` | Base de datos relacional de OwnCloud |
-| `owncloud-redis` | `redis:7-alpine` | Cache y bloqueo de archivos |
-| `owncloud-server` | `owncloud/server:10.15` | PHP-FPM + nginx interno; sirve la app en HTTP plano dentro de la red Docker |
-| `owncloud-proxy` | `caddy:2-alpine` | Termina TLS hacia el host con el cert firmado por la CA local; reenvía a `owncloud-server:8080` |
+| `owncloud-db` | `mariadb:10.11` | Base de datos de OwnCloud |
+| `owncloud-redis` | `redis:7-alpine` | Cache y locking |
+| `owncloud-server` | `owncloud/server:10.15` | Aplicación OwnCloud |
+| `owncloud-proxy` | `caddy:2-alpine` | HTTPS público en `https://localhost:9443` |
 
-## Variables de entorno
+OwnCloud habla con OpenLDAP por `ldaps://openldap:636` y con PrivacyIDEA por `https://privacyidea:8443/` dentro de la red Docker `otpsec`.
 
-Vienen del archivo `.env` en la raíz del repositorio:
+## Archivos de esta carpeta
 
-| Variable | Para qué |
+| Archivo | Qué hace |
 |---|---|
-| `OC_ADMIN_USERNAME` | Nombre del admin inicial de OwnCloud |
-| `OC_ADMIN_PASSWORD` | Contraseña del admin inicial |
-| `OC_DB_ROOT_PASSWORD` | Contraseña de root de MariaDB |
-| `OC_DB_PASSWORD` | Contraseña del usuario `owncloud` en MariaDB |
-| `OC_URL` | URL pública del servicio (HTTPS) |
+| `10-trust-project-ca.sh` | Hook de arranque de la imagen oficial. Registra la CA local del proyecto en el trust store del contenedor para validar LDAPS y HTTPS internos. |
+| `README.md` | Esta guía. |
 
-## Arranque
+## Configuración automatizada
 
-Desde la raíz del repositorio:
+Desde la raíz del repo:
 
 ```bash
-# 1. Si aún no existen, generar la CA local y los certs (incluye owncloud.crt)
-./scripts/generate-certs.sh
-
-# 2. Levantar los cuatro servicios
-cd compose
-docker compose --env-file ../.env up -d owncloud-db owncloud-redis
-# Esperar 10-20 segundos a que MariaDB termine su bootstrap antes de subir el resto
-docker compose --env-file ../.env up -d owncloud-server owncloud-proxy
-cd ..
-
-# 3. Verificar
-./scripts/owncloud-verify.sh
+./scripts/owncloud-configure.sh
 ```
 
-La interfaz queda disponible en `https://localhost:9443`. La primera vez tarda alrededor de un minuto porque OwnCloud corre las migraciones iniciales de la base.
+El script hace lo siguiente:
+
+1. Levanta OpenLDAP, PrivacyIDEA, MariaDB, Redis, OwnCloud y Caddy.
+2. Habilita `user_ldap`.
+3. Crea o actualiza la configuración LDAP `s01`.
+4. Apunta OwnCloud a `ldaps://openldap:636`.
+5. Usa la cuenta `cn=svc-owncloud,ou=Servicios,dc=sia,dc=unam,dc=mx`.
+6. Activa `twofactor_privacyidea`.
+7. Configura el plugin con URL interna `https://privacyidea:8443/`, realm `sia` y verificación SSL activa.
+8. Habilita Server Side Encryption con `OC_DEFAULT_MODULE`.
+9. Sincroniza los usuarios LDAP.
 
 ## Verificación
 
@@ -52,18 +56,41 @@ La interfaz queda disponible en `https://localhost:9443`. La primera vez tarda a
 ./scripts/owncloud-verify.sh
 ```
 
-El script valida:
+Valida:
 
-1. Caddy presenta un cert TLS firmado por la CA local (`certs/ca.crt`).
-2. `GET /status.php` devuelve `installed: true` y la versión esperada.
-3. `occ status` responde dentro del contenedor.
-4. El admin inicial existe en la base de usuarios local de OwnCloud.
+1. `https://localhost:9443/status.php`.
+2. `occ status`.
+3. Configuración LDAP por LDAPS con validación de certificado activa.
+4. Resolución exacta de los 6 usuarios LDAP.
+5. App `twofactor_privacyidea` activa y apuntando a PrivacyIDEA por HTTPS interno.
+6. Cifrado del lado servidor activo.
 
-Cuando se agreguen las fases siguientes (backend LDAP, 2FA, cifrado), este script se irá extendiendo con pasos adicionales.
+Para probar el flujo completo con sesión web real:
 
-## Pendiente para fases siguientes
+```bash
+./scripts/owncloud-login-verify.sh usuario.desarrollo1
+```
 
-- Configurar el backend LDAP de OwnCloud (`user_ldap`) apuntando a `ldaps://openldap:636` con la CA local validada.
-- Instalar y configurar el plugin `twofactor_privacyidea` para que pida un OTP de PrivacyIDEA después del bind LDAP.
-- Activar Server Side Encryption en modo *master key* (AES-256) para los archivos compartidos.
-- Crear permisos de prueba sobre carpetas para los seis usuarios del LDAP.
+Ese script crea un token TOTP de prueba, inicia sesión en OwnCloud con contraseña LDAP, envía el OTP al plugin de PrivacyIDEA, sube un archivo por WebDAV usando la sesión autenticada y comprueba que el archivo no queda en texto plano dentro del volumen.
+
+## Acceso web
+
+URL:
+
+```text
+https://localhost:9443
+```
+
+Credenciales útiles:
+
+| Usuario | Contraseña | Uso |
+|---|---|---|
+| `admin` | `sia-oc-admin-2026` | Admin local de OwnCloud |
+| `usuario.desarrollo1` | `sia-user-2026` | Usuario LDAP de demo |
+| `usuario.seguridad1` | `sia-user-2026` | Usuario LDAP de demo |
+
+Cuando `twofactor_privacyidea` está activo, los usuarios LDAP requieren OTP para completar el login web.
+
+## Nota sobre certificados
+
+El navegador mostrará advertencia si la CA local `certs/ca.crt` no está importada como autoridad confiable. Los scripts no dependen del trust store del sistema porque llaman a `curl` con `--cacert certs/ca.crt`.
