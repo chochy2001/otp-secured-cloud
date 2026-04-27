@@ -100,6 +100,7 @@ otp-secured-cloud/
 - [Arquitectura del sistema](docs/arquitectura.md)
 - [Diseño del árbol LDAP](docs/arbol-ldap.md)
 - [Preguntas abiertas al profesor](docs/preguntas-abiertas.md)
+- [Cierre de sesión de trabajo](docs/cierre-sesion.md)
 
 ## Integrantes
 

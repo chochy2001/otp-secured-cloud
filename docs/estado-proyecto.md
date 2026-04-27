@@ -19,6 +19,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Cifrado de archivos | Funcional | Server Side Encryption activo; `owncloud-login-verify.sh` sube un archivo y confirma que queda cifrado en el volumen |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
 | Presentación de 30 min | Por preparar | Pendiente |
+| Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
 
 Los estados son descriptivos y se actualizan conforme avanza cada bloque.
 
@@ -191,6 +192,7 @@ Ya no bloquean el desarrollo porque se decidió avanzar con supuestos documentad
 - `scripts/owncloud-configure.sh` automatiza `user_ldap`, `twofactor_privacyidea` y cifrado local.
 - `scripts/owncloud-verify.sh` valida HTTPS, `occ status`, LDAPS, 6 usuarios, plugin 2FA y encryption.
 - `scripts/owncloud-login-verify.sh` valida login web con LDAP + OTP, subida WebDAV y cifrado del archivo en disco.
+- Se agrega `docs/cierre-sesion.md` con estado para retomar, puertos, credenciales de laboratorio, comandos de verificación, limpieza Docker y próximos pasos.
 
 ## 6. Próximo hito objetivo
 
