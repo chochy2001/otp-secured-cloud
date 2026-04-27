@@ -166,4 +166,4 @@ docker compose down -v       # apaga y borra los volúmenes (datos del LDAP)
 
 ## 9. Qué sigue
 
-El LDAP es el primer componente. Conforme agreguemos **PrivacyIDEA**, **OwnCloud** y la **CA de certificados** al `docker-compose.yml`, esta guía se irá ampliando. Cada componente vivirá en su propio servicio dentro del mismo `docker-compose.yml` y se levantará con el mismo comando general.
+El entorno actual ya levanta OpenLDAP, PrivacyIDEA y la CA local del proyecto. Mientras OwnCloud sigue bloqueado por las respuestas pendientes del profesor, el equipo debe mantener esta guía alineada con los scripts de verificación y preparar la documentación final del entregable.

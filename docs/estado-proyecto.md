@@ -14,13 +14,13 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Colaboradores del equipo | En progreso | Arely aceptada; Mauricio, María Elena, Esteban y Luis Iván pendientes |
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
-| Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636 y HTTPS de privacyIDEA en 8443; `ldap-verify.sh` valida cadena contra la CA local |
+| Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
 | OwnCloud | Bloqueado | Depende de respuesta del profesor (versión 10 vs OCIS) |
 | Cifrado de archivos compartidos | Bloqueado | Depende de OwnCloud |
 | Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
 | Presentación de 30 min | Por preparar | Pendiente |
 
-Estados usados: funcional, parcial, por implementar, por preparar y bloqueado.
+Los estados son descriptivos y se actualizan conforme avanza cada bloque.
 
 ## 2. Entregables del profesor y su estado
 
@@ -36,7 +36,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Índice de figuras con referencia | Pendiente | Pendiente |
 | Conceptos básicos de 2FA mediante tokens OTP | Redactado | [`conceptos-basicos.md`](conceptos-basicos.md) |
 | Diagrama detallado de la solución | Diagrama de trabajo listo; falta versión renderizada | [`arquitectura.md`](arquitectura.md) |
-| Memoria técnica paso a paso | Parcial: LDAP documentado, falta PrivacyIDEA, TLS y OwnCloud | varios |
+| Memoria técnica paso a paso | Parcial: LDAP, PrivacyIDEA y TLS documentados en archivos de trabajo; falta consolidar el PDF y documentar OwnCloud cuando se desbloquee | varios |
 | Conclusiones individuales y por equipo | Pendiente | Pendiente |
 | Bibliografía | Pendiente | Pendiente |
 | Glosario de términos | Pendiente | Pendiente |
@@ -50,7 +50,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Snapshot del entorno como respaldo | Pendiente |
 | Grabación del flujo completo como respaldo | Pendiente |
 
-### 2.3 Funcionamiento (30% de la evaluación, 5 componentes × 6%)
+### 2.3 Funcionamiento (30% de la evaluación, 5 componentes x 6%)
 
 | Validación | Estado | Notas |
 |---|---|---|
@@ -93,7 +93,8 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 ### Fase 4: Certificados TLS (CA propia)
 - [x] `scripts/generate-certs.sh` genera CA local + certs de servidor para `openldap` y `privacyidea` (idempotente, con `--force` para regenerar)
 - [x] Compose monta los certs en OpenLDAP, publica `6636:636` para LDAPS y mantiene `389` durante la transición
-- [x] PrivacyIDEA arranca en HTTPS sobre `8443` con `pi-manage run --cert --key`; healthcheck del Dockerfile prueba HTTPS y cae a HTTP solo como fallback
+- [x] PrivacyIDEA arranca en HTTPS sobre `8443` con `pi-manage run --cert --key`; el healthcheck exige HTTPS
+- [x] Resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` y valida la CA local montada en el contenedor
 - [x] Helper `scripts/lib-curl.sh` define `--cacert certs/ca.crt` para que los scripts confíen en la CA local
 - [x] `scripts/ldap-verify.sh` extendido con un paso 8 que valida la cadena de certificación de LDAPS
 - [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
@@ -177,7 +178,7 @@ Mientras estas no lleguen, se avanza en todo lo que no dependa de OwnCloud.
 ### 2026-04-25
 - Script `scripts/privacyidea-enroll-test-token.sh` que enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP y valida el código localmente con Python stdlib contra `POST /validate/check`. Cierra técnicamente la validación iii (emisión de OTP) sin depender de un teléfono.
 - Script `scripts/privacyidea-validate-otp.sh` para probar OTPs reales contra la API; mismo endpoint que usará OwnCloud en la Fase 5.
-- Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, scripts adaptados para confiar en la CA con `--cacert`. `ldap-verify.sh` y `privacyidea-*.sh` validan toda la cadena.
+- Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, resolver LDAP interno usando LDAPS y scripts adaptados para confiar en la CA con `--cacert`.
 
 ## 6. Próximo hito objetivo
 

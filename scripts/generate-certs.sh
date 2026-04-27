@@ -32,10 +32,9 @@ mkdir -p "${CERTS_DIR}"
 
 CA_KEY="${CERTS_DIR}/ca.key"
 CA_CRT="${CERTS_DIR}/ca.crt"
-CA_SRL="${CERTS_DIR}/ca.srl"
 
 if [[ "${FORCE}" == "true" ]] || [[ ! -f "${CA_KEY}" ]] || [[ ! -f "${CA_CRT}" ]]; then
-  echo "[ca] Generando CA del proyecto (RSA 4096, ${CA_DAYS} dias)"
+  echo "[ca] Generando CA del proyecto (RSA 4096, ${CA_DAYS} días)"
   openssl req -x509 -newkey rsa:4096 -sha256 \
     -keyout "${CA_KEY}" -out "${CA_CRT}" \
     -days "${CA_DAYS}" -nodes \
@@ -55,8 +54,9 @@ generate_server_cert() {
   local crt="${CERTS_DIR}/${name}.crt"
   local extfile="${CERTS_DIR}/${name}.ext"
 
-  if [[ "${FORCE}" != "true" ]] && [[ -f "${key}" ]] && [[ -f "${crt}" ]]; then
-    echo "[${name}] El certificado ya existe, no se regenera."
+  if [[ "${FORCE}" != "true" ]] && [[ -f "${key}" ]] && [[ -f "${crt}" ]] \
+    && openssl verify -CAfile "${CA_CRT}" "${crt}" >/dev/null 2>&1; then
+    echo "[${name}] El certificado ya existe y valida contra la CA actual, no se regenera."
     return
   fi
 
@@ -89,8 +89,8 @@ generate_server_cert "privacyidea" "DNS:privacyidea,DNS:localhost,IP:127.0.0.1,I
 
 echo
 echo "Resumen:"
-ls -l "${CERTS_DIR}" | grep -E '\.(crt|key|srl)$' || true
+find "${CERTS_DIR}" -maxdepth 1 -type f \( -name '*.crt' -o -name '*.key' -o -name '*.srl' \) -print | sort
 
 echo
-echo "La CA y las llaves privadas estan ignoradas por git (ver .gitignore)."
+echo "La CA y las llaves privadas están ignoradas por git (ver .gitignore)."
 echo "Para confiar en los certificados desde curl: --cacert ${CA_CRT}"

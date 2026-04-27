@@ -1,16 +1,17 @@
+# shellcheck shell=bash
 # Helper de curl para los scripts que hablan con privacyIDEA.
 # No es ejecutable: se usa con `source` desde otros scripts.
 #
 # Define el array PI_CURL_OPTS con las opciones que se le tienen que
-# pasar a curl cuando PI_URL es HTTPS, para que confie en la CA del
+# pasar a curl cuando PI_URL es HTTPS, para que confíe en la CA del
 # proyecto en lugar de fallar por certificado autofirmado.
 #
 # Requisitos previos en el script que invoca:
-#   - ROOT_DIR ya esta seteado al directorio raiz del repo.
+#   - ROOT_DIR ya está seteado al directorio raíz del repo.
 #   - PI_URL ya viene cargado del .env.
 #   - PI_CA_BUNDLE es la ruta relativa al bundle de la CA (opcional).
 #
-# Uso tipico:
+# Uso típico:
 #   ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 #   source "$ROOT_DIR/.env"
 #   source "$ROOT_DIR/scripts/lib-curl.sh"

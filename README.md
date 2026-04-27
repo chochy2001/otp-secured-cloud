@@ -13,7 +13,7 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 1. **El archivo `.env` con contraseñas se versiona a propósito.** Es una mala práctica reconocida: lo hacemos para que los integrantes del equipo y quien revise el proyecto puedan levantar el entorno sin intercambiar secretos por otro canal. En producción las credenciales deben estar fuera del repositorio (gestor de secretos, variables en CI, etc.).
 2. **Las contraseñas por defecto son débiles y compartidas.** Todos los usuarios comparten una misma contraseña (`sia-user-2026`). En producción debería existir política de contraseñas, rotación, y contraseñas únicas por usuario.
 3. **Los LDIFs almacenan `userPassword` en texto plano.** OpenLDAP las hashea al importar, pero el LDIF original deja el valor expuesto en el repo. En producción se generan los hashes con `slappasswd -s` y solo el hash se escribe al archivo.
-4. **Los certificados TLS serán autofirmados** con una CA del propio proyecto. Esto es válido para un laboratorio cerrado pero inservible en internet público: cualquier cliente verá advertencias de certificado y un atacante con acceso al mismo host podría montar MITM.
+4. **Los certificados TLS son autofirmados** con una CA del propio proyecto. Esto es válido para un laboratorio cerrado pero inservible en internet público: cualquier cliente verá advertencias de certificado si no confía explícitamente en la CA local.
 5. **No hay backup, alta disponibilidad, ni hardening del sistema operativo.** Un solo contenedor por servicio, volúmenes locales, sin replicación.
 6. **No hay rate limiting, lockout de cuentas, ni protección contra fuerza bruta** más allá de lo que trae cada componente por defecto.
 7. **El cifrado de archivos de OwnCloud en modo *master key* cifra en disco pero no protege contra el administrador del servidor.** La llave maestra vive en el mismo servidor. Para protección frente a operadores sería necesario cifrado extremo a extremo en el cliente.
@@ -68,7 +68,7 @@ cd ..
 ./scripts/privacyidea-enroll-test-token.sh
 ```
 
-Si los cuatro scripts terminan con `Todo OK` (o el mensaje equivalente del último), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS y validación de OTP funcionando contra el resolver LDAP del proyecto.
+Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS y validación de OTP funcionando contra el resolver LDAP del proyecto.
 
 ## Estructura del repositorio
 
@@ -77,7 +77,7 @@ otp-secured-cloud/
 |-- compose/              docker-compose.yml con todos los servicios
 |-- ldap/
 |   `-- bootstrap/        LDIFs que siembran el directorio al primer arranque
-|-- privacyidea/          Configuración del servicio de OTP (pendiente, con README)
+|-- privacyidea/          Configuración del servicio de OTP
 |-- owncloud/             Configuración del servicio de almacenamiento (pendiente, con README)
 |-- certs/                Certificados TLS autofirmados del proyecto (con README)
 |-- scripts/              Utilidades (pruebas, regenerar certs, etc.)

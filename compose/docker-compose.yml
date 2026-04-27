@@ -62,6 +62,7 @@ services:
       # completo, para que el contenedor no vea el resto de los certs.
       - ../certs/privacyidea.crt:/etc/privacyidea/ssl/server.crt:ro
       - ../certs/privacyidea.key:/etc/privacyidea/ssl/server.key:ro
+      - ../certs/ca.crt:/etc/privacyidea/ssl/ca.crt:ro
     networks:
       - otpsec
     restart: unless-stopped

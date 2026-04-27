@@ -14,14 +14,17 @@ fi
 
 # shellcheck disable=SC1091
 source "$ROOT_DIR/.env"
+
+PI_URL="${PI_URL:-https://localhost:8443}"
+
 # shellcheck disable=SC1091
 source "$ROOT_DIR/scripts/lib-curl.sh"
 
-PI_URL="${PI_URL:-https://localhost:8443}"
 RESOLVER_NAME="${PI_RESOLVER_NAME:-sia-ldap}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
+LDAP_RESOLVER_URI="${PI_LDAP_URI:-ldaps://openldap:636}"
+LDAP_TLS_CA_FILE="${PI_LDAP_TLS_CA_FILE:-/etc/privacyidea/ssl/ca.crt}"
 LDAP_FILTER="(objectClass=inetOrgPerson)"
-LDAP_LOGIN_FILTER="(&(uid={login})(objectClass=inetOrgPerson))"
 LDAP_USERINFO='{"username": "uid", "uid": "uid", "givenname": "givenName", "surname": "sn", "email": "mail", "phone": "telephoneNumber", "mobile": "mobile"}'
 
 require_success() {
@@ -70,7 +73,7 @@ echo "==> 3. Creando o actualizando resolver LDAP '${RESOLVER_NAME}'"
 RESOLVER_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/resolver/${RESOLVER_NAME}" \
   "${AUTH_HEADERS[@]}" \
   --data-urlencode "type=ldapresolver" \
-  --data-urlencode "LDAPURI=ldap://openldap" \
+  --data-urlencode "LDAPURI=${LDAP_RESOLVER_URI}" \
   --data-urlencode "LDAPBASE=${LDAP_BASE_DN}" \
   --data-urlencode "AUTHTYPE=Simple" \
   --data-urlencode "BINDDN=cn=svc-owncloud,ou=Servicios,${LDAP_BASE_DN}" \
@@ -80,12 +83,13 @@ RESOLVER_RESPONSE="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/resolver/
   --data-urlencode "SIZELIMIT=500" \
   --data-urlencode "LOGINNAMEATTRIBUTE=uid" \
   --data-urlencode "LDAPSEARCHFILTER=${LDAP_FILTER}" \
-  --data-urlencode "LDAPFILTER=${LDAP_LOGIN_FILTER}" \
   --data-urlencode "USERINFO=${LDAP_USERINFO}" \
   --data-urlencode "UIDTYPE=entryUUID" \
   --data-urlencode "NOREFERRALS=True" \
   --data-urlencode "START_TLS=False" \
-  --data-urlencode "TLS_VERIFY=False")"
+  --data-urlencode "TLS_VERIFY=True" \
+  --data-urlencode "TLS_VERSION=5" \
+  --data-urlencode "TLS_CA_FILE=${LDAP_TLS_CA_FILE}")"
 require_success "configuración del resolver" "$RESOLVER_RESPONSE"
 echo "OK"
 

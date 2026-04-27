@@ -28,7 +28,7 @@ Cuando se configura el *LDAP User Backend* o el *User Resolver*, cada aplicació
 | Campo | Valor |
 |---|---|
 | Host | `openldap` (nombre del contenedor en la red Docker) |
-| Port | `389` (sin TLS) o `636` (con LDAPS) |
+| Port | `636` dentro de Docker para LDAPS; `6636` desde el host; `389` queda disponible solo como transición |
 | Base DN | `dc=sia,dc=unam,dc=mx` |
 | Bind DN | `cn=svc-owncloud,ou=Servicios,dc=sia,dc=unam,dc=mx` |
 | Bind Password | valor de `LDAP_SERVICE_PASSWORD` en `.env` |

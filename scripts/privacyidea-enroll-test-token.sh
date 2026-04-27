@@ -4,7 +4,7 @@
 # de punta a punta, SIN necesidad de un teléfono.
 #
 # Flujo:
-#   1. Se autentica como admin via /auth.
+#   1. Se autentica como admin vía /auth.
 #   2. Borra cualquier token previo con el mismo serial (idempotente).
 #   3. Crea un TOTP nuevo con /token/init y genkey=1 (PrivacyIDEA genera
 #      la semilla, no hay valor hardcodeado en el repo).
@@ -32,10 +32,12 @@ fi
 
 # shellcheck disable=SC1091
 source "$ROOT_DIR/.env"
+
+PI_URL="${PI_URL:-https://localhost:8443}"
+
 # shellcheck disable=SC1091
 source "$ROOT_DIR/scripts/lib-curl.sh"
 
-PI_URL="${PI_URL:-https://localhost:8443}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
 TEST_USER="${1:-usuario.desarrollo1}"
 # PrivacyIDEA exige serial con regex ^[0-9a-zA-Z\-_]+$ (sin puntos).

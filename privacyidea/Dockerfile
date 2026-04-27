@@ -74,14 +74,11 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENV PRIVACYIDEA_CONFIGFILE=/etc/privacyidea/pi.cfg
 ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8080 8443
+EXPOSE 8443
 
-# El healthcheck prueba primero HTTPS y si falla cae a HTTP, para
-# soportar el modo con TLS (8443) y el fallback sin TLS (8080) que
-# usa el entrypoint cuando los certs no están montados.
+# El healthcheck exige HTTPS porque la Fase 4 requiere certs montados.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD curl -fsSk https://localhost:8443/ > /dev/null \
-   || curl -fsS  http://localhost:8080/  > /dev/null \
    || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

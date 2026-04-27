@@ -36,7 +36,7 @@ cd ..
 
 La primera vez el build tarda varios minutos porque compila dependencias nativas (`python-ldap`, `cryptography`). Los siguientes arranques son inmediatos.
 
-La interfaz web queda disponible en `http://localhost:8080`.
+La interfaz web queda disponible en `https://localhost:8443`.
 
 ## Verificación
 
@@ -46,13 +46,14 @@ La interfaz web queda disponible en `http://localhost:8080`.
 
 El script valida en orden:
 
-1. El servicio responde en `http://localhost:8080/`.
+1. El servicio responde en `https://localhost:8443/`.
 2. El admin puede autenticarse vía API y obtener un token de sesión.
 3. Lista los resolvers configurados (si los hay).
-4. Valida que el resolver LDAP encuentra exactamente 6 usuarios.
-5. Valida que el realm existe.
+4. Valida que el resolver LDAP use LDAPS y verifique la CA local.
+5. Valida que el resolver LDAP encuentra exactamente 6 usuarios.
+6. Valida que el realm existe.
 
-En los pasos 3 a 5, si la configuración aún no está hecha, el script imprime `PENDIENTE` y termina con éxito. Solo errores reales (servicio caído, admin que no autentica, conteo incorrecto) devuelven código distinto de cero.
+Si la configuración aún no está hecha, el script termina con código distinto de cero e indica correr `./scripts/privacyidea-configure.sh`.
 
 ## Configuración del resolver LDAP y del realm
 
@@ -69,22 +70,24 @@ También se puede hacer desde la interfaz web si se quiere revisar visualmente l
 
 ### Crear el resolver LDAP
 
-1. Abrir `http://localhost:8080`, iniciar sesión con el admin (`admin` y el valor de `PI_ADMIN_PASSWORD`).
+1. Abrir `https://localhost:8443`, iniciar sesión con el admin (`admin` y el valor de `PI_ADMIN_PASSWORD`).
 2. Ir a *Config*, luego *Users*, luego *New LDAP resolver*.
 3. Rellenar los campos (los valores corresponden al árbol documentado en [`docs/arbol-ldap.md`](../docs/arbol-ldap.md)):
 
 | Campo | Valor |
 |---|---|
 | Resolver name | `sia-ldap` |
-| Server URI | `ldap://openldap` (nombre del contenedor en la red Docker) |
+| Server URI | `ldaps://openldap:636` (nombre del contenedor en la red Docker) |
 | Bind Type | Simple |
 | Bind DN | `cn=svc-owncloud,ou=Servicios,dc=sia,dc=unam,dc=mx` |
 | Bind Password | valor de `LDAP_SERVICE_PASSWORD` (por ejemplo `sia-svc-2026`) |
+| TLS verify | `True` |
+| TLS version | `5` (TLS 1.2) |
+| TLS CA file | `/etc/privacyidea/ssl/ca.crt` |
 | Base DN | `dc=sia,dc=unam,dc=mx` |
 | LoginName Attribute | `uid` |
 | UserID Attribute | `entryUUID` |
 | Search Filter | `(objectClass=inetOrgPerson)` |
-| User Filter | `(&(uid={login})(objectClass=inetOrgPerson))` |
 
 4. Probar la conexión con el botón de prueba. Debe devolver `Found 6 users`.
 5. Guardar.
@@ -98,7 +101,7 @@ También se puede hacer desde la interfaz web si se quiere revisar visualmente l
 
 ### Validar
 
-Correr de nuevo `./scripts/privacyidea-verify.sh`. Debe terminar con `Todo OK` en los 5 pasos.
+Correr de nuevo `./scripts/privacyidea-verify.sh`. Debe terminar con `Todo OK` en los 6 pasos.
 
 ## Enrolar un token TOTP con FreeOTP
 
@@ -113,7 +116,7 @@ Instalar **FreeOTP Authenticator** en el móvil:
 
 ### Enrolar el token desde la UI
 
-1. Abrir `http://localhost:8080` e iniciar sesión como `admin`.
+1. Abrir `https://localhost:8443` e iniciar sesión como `admin`.
 2. Ir a *Tokens*, luego *Enroll Token*.
 3. Rellenar los campos:
 
@@ -160,7 +163,7 @@ Qué hace:
 Se espera:
 
 ```
-==> Validando OTP para 'usuario.desarrollo1@sia' contra http://localhost:8080
+==> Validando OTP para 'usuario.desarrollo1@sia' contra https://localhost:8443
 OK: PrivacyIDEA aceptó el OTP.
 ```
 

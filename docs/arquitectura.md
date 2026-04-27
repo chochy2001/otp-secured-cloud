@@ -5,7 +5,7 @@
 | Componente | Imagen / Versión | Rol |
 |---|---|---|
 | OpenLDAP | `osixia/openldap:1.5.0` | Directorio de usuarios, autenticación de primer factor |
-| PrivacyIDEA | *pendiente* | Emisión y validación de tokens OTP |
+| PrivacyIDEA | `privacyIDEA 3.10.2` | Emisión y validación de tokens OTP |
 | FreeOTP | App Android/iOS | Cliente que genera el código TOTP en el móvil del usuario |
 | OwnCloud | *pendiente (10 vs OCIS)* | Servicio de almacenamiento con integración 2FA |
 
@@ -65,11 +65,11 @@ El principio fundamental del diseño es que **OpenLDAP es la única fuente de id
 
 | Servicio | Puerto interno | Puerto expuesto |
 |---|---|---|
-| OpenLDAP | 389 (ldap), 636 (ldaps) | 389; 636 queda pendiente hasta activar TLS |
-| PrivacyIDEA | 8080 | 8080 |
+| OpenLDAP | 389 (ldap), 636 (ldaps) | 389, 6636 |
+| PrivacyIDEA | 8443 (https) | 8443 |
 | OwnCloud | 80/443 | 443 (tras TLS) |
 
-Todos los servicios TLS usarán certificados autofirmados generados por una CA del proyecto en `certs/`.
+OpenLDAP y PrivacyIDEA usan certificados firmados por la CA local del proyecto en `certs/`. El resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` dentro de la red Docker.
 
 ## Diagrama detallado
 
