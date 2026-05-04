@@ -8,9 +8,10 @@
 #
 # Requisitos:
 #   - pandoc (siempre): brew install pandoc | sudo apt install pandoc
-#   - LaTeX (para PDF):
-#       macOS: brew install --cask basictex
-#       Linux: sudo apt install texlive-xetex
+#   - Motor LaTeX (para PDF):
+#       macOS recomendado: brew install tectonic (no requiere sudo)
+#       Linux:             sudo apt install texlive-xetex
+#       Alternativa macOS: brew install --cask basictex (pide sudo)
 #
 # Salida:
 #   build/entregable-otp-secured-cloud.pdf  (si hay LaTeX)
@@ -35,6 +36,10 @@ if ! command -v pandoc >/dev/null 2>&1; then
 fi
 
 # Orden del entregable. Si se cambia, mantener consistencia con docs/indice.md.
+# Nota: docs/auditoria.md no se incluye porque el profesor confirmó que la
+# capa de auditoría no se evalúa, y los logs JSON crudos generan páginas
+# extensas con líneas largas. La memoria técnica ya describe el flujo y
+# referencia el archivo para quien quiera profundizar.
 DOC_ORDER=(
   "${ROOT_DIR}/docs/portada.md"
   "${ROOT_DIR}/docs/introduccion.md"
@@ -42,7 +47,6 @@ DOC_ORDER=(
   "${ROOT_DIR}/docs/arbol-ldap.md"
   "${ROOT_DIR}/docs/arquitectura.md"
   "${ROOT_DIR}/docs/memoria-tecnica.md"
-  "${ROOT_DIR}/docs/auditoria.md"
   "${ROOT_DIR}/docs/conclusiones.md"
   "${ROOT_DIR}/docs/glosario.md"
   "${ROOT_DIR}/docs/bibliografia.md"
@@ -67,6 +71,13 @@ if [[ "${MISSING_FIGS}" -gt 0 ]]; then
   echo "AVISO: faltan ${MISSING_FIGS} figura(s) PNG en docs/figuras/."
   echo "       Genéralas con './scripts/build-figures.sh' antes para incluirlas como imágenes."
   echo "       Si no se generan, los bloques mermaid se incluyen como código fuente."
+fi
+
+# Recordar al equipo si el nombre del profesor sigue sin rellenarse
+# en la portada. La línea se reconoce por contener guiones bajos.
+if grep -q '^\*\*Profesor:\*\* _\+' "${ROOT_DIR}/docs/portada.md"; then
+  echo "AVISO: el nombre del profesor en docs/portada.md sigue como línea en blanco."
+  echo "       Edita el archivo y reemplaza los guiones bajos por el nombre antes de entregar."
 fi
 
 # Preprocesar los Markdown: si la PNG existe, reemplazar el bloque
@@ -102,9 +113,13 @@ for heading_match in heading_re.finditer(src):
     block_match = block_re.search(src, heading_match.end())
     if not block_match:
         continue
-    title = heading_match.group(1).strip()
+    # Insertar la imagen con alt-text vacío para que pandoc no genere
+    # un caption automático ("Figura N:") que se duplicaría con el
+    # encabezado "### Figura N:" que ya está arriba.
+    # `\ ` (espacio escapado) en la línea posterior evita que pandoc
+    # convierta la imagen en una figura LaTeX numerada.
     result.append(src[last_end:block_match.start()])
-    result.append(f"![{title.lstrip('# ').rstrip()}]({png.as_posix()})\n")
+    result.append(f"![]({png.as_posix()})\\ \n")
     last_end = block_match.end()
 result.append(src[last_end:])
 dst.write_text("".join(result))
@@ -124,6 +139,15 @@ PANDOC_COMMON=(
   --metadata author="Equipo SIA 2026-2, Facultad de Ingeniería UNAM"
   --metadata date="29 de mayo de 2026"
 )
+
+# Variables específicas del PDF: mitigar líneas largas (URLs en
+# bibliografía, DN de LDAP en código) que en LaTeX producen avisos
+# 'Overfull \hbox'. \sloppy relaja el ajuste y xurl rompe URLs.
+PDF_HEADER_FILE="${TMP_DOCS_DIR}/header.tex"
+cat > "${PDF_HEADER_FILE}" <<'TEXEOF'
+\usepackage{xurl}
+\sloppy
+TEXEOF
 
 # HTML (siempre se genera, no requiere LaTeX)
 echo "==> Generando ${HTML_FILE}"
@@ -157,20 +181,20 @@ if [[ -n "${PDF_ENGINE}" ]]; then
   if pandoc "${PROCESSED_DOCS[@]}" \
     "${PANDOC_COMMON[@]}" \
     --pdf-engine="${PDF_ENGINE}" \
+    -H "${PDF_HEADER_FILE}" \
     -o "${PDF_FILE}"; then
     echo "    OK ($(du -h "${PDF_FILE}" | cut -f1))"
   else
     echo "AVISO: pandoc falló al ensamblar el PDF (probablemente faltan paquetes LaTeX)."
-    echo "       Si el motor es basictex, ejecuta:"
-    echo "         sudo tlmgr update --self"
-    echo "         sudo tlmgr install <paquetes que el error pida>"
+    echo "       Con tectonic, los paquetes se descargan al primer uso; reintentar suele funcionar."
+    echo "       Con basictex/texlive, ejecuta 'sudo tlmgr install <paquete>' según el error."
     echo "       El HTML y el DOCX ya quedaron disponibles arriba."
   fi
 else
   echo "AVISO: no se encontró un motor LaTeX (xelatex, lualatex, pdflatex, tectonic)."
   echo "       PDF omitido. Para producirlo:"
-  echo "         macOS:  brew install --cask basictex"
-  echo "         Linux:  sudo apt install texlive-xetex"
+  echo "         macOS recomendado: brew install tectonic (sin sudo)"
+  echo "         Linux:             sudo apt install texlive-xetex"
   echo "       El HTML y el DOCX están listos en ${OUTPUT_DIR}/."
 fi
 
