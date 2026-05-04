@@ -44,7 +44,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Auditoría con extractos reales de logs | Generada y versionada | [`auditoria.md`](auditoria.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
-| Conclusiones individuales (6) | Pendientes (las redacta cada integrante) | [`conclusiones.md`](conclusiones.md) |
+| Conclusiones individuales (6) | Primer borrador redactado, cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
 | Glosario de términos | Redactado | [`glosario.md`](glosario.md) |
 | Ensamblado del PDF final | Documentado, se ejecuta cuando el equipo cierra conclusiones | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
@@ -134,10 +134,10 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 - [x] Capturar ejemplos reales de los 8 eventos clave con `scripts/audit-capture.sh` que escribe `docs/auditoria.md`
 
 ### Fase 8: Documentación final y entrega (redactada, falta ensamblado)
-- [x] Portada en [`portada.md`](portada.md) (queda confirmar nombre del profesor)
+- [x] Portada en [`portada.md`](portada.md) (queda confirmar nombre del profesor en la línea de relleno)
 - [x] Introducción en [`introduccion.md`](introduccion.md)
 - [x] Conclusión de equipo en [`conclusiones.md`](conclusiones.md)
-- [ ] Conclusiones individuales (6 integrantes redactan su párrafo)
+- [x] Conclusiones individuales (primer borrador, cada integrante puede afinarlo)
 - [x] Glosario en [`glosario.md`](glosario.md) con 30+ términos
 - [x] Bibliografía en [`bibliografia.md`](bibliografia.md) con RFCs y docs oficiales
 - [x] Índice de figuras en [`indice-figuras.md`](indice-figuras.md), 6 figuras en mermaid
@@ -215,4 +215,4 @@ Ya no bloquean el desarrollo porque se decidió avanzar con supuestos documentad
 
 ## 6. Próximo hito objetivo
 
-**Cerrar el entregable y la presentación.** Toda la base técnica está cerrada (validaciones i a v, carpetas compartidas, cifrado en disco y auditoría reproducible). Toda la documentación está redactada (memoria técnica, glosario, bibliografía, conclusión de equipo, guion de exposición y manual de FreeOTP). Lo que queda es trabajo humano: las 6 conclusiones individuales, confirmar el nombre del profesor en la portada, instalar `mermaid-cli` y `pandoc` para generar las figuras y el PDF, hacer el ensayo grabado y enrolar el TOTP demo en un teléfono real.
+**Empaquetar y ensayar.** Toda la base técnica está cerrada (validaciones i a v, carpetas compartidas, cifrado en disco y auditoría reproducible). Toda la documentación está redactada (memoria técnica, glosario, bibliografía, conclusión de equipo, las seis conclusiones individuales en primer borrador, guion de exposición, slides Marp, manual de FreeOTP y guía operativa de la demo). Lo que queda son tareas locales del equipo: cada integrante revisa su párrafo en `conclusiones.md` si lo quiere afinar, se confirma el nombre del profesor, se instalan `mermaid-cli` y `pandoc` para generar las figuras y el PDF, se enrola el TOTP demo en un teléfono real con FreeOTP y se hace el ensayo grabado de la presentación.

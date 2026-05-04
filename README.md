@@ -45,7 +45,9 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] OwnCloud 10.15 levantado con MariaDB, Redis y Caddy (TLS en 9443)
 - [x] OwnCloud integrado con backend LDAP por LDAPS y plugin `twofactor_privacyidea`
 - [x] Cifrado de archivos compartidos activado (Server Side Encryption, master key)
-- [ ] Memoria técnica y presentación final
+- [x] Carpetas compartidas con OCS Sharing API y descifrado por el destinatario (`scripts/owncloud-share-verify.sh`)
+- [x] Auditoría reproducible de los 8 eventos clave (`scripts/audit-capture.sh`)
+- [x] Memoria técnica, conclusiones, glosario, bibliografía y guion de exposición redactados
 
 ## Arranque rápido
 
@@ -54,9 +56,7 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 ./scripts/generate-certs.sh
 
 # 2. Levantar todo el stack
-cd compose
-docker compose --env-file ../.env up -d
-cd ..
+docker compose -f compose/docker-compose.yml --env-file .env up -d
 
 # 3. Verificar OpenLDAP (incluye prueba de LDAPS contra la CA)
 ./scripts/ldap-verify.sh
@@ -66,7 +66,7 @@ cd ..
 ./scripts/privacyidea-verify.sh
 
 # 5. Enrolar un TOTP de prueba y validarlo de extremo a extremo
-./scripts/privacyidea-enroll-test-token.sh
+./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1
 
 # 6. Configurar OwnCloud (LDAP backend + 2FA + encryption) y validar
 ./scripts/owncloud-configure.sh
@@ -74,9 +74,17 @@ cd ..
 
 # 7. Probar login web LDAP + OTP y archivo cifrado en disco
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
+
+# 8. Probar carpetas compartidas y descifrado por el destinatario
+./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+
+# 9. Capturar bitácoras reales de los 8 eventos clave
+./scripts/audit-capture.sh
 ```
 
-Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, PrivacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo y cifrado local verificado sobre un archivo real.
+Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, privacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo, cifrado local verificado sobre un archivo real, archivo compartido descifrado por el destinatario y bitácoras de auditoría escritas en `docs/auditoria.md`.
+
+Para una guía exhaustiva del día de la presentación (pre-flight, demo en vivo y plan B), ver [`docs/como-probar.md`](docs/como-probar.md).
 
 ## Estructura del repositorio
 

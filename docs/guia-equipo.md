@@ -78,6 +78,8 @@ Corre los scripts en este orden desde la raíz del repo:
 ./scripts/owncloud-configure.sh
 ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
+./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/audit-capture.sh
 ```
 
 Deberías ver:
@@ -87,8 +89,10 @@ Deberías ver:
 3. Token TOTP reproducible validado contra la API.
 4. OwnCloud en `https://localhost:9443`, LDAP por LDAPS, 2FA activo y cifrado del lado servidor.
 5. Login web real con usuario LDAP + OTP, subida WebDAV y archivo cifrado en disco.
+6. Archivo compartido por OCS Sharing API, descargado descifrado por el destinatario.
+7. Auditoría escrita en `docs/auditoria.md` con extractos reales de los 8 eventos clave.
 
-Si alguno de los pasos falla, revisa la sección [Problemas comunes](#7-problemas-comunes) más abajo.
+Si alguno de los pasos falla, revisa la sección [Problemas comunes](#7-problemas-comunes) más abajo. Para una guía exhaustiva del día de la presentación, ver [`como-probar.md`](como-probar.md).
 
 ## 6. Pruebas manuales útiles
 
@@ -180,6 +184,30 @@ docker compose down          # apaga los contenedores pero mantiene los datos
 docker compose down -v       # apaga y borra los volúmenes (datos del LDAP)
 ```
 
-## 9. Qué sigue
+## 9. Generar artefactos de entrega
 
-El entorno actual ya levanta OpenLDAP, PrivacyIDEA, OwnCloud, la CA local y la verificación end-to-end de OTP. Lo siguiente es preparar el guion de demo, documentar auditoría y consolidar la memoria técnica final.
+Cuando se prepare la entrega final, además del entorno operativo se necesitan dos artefactos derivados:
+
+```bash
+# Renderizar las 6 figuras Mermaid a PNG (requiere npm)
+npm install -g @mermaid-js/mermaid-cli
+./scripts/build-figures.sh
+
+# Ensamblar el PDF del entregable (requiere pandoc + LaTeX)
+brew install pandoc basictex          # macOS
+# o: sudo apt install pandoc texlive-xetex   # Linux
+./scripts/build-pdf.sh
+```
+
+El PDF queda en `build/entregable-otp-secured-cloud.pdf` y las figuras en `docs/figuras/figuraN.png`. Ambos están en `.gitignore`: cada integrante los regenera localmente cuando los necesita.
+
+## 10. Documentos siguientes
+
+Para profundizar en un área específica:
+
+- [`como-probar.md`](como-probar.md): guía operativa para el día de la presentación, incluye pre-flight checklist y plan B.
+- [`guion-exposicion.md`](guion-exposicion.md): bloques por integrante para los 30 minutos de exposición.
+- [`presentacion.md`](presentacion.md): slides en formato Marp listas para abrir con la extensión correspondiente.
+- [`manual-freeotp.md`](manual-freeotp.md): cómo enrolar el TOTP demo en un teléfono real.
+- [`auditoria.md`](auditoria.md): extractos reales de los logs de los 8 eventos clave.
+- [`memoria-tecnica.md`](memoria-tecnica.md): recorrido detallado de la implementación por fases.

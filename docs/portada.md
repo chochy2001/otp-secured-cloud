@@ -27,8 +27,12 @@
 | Rufino López María Elena | mariaelena.rufino424@gmail.com |
 | Salgado Miranda Jorge | ohchochy@gmail.com |
 
-**Profesor:** (a confirmar por el equipo antes de imprimir)
+**Profesor:** ______________________________________________
 
 **Fecha de entrega:** 29 de mayo de 2026
 
 **Repositorio público:** https://github.com/chochy2001/otp-secured-cloud
+
+<!--
+El nombre del profesor se rellena antes de generar el PDF final con el editor de texto que use el equipo. La línea de arriba imita un campo de formulario impreso.
+-->

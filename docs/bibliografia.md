@@ -42,4 +42,4 @@
 
 ## Notas para citar este entregable
 
-Los archivos del repositorio se citan con su ruta relativa al raíz `otp-secured-cloud/` y, si la versión es relevante, con el commit SHA del estado al cierre del semestre. Por ejemplo: `scripts/owncloud-share-verify.sh` o `docs/auditoria.md @ commit XXXXX`. La versión del entregable a imprimir corresponde al último commit en `main` antes de la fecha de exposición del 29 de mayo de 2026.
+Los archivos del repositorio se citan con su ruta relativa al raíz `otp-secured-cloud/`. Por ejemplo: `scripts/owncloud-share-verify.sh` o `docs/auditoria.md`. Si se necesita anclar una cita a una versión exacta del código, se acompaña con el SHA corto del commit (siete primeros caracteres) tomado de `git log --oneline`. La versión del entregable a imprimir corresponde al último commit en `main` antes de la fecha de exposición del 29 de mayo de 2026.

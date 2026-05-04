@@ -36,11 +36,12 @@ h. Demo local en laptop + snapshot + grabación de respaldo.
 - Certificados TLS autofirmados aceptados.
 - Presentación de 30 minutos.
 
-## Qué avanzar ahora
+## Estado al cierre del proyecto
 
-La base técnica ya está implementada. Lo que sigue no depende de la respuesta del profesor:
+La base técnica está implementada y todo el material del entregable está redactado. Los puntos que dependían de la respuesta del profesor se cerraron con los supuestos declarados arriba:
 
-- Preparar carpetas y permisos de demo dentro de OwnCloud.
-- Documentar bitácoras y casos de auditoría.
-- Consolidar la memoria técnica final.
-- Preparar guion, slides, snapshot y grabación de respaldo.
+- Carpetas compartidas y permisos: automatizadas con `scripts/owncloud-share-verify.sh`, que crea el share por OCS Sharing API y valida que el destinatario descarga el archivo descifrado.
+- Bitácoras y casos de auditoría: capturadas con `scripts/audit-capture.sh`, que produce `docs/auditoria.md` con extractos reales de los ocho eventos clave.
+- Memoria técnica final: redactada en `docs/memoria-tecnica.md`.
+- Guion y slides: redactados en `docs/guion-exposicion.md` y `docs/presentacion.md`.
+- Snapshot y grabación de respaldo: pendientes en la laptop del equipo (procedimiento en `docs/como-probar.md`).
