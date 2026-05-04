@@ -24,7 +24,7 @@ Las contraseñas viven en `.env` con el patrón memorable `sia-<rol>-2026`. Se v
 
 ## 2. Levantamiento del stack
 
-El stack se levanta con tres comandos:
+La validación principal se reproduce con esta secuencia desde la raíz del repositorio:
 
 ```bash
 ./scripts/generate-certs.sh

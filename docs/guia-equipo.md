@@ -95,7 +95,8 @@ Deberías ver:
 4. OwnCloud en `https://localhost:9443`, LDAP por LDAPS, 2FA activo y cifrado del lado servidor.
 5. Login web real con usuario LDAP + OTP, subida WebDAV y archivo cifrado en disco.
 6. Archivo compartido por OCS Sharing API, descargado descifrado por el destinatario.
-7. Auditoría escrita en `docs/auditoria.md` con extractos reales de los 8 eventos clave.
+
+Si además se ejecuta el script opcional `audit-capture.sh`, se obtiene como salida adicional `docs/auditoria.md` con extractos reales de los 8 eventos clave. Esa salida es complemento académico y no es parte de la cadena de validación principal.
 
 Si alguno de los pasos falla, revisa la sección [Problemas comunes](#7-problemas-comunes) más abajo. Para una guía exhaustiva del día de la presentación, ver [`como-probar.md`](como-probar.md).
 

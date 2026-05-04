@@ -129,11 +129,14 @@ Lista a ejecutar el día anterior a la presentación, en la laptop que se usará
 - [ ] `./scripts/ldap-verify.sh`, `privacyidea-verify.sh`, `owncloud-verify.sh` terminan con `Todo OK`.
 - [ ] `./scripts/owncloud-login-verify.sh usuario.desarrollo1` termina sin errores.
 - [ ] `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1` termina sin errores.
-- [ ] El archivo `docs/auditoria.md` existe y tiene secciones 1 a 8.
 - [ ] El navegador en modo incógnito tiene aceptada la excepción del cert de `https://localhost:9443`.
 - [ ] El teléfono con FreeOTP tiene un token enrolado para el usuario demo (ver `docs/manual-freeotp.md`).
 - [ ] Si se va a presentar el PDF: `./scripts/build-figures.sh` y `./scripts/build-pdf.sh` ejecutados con éxito.
 - [ ] Charge del teléfono al 100 %.
+
+Solo si se va a mostrar auditoría durante la sesión (el profesor confirmó que esa capa no se evalúa, así que normalmente se omite):
+
+- [ ] `./scripts/audit-capture.sh` ejecutado y `docs/auditoria.md` regenerado con sus 8 secciones.
 
 ## 8. Día de la presentación
 
