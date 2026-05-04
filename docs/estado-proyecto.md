@@ -199,7 +199,7 @@ Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad d
 - Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, resolver LDAP interno usando LDAPS y scripts adaptados para confiar en la CA con `--cacert`.
 
 ### 2026-04-27
-- Como el profesor no respondió las preguntas abiertas, se avanza con los supuestos declarados.
+- En este punto el profesor todavía no había contestado las cuatro preguntas tácticas. Se avanza con los supuestos declarados para no detener el desarrollo. (Las cuatro respuestas llegaron días después y están registradas en `preguntas-abiertas.md` y en la sección 4.1 de este documento.)
 - Fase 5 cerrada técnicamente: OwnCloud 10.15 Server levantado con MariaDB 10.11, Redis 7 y Caddy 2 como terminador TLS sobre el puerto 9443.
 - Cert `owncloud.crt` añadido a `scripts/generate-certs.sh` con SANs `owncloud`, `owncloud-server`, `owncloud-proxy`, `localhost`, `127.0.0.1`, `::1`.
 - `scripts/owncloud-configure.sh` automatiza `user_ldap`, `twofactor_privacyidea` y cifrado local.
