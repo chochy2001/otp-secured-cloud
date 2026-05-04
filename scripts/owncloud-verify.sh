@@ -102,7 +102,12 @@ echo "OK: 6 usuarios"
 
 echo
 echo "==> 5. App privacyIDEA activa y apuntando a HTTPS interno"
-if ! occ app:list | grep -q "twofactor_privacyidea"; then
+# Capturar la salida en una variable evita el SIGPIPE que produce
+# `occ app:list | grep -q ...` cuando `grep` encuentra la coincidencia
+# antes de que `occ` termine de escribir. Con `set -o pipefail` ese
+# SIGPIPE se traducía en un falso error aunque el plugin sí estuviera.
+APP_LIST="$(occ app:list 2>&1)"
+if ! printf '%s' "${APP_LIST}" | grep -q "twofactor_privacyidea"; then
   echo "ERROR: twofactor_privacyidea no está disponible."
   exit 1
 fi

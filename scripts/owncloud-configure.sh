@@ -98,7 +98,11 @@ echo "OK"
 
 echo
 echo "==> 3. Instalando y configurando privacyIDEA para OwnCloud"
-if ! occ app:list | grep -q "twofactor_privacyidea"; then
+# Capturar la salida evita el SIGPIPE que produce `occ app:list | grep -q ...`
+# cuando grep sale antes de que occ termine de escribir; con pipefail eso
+# se traducía en un falso fallo aunque el plugin ya estuviera instalado.
+APP_LIST="$(occ app:list 2>&1)"
+if ! printf '%s' "${APP_LIST}" | grep -q "twofactor_privacyidea"; then
   occ market:install twofactor_privacyidea >/dev/null
 fi
 occ app:enable twofactor_privacyidea >/dev/null || true
