@@ -154,16 +154,18 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 
 ## 4. Bloqueadores actuales
 
-### 4.1 Preguntas al profesor sin responder (4)
+### 4.1 Preguntas al profesor (las cuatro contestadas)
 
-Ver [`preguntas-abiertas.md`](preguntas-abiertas.md) para el detalle.
+El detalle textual de cada respuesta vive en [`preguntas-abiertas.md`](preguntas-abiertas.md). Resumen:
 
-1. Alcance del cliente: solo web vs también escritorio/móvil.
-2. Versión de OwnCloud: 10 Server vs OCIS.
-3. Modelo de autorización: grupos LDAP vs permisos internos de OwnCloud.
-4. Auditoría en la demo: bitácoras en vivo vs solo descripción.
+| Pregunta | Respuesta del profesor | Implicación |
+|---|---|---|
+| 1. Alcance del cliente | Cliente web es suficiente | Demo solo por navegador, sin app passwords |
+| 2. Versión de OwnCloud | La que gusten, debe funcionar | OwnCloud 10.15 Server (PHP) confirmado |
+| 3. Modelo de autorización | LDAP autentica, OwnCloud autoriza | Permisos por carpeta en OwnCloud, sin sincronía de grupos |
+| 4. Auditoría | No se revisará en la evaluación | Se mantiene como contexto académico, no como entregable |
 
-Ya no bloquean el desarrollo porque se decidió avanzar con supuestos documentados. Si el profesor pide otro enfoque, se ajusta desde la base funcional actual.
+Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad de ellos". La tabla consolidada de los siete supuestos con su archivo de referencia está en `preguntas-abiertas.md`.
 
 ### 4.2 Invitaciones de GitHub pendientes de aceptar (4)
 
