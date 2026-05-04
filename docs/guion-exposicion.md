@@ -1,33 +1,34 @@
 # Guion de exposición - 30 minutos
 
-Material de trabajo para el ensayo. Distribuye los 30 minutos entre los 6 integrantes y deja la demo en vivo como punto central.
+Material de trabajo para el ensayo. Distribuye los 30 minutos entre los 6 integrantes y deja la demo en vivo como punto central. La distribución se ajusta a lo que el profesor confirmó que va a evaluar: identificación, autenticación y autorización (las tres primeras capas del control de acceso). La auditoría se menciona brevemente como contexto académico pero no se la usa como bloque principal.
 
 ## Distribución por integrante
 
 | Bloque | Tiempo | Responsable | Tema |
 |---|---|---|---|
-| 0. Intro y contexto | 2 min | Salgado Miranda Jorge | Apertura, integrantes, objetivo del proyecto, las 4 capas |
+| 0. Intro y contexto | 2 min | Salgado Miranda Jorge | Apertura, integrantes, objetivo, mapeo a las 3 capas evaluadas |
 | 1. Marco conceptual: 2FA, OTP, TOTP, HOTP | 4 min | Olvera González Arely | Por qué 2FA, definiciones formales, diferencias entre HOTP y TOTP |
-| 2. Diseño del árbol LDAP y cuentas de servicio | 4 min | López Segundo Luis Iván | Base DN, OUs, NHI, ACL, evidencia con `ldap-verify.sh` |
+| 2. Diseño del árbol LDAP y cuentas de servicio | 5 min | López Segundo Luis Iván | Base DN, OUs, NHI, ACL, evidencia con `ldap-verify.sh` |
 | 3. privacyIDEA y enrolamiento con FreeOTP | 4 min | Ferreira Rojas Mauricio | Resolver, realm, ciclo de vida del token, FreeOTP en pantalla |
-| 4. OwnCloud y orquestación 2FA | 4 min | Rufino López María Elena | Plugin twofactor_privacyidea, login web, cifrado del lado servidor |
-| 5. Demo en vivo: login + share + cifrado en disco | 6 min | Arellanes Conde Esteban | `owncloud-login-verify.sh`, `owncloud-share-verify.sh`, mostrar HBEGIN |
-| 6. Auditoría: bitácoras y las 4 capas verificadas | 3 min | Salgado Miranda Jorge | `audit-capture.sh`, mostrar `docs/auditoria.md` |
-| 7. Conclusiones, limitaciones y preguntas | 3 min | Todos rotando | Lo aceptado a propósito, lo que cambiaríamos, dudas del profesor |
+| 4. OwnCloud: autorización, 2FA y cifrado | 5 min | Rufino López María Elena | Plugin twofactor_privacyidea, permisos por carpeta dentro de OwnCloud, cifrado del lado servidor |
+| 5. Demo en vivo: login + share + cifrado en disco | 7 min | Arellanes Conde Esteban | `owncloud-login-verify.sh`, `owncloud-share-verify.sh`, mostrar HBEGIN, casos de error |
+| 6. Conclusiones, limitaciones y preguntas | 3 min | Todos rotando | Lo aceptado a propósito, mención breve de auditoría como contexto, dudas del profesor |
 
-Total: 30 minutos exactos. Si se atrasa el bloque 5 (demo), se acortan los bloques 6 y 7.
+Total: 30 minutos exactos. Si la demo (bloque 5) se atrasa, se acorta el bloque 6.
+
+Nota sobre auditoría: el profesor confirmó por correo que no va a revisar la cuarta capa, así que no tiene bloque propio. El equipo puede mencionar `scripts/audit-capture.sh` y `docs/auditoria.md` durante el bloque 6 si surge la pregunta, sin necesidad de demostrarlo en vivo.
 
 ## Apertura (2 minutos) - Salgado Miranda Jorge
 
 **Apertura, ronda de presentación, marco general del proyecto.**
 
-Mensaje clave: "Construimos un servicio de almacenamiento donde el control de acceso se prueba en sus cuatro capas."
+Mensaje clave: "Construimos un servicio de almacenamiento que demuestra las tres capas evaluables del control de acceso: identificación, autenticación y autorización. La cuarta capa, auditoría, queda como complemento académico."
 
 Pasos:
 1. Saludo y nombre del proyecto.
 2. Presentar al equipo en orden alfabético (apellido).
-3. Mostrar la diapositiva con el mapeo de las 4 capas a los componentes (LDAP, privacyIDEA, OwnCloud, logs).
-4. Anunciar el formato: 5 bloques temáticos, 1 demo, conclusiones y preguntas.
+3. Mostrar la diapositiva con el mapeo de las cuatro capas a los componentes (LDAP, privacyIDEA, OwnCloud, logs) y aclarar que la evaluación se concentra en las tres primeras según indicación del profesor.
+4. Anunciar el formato: 4 bloques temáticos, 1 demo, conclusiones y preguntas.
 
 ## Bloque 1: Marco conceptual - Olvera González Arely (4 minutos)
 
@@ -70,47 +71,35 @@ Pasos:
 4. Si hay tiempo, escanear el QR en un teléfono real con FreeOTP previamente preparado, o explicar que el script ya valida el OTP localmente sin teléfono.
 5. Validar un OTP arbitrario contra `/validate/check` con `./scripts/privacyidea-validate-otp.sh`.
 
-## Bloque 4: OwnCloud y 2FA - Rufino López María Elena (4 minutos)
+## Bloque 4: OwnCloud, autorización y cifrado - Rufino López María Elena (5 minutos)
 
-**Cómo se orquesta todo desde la perspectiva del usuario final.**
+**Cómo se orquesta todo desde la perspectiva del usuario final, con énfasis en la capa de autorización que el profesor confirmó como responsabilidad de OwnCloud.**
 
-Mensaje clave: "OwnCloud no implementa 2FA; delega a privacyIDEA mediante un plugin oficial."
+Mensaje clave: "LDAP autentica, OwnCloud autoriza. El plugin oficial twofactor_privacyidea cubre el segundo factor."
 
 Pasos:
 1. Abrir `https://localhost:9443` en un navegador limpio (modo incógnito recomendado para la demo).
 2. Mostrar el flujo: usuario + password LDAP, redirección al selector de 2FA, ingreso del OTP, vista de archivos.
 3. Explicar la configuración: `user_ldap` apunta a LDAPS, `twofactor_privacyidea` apunta a HTTPS interno con la CA local.
-4. Mostrar que el cifrado del lado servidor está activo (`occ encryption:status` o desde el panel admin).
-5. Subir un archivo desde la UI y abrir el volumen de Docker para mostrar la cabecera `HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND`.
+4. Capa de autorización: mostrar la pantalla de compartir archivos en OwnCloud, donde se elige usuario destino y permisos (lectura, escritura, compartir). Aclarar que esta autorización vive enteramente dentro de OwnCloud, sin sincronizar grupos LDAP, tal como el profesor confirmó.
+5. Mostrar que el cifrado del lado servidor está activo (`occ encryption:status` o desde el panel admin).
+6. Subir un archivo desde la UI y abrir el volumen de Docker para mostrar la cabecera `HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND`.
 
-## Bloque 5: Demo en vivo - Arellanes Conde Esteban (6 minutos)
+## Bloque 5: Demo en vivo - Arellanes Conde Esteban (7 minutos)
 
 **Reproducción end-to-end con scripts.**
 
 Mensaje clave: "No describimos la solución; la demostramos. Los scripts son la prueba."
 
 Pasos:
-1. Mostrar la terminal con la raíz del repo. Verificar que `docker compose ps` muestra los 6 contenedores en `Up`.
-2. Ejecutar `./scripts/owncloud-login-verify.sh usuario.desarrollo1`. Cuando termine "OK: archivo subido y cifrado en el volumen", explicar paso a paso lo que validó.
-3. Ejecutar `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1`. Cuando termine "OK: usuario.seguridad1 descifró y leyó el archivo compartido", aclarar que ese mensaje cierra la pregunta del profesor sobre cifrado de archivos compartidos.
+1. Mostrar la terminal con la raíz del repo. Verificar que `docker compose ps` muestra los seis contenedores en `Up`.
+2. Ejecutar `./scripts/owncloud-login-verify.sh usuario.desarrollo1`. Cuando termine "OK: archivo subido y cifrado en el volumen", explicar paso a paso lo que validó: bind LDAPS contra OpenLDAP (identificación + autenticación primer factor), validación OTP contra privacyIDEA (autenticación segundo factor) y subida WebDAV con cifrado en disco.
+3. Ejecutar `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1`. Cuando termine "OK: usuario.seguridad1 descifró y leyó el archivo compartido", aclarar que ese mensaje demuestra la capa de autorización (definida en OwnCloud, no en LDAP) y que el destinatario lee el archivo descifrado a pesar de que en disco sigue cifrado.
 4. Mostrar el archivo en disco con `docker exec otpsec-owncloud-server head -c 80 /mnt/data/files/usuario.desarrollo1/files/demo-compartido-usuario.desarrollo1.txt`. La cabecera `HBEGIN` debe ser visible.
-5. Plan B: si la demo en vivo falla, mostrar la grabación de respaldo (ver bloque "Plan B" abajo).
+5. Caso de error (opcional, si queda tiempo): repetir el login con un OTP incorrecto para mostrar que OwnCloud no abre la sesión.
+6. Plan B: si la demo en vivo falla, mostrar la grabación de respaldo (ver bloque "Plan B" abajo).
 
-## Bloque 6: Auditoría - Salgado Miranda Jorge (3 minutos)
-
-**Las cuatro capas no son teóricas; aquí está la evidencia.**
-
-Mensaje clave: "Logs reales de los tres componentes para los 8 eventos clave del control de acceso."
-
-Pasos:
-1. Ejecutar `./scripts/audit-capture.sh`. Tarda menos de 90 s. Aprovechar el tiempo para explicar qué eventos cubre.
-2. Abrir `docs/auditoria.md` recién generado. Mostrar tres ejemplos:
-   - Sección 2 (LDAP fallido): `RESULT err=49 text=` en `docker logs otpsec-openldap`.
-   - Sección 6 (OwnCloud LDAP+OTP exitoso): `"authentication":"ACCEPT"` y `"User authenticated successfully!"` en `owncloud.log`.
-   - Sección 7 (OTP rechazado): `"wrong otp value"` con el OTP `000000`.
-3. Recordar que los tres niveles del control (identificación, autenticación, autorización) producen registros automáticos y que esos registros son la cuarta capa.
-
-## Bloque 7: Conclusiones y preguntas - Todos (3 minutos)
+## Bloque 6: Conclusiones y preguntas - Todos (3 minutos)
 
 **Cierre sincero y honesto.**
 
@@ -119,8 +108,9 @@ Mensaje clave: "Sabemos qué cosas serían inaceptables en producción y por qu�
 Pasos:
 1. Cada integrante (en una sola línea cada uno) menciona un aprendizaje técnico personal.
 2. Listar las limitaciones aceptadas a propósito: `.env` versionado, certs autofirmados, master key en el mismo servidor, sin alta disponibilidad. Recordar la sección "Aviso de seguridad" del README.
-3. Listar las dos o tres cosas que cambiaríamos en un entorno real.
-4. Abrir preguntas del profesor.
+3. Mencionar brevemente que el proyecto incluye `scripts/audit-capture.sh` y `docs/auditoria.md` como complemento académico de la cuarta capa de control de acceso, aunque el profesor confirmó que esa capa no será evaluada. No demostrar en vivo a menos que él lo pida.
+4. Listar las dos o tres cosas que cambiaríamos en un entorno real.
+5. Abrir preguntas del profesor.
 
 ## Plan B: si la demo falla
 

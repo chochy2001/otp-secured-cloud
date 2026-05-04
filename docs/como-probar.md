@@ -81,7 +81,7 @@ Salidas esperadas:
 | `owncloud-verify.sh` | `Todo OK.` (6 checks) | Validación iv |
 | `owncloud-login-verify.sh` | `OK: archivo subido y cifrado en el volumen.` | Validaciones iii y v |
 | `owncloud-share-verify.sh` | `OK: <destinatario> descifró y leyó el archivo compartido.` | Cifrado de archivos compartidos |
-| `audit-capture.sh` | `Auditoría escrita en docs/auditoria.md.` | Cuarta capa: auditoría |
+| `audit-capture.sh` | `Auditoría escrita en docs/auditoria.md.` | Cuarta capa (complemento académico, no evaluable) |
 
 Cualquier fallo aborta el script con `ERROR:` y un código distinto de 0. La regla es: ningún `ERROR:` en la salida = todo verde.
 
@@ -163,16 +163,18 @@ docker exec otpsec-owncloud-server head -c 80 \
   /mnt/data/files/usuario.desarrollo1/files/demo-cifrado.txt
 echo
 
-# 4. Auditoría reproducible
+# 4. Auditoría reproducible (opcional, solo si el profesor pregunta)
+# El profesor confirmó por correo que esta capa no será evaluada.
+# Mantener listo por si surge la pregunta durante la sesión.
 ./scripts/audit-capture.sh
 
-# 5. Mostrar tres ejemplos del archivo recién generado
+# 5. Si se decide mostrar la auditoría, abrir tres ejemplos del archivo
 sed -n '36,45p' docs/auditoria.md   # login LDAP fallido
 sed -n '110,127p' docs/auditoria.md # login web 2FA exitoso
 sed -n '129,146p' docs/auditoria.md # login web con OTP rechazado
 ```
 
-Cada comando produce salida visible al público. Pausar 5 segundos después de cada `OK:` para que se lea.
+Cada comando produce salida visible al público. Pausar 5 segundos después de cada `OK:` para que se lea. La parte de auditoría (puntos 4 y 5) se ejecuta solo si surge la pregunta del profesor; el bloque principal de la demo termina en el punto 3.
 
 ## 10. Plan B si la demo falla
 
@@ -249,6 +251,6 @@ Buscar la última línea de error. Causas comunes: certificado expirado (regener
 | López Segundo Luis Iván | lopezsknd@gmail.com | Diseño del árbol LDAP |
 | Olvera González Arely | arely.olvera@ingenieria.unam.edu | Marco conceptual 2FA y OTP |
 | Rufino López María Elena | mariaelena.rufino424@gmail.com | OwnCloud y orquestación 2FA |
-| Salgado Miranda Jorge | ohchochy@gmail.com | Apertura, auditoría, propietario del repo |
+| Salgado Miranda Jorge | ohchochy@gmail.com | Apertura, conclusiones, propietario del repo |
 
 Si una persona no llega: el guion permite redistribuir bloques sin perder coherencia. El que cubra debe haber leído al menos el archivo de su nuevo bloque la noche anterior.

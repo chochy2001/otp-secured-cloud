@@ -36,27 +36,26 @@ Repositorio público: https://github.com/chochy2001/otp-secured-cloud
 
 # Objetivo
 
-Construir un servicio de almacenamiento de archivos donde el control de acceso se demuestre en sus cuatro capas:
+Construir un servicio de almacenamiento de archivos donde el control de acceso se demuestre en las tres capas que el profesor confirmó como evaluables:
 
 1. Identificación
 2. Autenticación con dos factores
 3. Autorización
-4. Auditoría
 
-El segundo factor se exige siempre y los archivos se cifran del lado servidor. Cada decisión queda evidenciada por un script reproducible.
+La cuarta capa (auditoría) se incluye como complemento académico pero no se evalúa, según indicación del profesor por correo. El segundo factor se exige siempre y los archivos se cifran del lado servidor. Cada decisión queda evidenciada por un script reproducible.
 
 ---
 
 # Las cuatro capas del control de acceso
 
-| Capa | Pregunta | Componente del proyecto |
-|---|---|---|
-| Identificación | Quién dice ser el usuario | OpenLDAP con UIDs únicos |
-| Autenticación | Lo demuestra | Contraseña LDAP + OTP TOTP |
-| Autorización | Qué puede hacer | Permisos de OwnCloud y OCS Sharing |
-| Auditoría | Qué hizo y cuándo | Logs de los tres componentes |
+| Capa | Pregunta | Componente del proyecto | Evaluable |
+|---|---|---|---|
+| Identificación | Quién dice ser el usuario | OpenLDAP con UIDs únicos | Sí |
+| Autenticación | Lo demuestra | Contraseña LDAP + OTP TOTP | Sí |
+| Autorización | Qué puede hacer | Permisos de OwnCloud y OCS Sharing | Sí |
+| Auditoría | Qué hizo y cuándo | Logs de los tres componentes | No (complemento académico) |
 
-Si falta cualquiera, el control de acceso es incompleto. La auditoría es la que más se olvida.
+El profesor confirmó por correo que solo revisará las primeras tres capas. La cuarta queda documentada para completar el marco que él mismo presentó en clase.
 
 ---
 
@@ -340,62 +339,26 @@ El contenido en claro NO aparece. Solo OwnCloud puede descifrarlo cuando un usua
 
 ---
 
-# Auditoría: el script
+# Auditoría: complemento académico
 
-```bash
-./scripts/audit-capture.sh
-```
+El profesor confirmó por correo que la cuarta capa (auditoría) no será evaluada. La incluimos como complemento del marco de control de acceso que él mismo presentó en clase.
 
-Sube el `loglevel` de OwnCloud a debug, dispara 8 eventos en orden, captura las líneas relevantes de cada componente y restaura el `loglevel` al terminar.
+`./scripts/audit-capture.sh` dispara los ocho eventos clave (login LDAP correcto y fallido, enrolamiento, OTP correcto y rechazado, login web 2FA exitoso y rechazado, acceso a archivo por WebDAV) y captura los logs de los tres componentes en `docs/auditoria.md`.
 
-| Evento | Componente que registra |
-|---|---|
-| 1. Login LDAP exitoso | OpenLDAP (`docker logs`) |
-| 2. Login LDAP fallido | OpenLDAP |
-| 3. Token TOTP enrolado | privacyIDEA |
-| 4. OTP correcto validado | privacyIDEA |
-| 5. OTP incorrecto rechazado | privacyIDEA |
-| 6. Login web 2FA exitoso | OwnCloud |
-| 7. Login web 2FA rechazado | OwnCloud |
-| 8. Acceso a archivo por WebDAV | OwnCloud |
+Disponible para consulta en el repositorio si el profesor pregunta por evidencia, no se demuestra en vivo.
 
 ---
 
-# Auditoría: ejemplos de los logs
+# Mapeo a las capas evaluables
 
-OpenLDAP, login con contraseña incorrecta:
+| Capa | Evidencia concreta | Donde |
+|---|---|---|
+| Identificación | `BIND dn="uid=usuario.desarrollo1,ou=Desarrollo,..."` | OpenLDAP |
+| Autenticación primer factor | `RESULT err=0` (éxito) o `err=49` (rechazo) | OpenLDAP |
+| Autenticación segundo factor | `"authentication":"ACCEPT"` o `"REJECT"` desde privacyIDEA | OwnCloud log |
+| Autorización | Permisos por carpeta y por usuario en OwnCloud, OCS Sharing API, WebDAV PUT/GET con `"user":"usuario.desarrolloN"` | OwnCloud |
 
-```
-conn=1657 op=0 BIND dn="uid=usuario.desarrollo2,..." method=128
-conn=1657 op=0 RESULT tag=97 err=49 text=
-```
-
-OwnCloud, OTP correcto pasado al plugin:
-
-```json
-{"app":"privacyIDEA","message":"With options: user=usuario.desarrollo2, pass=147196, realm=sia"}
-{"app":"privacyIDEA","message":"... \"authentication\":\"ACCEPT\" ..."}
-{"app":"privacyIDEA","message":"privacyIDEA: User authenticated successfully!"}
-```
-
-OwnCloud, OTP rechazado:
-
-```json
-{"app":"privacyIDEA","message":"With options: user=..., pass=000000, realm=sia"}
-{"app":"privacyIDEA","message":"privacyIDEA:wrong otp value"}
-```
-
----
-
-# Mapeo a las 4 capas (resumen)
-
-| Capa | Evidencia concreta |
-|---|---|
-| Identificación | `BIND dn="uid=usuario.desarrollo1,ou=Desarrollo,..."` en OpenLDAP |
-| Autenticación primer factor | `RESULT err=0` (éxito) o `err=49` (rechazo) en OpenLDAP |
-| Autenticación segundo factor | `"authentication":"ACCEPT"` o `"REJECT"` desde privacyIDEA en `owncloud.log` |
-| Autorización | WebDAV PUT/GET en `owncloud.log` con `"user":"usuario.desarrolloN"` y código 2xx |
-| Auditoría | Las cuatro líneas anteriores existen en archivos consultables |
+Las tres capas evaluables se demuestran en vivo durante el bloque de demo con `owncloud-login-verify.sh` y `owncloud-share-verify.sh`.
 
 ---
 
