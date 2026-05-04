@@ -88,14 +88,25 @@ fi
 # mermaid que sigue al encabezado '### Figura N:' por una referencia
 # de imagen para que pandoc inserte la PNG en el PDF y DOCX. Los
 # archivos originales no se tocan; trabajamos sobre copias en TMP.
+# Las figuras se copian a una subcarpeta del TMP para usar rutas
+# relativas en las referencias (tectonic emite un warning cuando ve
+# rutas absolutas a recursos por reproducibilidad entre máquinas).
 TMP_DOCS_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DOCS_DIR}"' EXIT
+
+mkdir -p "${TMP_DOCS_DIR}/figuras"
+for n in 1 2 3 4 5 6; do
+  src_png="${ROOT_DIR}/docs/figuras/figura${n}.png"
+  if [[ -f "${src_png}" ]]; then
+    cp "${src_png}" "${TMP_DOCS_DIR}/figuras/figura${n}.png"
+  fi
+done
 
 PROCESSED_DOCS=()
 for doc in "${DOC_ORDER[@]}"; do
   base="$(basename "${doc}")"
   out="${TMP_DOCS_DIR}/${base}"
-  python3 - "${doc}" "${out}" "${ROOT_DIR}/docs/figuras" <<'PYEOF'
+  python3 - "${doc}" "${out}" "${TMP_DOCS_DIR}/figuras" <<'PYEOF'
 import re
 import sys
 from pathlib import Path
@@ -123,7 +134,11 @@ for heading_match in heading_re.finditer(src):
     # `\ ` (espacio escapado) en la línea posterior evita que pandoc
     # convierta la imagen en una figura LaTeX numerada.
     result.append(src[last_end:block_match.start()])
-    result.append(f"![]({png.as_posix()})\\ \n")
+    # Referencia relativa: el .md preprocesado y la carpeta figuras
+    # viven en el mismo TMP_DOCS_DIR, así pandoc resuelve la ruta sin
+    # apuntar a /private/var/folders/... y tectonic no avisa por
+    # rutas absolutas no reproducibles.
+    result.append(f"![](figuras/figura{fig_num}.png)\\ \n")
     last_end = block_match.end()
 result.append(src[last_end:])
 dst.write_text("".join(result))
@@ -135,11 +150,15 @@ done
 # como Markdown propios al inicio del orden de documentos. Pandoc en
 # modo article sin title/author no inserta su propia cubierta, así
 # docs/portada.md aparece como primera página tal cual la diseñamos.
+# --resource-path=TMP_DOCS_DIR es necesario para que pandoc resuelva
+# las referencias relativas 'figuras/figuraN.png' contra la copia
+# de las imágenes que se hizo en ese directorio.
 PANDOC_COMMON=(
   -V documentclass=article
   -V geometry:margin=2.5cm
   -V fontsize=11pt
   -V lang=es
+  --resource-path="${TMP_DOCS_DIR}"
 )
 
 # Variables específicas del PDF: mitigar líneas largas (URLs en
@@ -149,6 +168,11 @@ PDF_HEADER_FILE="${TMP_DOCS_DIR}/header.tex"
 cat > "${PDF_HEADER_FILE}" <<'TEXEOF'
 \usepackage{xurl}
 \sloppy
+% emergencystretch deja que LaTeX estire una línea hasta este valor
+% antes de generar un Overfull \hbox. 3em es lo bastante para
+% absorber URLs y DNs largos en bibliografía y código sin que el
+% texto pierda legibilidad.
+\setlength{\emergencystretch}{3em}
 TEXEOF
 
 # HTML (siempre se genera, no requiere LaTeX)
@@ -180,6 +204,12 @@ fi
 
 if [[ -n "${PDF_ENGINE}" ]]; then
   echo "==> Generando ${PDF_FILE} con ${PDF_ENGINE}"
+  # Nota sobre warnings: tectonic emite avisos 'absolute path ... build
+  # may not be reproducible' por cada figura. Esto pasa porque pandoc
+  # copia internamente las imágenes a su propio media-temp y pasa la
+  # ruta absoluta a LaTeX. No afecta el PDF resultante; las imágenes
+  # se embeben correctamente. Es ruido informativo de tectonic, no un
+  # error de configuración.
   if pandoc "${PROCESSED_DOCS[@]}" \
     "${PANDOC_COMMON[@]}" \
     --pdf-engine="${PDF_ENGINE}" \
