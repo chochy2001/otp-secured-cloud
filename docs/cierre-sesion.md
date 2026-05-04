@@ -84,7 +84,7 @@ npm install -g @mermaid-js/mermaid-cli
 ./scripts/build-figures.sh
 
 # Ensamblar el PDF del entregable
-brew install pandoc basictex          # macOS
+brew install pandoc tectonic          # macOS (tectonic no requiere sudo)
 # o: sudo apt install pandoc texlive-xetex   # Linux
 ./scripts/build-pdf.sh
 

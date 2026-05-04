@@ -125,7 +125,7 @@ Material para el entregable (40 por ciento de la nota):
 - [Índice de figuras](docs/indice-figuras.md)
 - [Índice del entregable](docs/indice.md)
 
-Ensamblado del PDF: `./scripts/build-pdf.sh` (requiere `pandoc` y un motor LaTeX como `xelatex` o `lualatex`).
+Ensamblado del PDF, HTML y DOCX: `./scripts/build-pdf.sh`. Requiere `pandoc` siempre y un motor LaTeX si se quiere PDF (recomendado: `tectonic`, instalable en macOS sin sudo con `brew install tectonic`; en Linux `sudo apt install texlive-xetex`).
 
 Material para la exposición (30 por ciento de la nota):
 

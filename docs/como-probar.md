@@ -15,7 +15,7 @@ Software que tiene que estar instalado antes de bajar el repo:
 | `openssl` | Generación de la CA local | preinstalado | preinstalado |
 | `shellcheck` (opcional) | Lint de scripts shell | `brew install shellcheck` | `sudo apt install shellcheck` |
 | `node` y `npm` (opcional) | Renderizar figuras Mermaid | `brew install node` | `sudo apt install nodejs npm` |
-| `pandoc` y motor LaTeX (opcional) | Generar el PDF del entregable | `brew install pandoc basictex` | `sudo apt install pandoc texlive-xetex` |
+| `pandoc` y motor LaTeX (opcional) | Generar el PDF del entregable | `brew install pandoc tectonic` | `sudo apt install pandoc texlive-xetex` |
 | `mermaid-cli` (opcional) | Convertir bloques Mermaid a PNG | `npm install -g @mermaid-js/mermaid-cli` | igual |
 
 Las cuatro últimas filas son opcionales: solo se necesitan si se va a generar el PDF del entregable o las figuras renderizadas el mismo día. Para la demo en vivo bastan Docker y los scripts ya versionados.
