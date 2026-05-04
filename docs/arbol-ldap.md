@@ -2,6 +2,8 @@
 
 ## Visión general
 
+Versión textual del árbol, útil para navegar en una terminal:
+
 ```
 dc=sia,dc=unam,dc=mx                          (base DN raíz)
 |
@@ -23,6 +25,42 @@ dc=sia,dc=unam,dc=mx                          (base DN raíz)
 |
 `-- ou=Servicios                               (cuentas no humanas)
     `-- cn=svc-owncloud                        (bind DN para aplicaciones)
+```
+
+### Figura 2: Árbol LDAP del proyecto
+
+Versión Mermaid renderizable a PNG con `scripts/build-figures.sh` para incluirla en el PDF del entregable.
+
+```mermaid
+graph TD
+  root["dc=sia,dc=unam,dc=mx"]
+  admin["cn=admin"]
+  ou_users["ou=Usuarios"]
+  ou_groups["ou=Grupos"]
+  ou_svc["ou=Servicios"]
+  ou_dev["ou=Desarrollo"]
+  ou_sec["ou=Seguridad"]
+  dev1["uid=usuario.desarrollo1"]
+  dev2["uid=usuario.desarrollo2"]
+  dev3["uid=usuario.desarrollo3"]
+  sec1["uid=usuario.seguridad1"]
+  sec2["uid=usuario.seguridad2"]
+  sec3["uid=usuario.seguridad3"]
+  svc["cn=svc-owncloud"]
+
+  root --> admin
+  root --> ou_users
+  root --> ou_groups
+  root --> ou_svc
+  ou_users --> ou_dev
+  ou_users --> ou_sec
+  ou_dev --> dev1
+  ou_dev --> dev2
+  ou_dev --> dev3
+  ou_sec --> sec1
+  ou_sec --> sec2
+  ou_sec --> sec3
+  ou_svc --> svc
 ```
 
 ## Valores que esperan OwnCloud y PrivacyIDEA

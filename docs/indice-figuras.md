@@ -1,19 +1,31 @@
 # Índice de figuras
 
-| Número | Figura | Ubicación |
-|---|---|---|
-| 1 | Diagrama de arquitectura del sistema | `docs/arquitectura.md`, sección "Diagrama" |
-| 2 | Árbol LDAP del proyecto: base DN, OUs, usuarios y cuenta de servicio | `docs/arbol-ldap.md`, sección "Árbol final" |
-| 3 | Flujo de autenticación 2FA: cliente web, OwnCloud, LDAP, privacyIDEA | `docs/arquitectura.md`, sección "Flujo de petición" |
-| 4 | Diagrama de red Docker entre servicios | `docs/arquitectura.md`, sección "Red" |
-| 5 | Flujo de cifrado del lado servidor: subida, almacenamiento, descarga | `docs/memoria-tecnica.md`, sección "Fase 6" |
-| 6 | Flujo de carpetas compartidas: emisor, OCS API, destinatario | `docs/memoria-tecnica.md`, sección "Carpetas compartidas" |
+Las seis figuras del entregable viven como bloques `mermaid` dentro de los archivos del repositorio. GitHub las renderiza en línea cuando se ve la página web del proyecto y `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` para incluirlas en el PDF final.
 
-## Notas para los autores del entregable
+| Número | Figura | Archivo fuente | Encabezado en el archivo |
+|---|---|---|---|
+| 1 | Arquitectura del sistema: componentes, conexiones HTTPS y LDAPS | `docs/arquitectura.md` | `### Figura 1: Arquitectura del sistema` |
+| 2 | Árbol LDAP del proyecto: base DN, OUs, usuarios y cuenta de servicio | `docs/arbol-ldap.md` | `### Figura 2: Árbol LDAP del proyecto` |
+| 3 | Flujo de autenticación 2FA: cliente web, OwnCloud, OpenLDAP y privacyIDEA | `docs/arquitectura.md` | `### Figura 3: Flujo de autenticación 2FA` |
+| 4 | Red Docker y puertos publicados | `docs/arquitectura.md` | `### Figura 4: Red Docker y puertos` |
+| 5 | Flujo de cifrado del lado servidor: subida, almacenamiento y descarga | `docs/memoria-tecnica.md` | `### Figura 5: Flujo de cifrado del lado servidor` |
+| 6 | Flujo de carpetas compartidas: emisor, OCS Sharing API y destinatario | `docs/memoria-tecnica.md` | `### Figura 6: Flujo de carpetas compartidas` |
 
-Estas figuras viven hoy como diagramas ASCII en los archivos referenciados. Antes de imprimir el PDF, hay dos opciones:
+## Cómo regenerar las figuras
 
-1. **Mantener el ASCII** y aclarar que las figuras se construyen con caracteres visibles para que sean legibles en cualquier visor sin depender de fuentes ni renderizado externo.
-2. **Renderizar versión gráfica** con una herramienta libre (por ejemplo, draw.io exportando a PDF/PNG, o Mermaid embebido en un Markdown procesado por Pandoc). Si se elige esta opción, los archivos exportados deben vivir en `docs/figuras/` con el nombre `figura-N.png` o `.svg`. Esa carpeta no existe aún en el repositorio para no agregar binarios al historial; se crea cuando el equipo decida formato y herramienta.
+```bash
+npm install -g @mermaid-js/mermaid-cli
+./scripts/build-figures.sh
+```
 
-El equipo aún tiene que decidir cuál opción seguir. En cualquier caso, esta tabla queda lista para citarse desde el cuerpo del documento como "(figura N)".
+El script lee los tres archivos fuente, busca cada encabezado `### Figura N:` y exporta el bloque `mermaid` que sigue a `docs/figuras/figuraN.png`. Los binarios viven en esa carpeta solo en máquinas locales: el `.gitignore` los excluye porque la fuente de verdad es el código `mermaid` en los archivos `.md`.
+
+## Cómo citar una figura desde el cuerpo del PDF
+
+Después de ejecutar `build-figures.sh`, las imágenes se referencian con sintaxis Pandoc estándar:
+
+```markdown
+![Figura 1: Arquitectura del sistema](docs/figuras/figura1.png)
+```
+
+`scripts/build-pdf.sh` espera que las figuras existan en `docs/figuras/` antes de ejecutarse; si faltan, el PDF se genera de todas formas pero las figuras aparecen con el bloque `mermaid` en bruto en lugar de la imagen.

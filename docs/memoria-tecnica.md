@@ -125,6 +125,30 @@ Ver detalles de configuración en `privacyidea/README.md`.
 - `scripts/owncloud-verify.sh`: 6 checks (HTTPS, instalación, LDAP, 6 usuarios, plugin 2FA, encryption).
 - `scripts/owncloud-login-verify.sh`: end-to-end que reproduce el login web LDAP + OTP, sube un archivo por WebDAV y verifica que queda cifrado en disco.
 
+### Figura 5: Flujo de cifrado del lado servidor
+
+```mermaid
+sequenceDiagram
+  participant U as Usuario autenticado
+  participant OC as OwnCloud
+  participant ENC as Modulo encryption
+  participant FS as Disco /mnt/data/files
+  participant DB as MariaDB metadatos
+
+  U->>OC: PUT remote.php webdav archivo.txt
+  OC->>ENC: cifrar con master key AES-256-CTR
+  ENC->>FS: HBEGIN oc_encryption_module ... HEND + cifrado
+  ENC->>DB: registra metadatos del archivo
+  DB-->>OC: ok
+  OC-->>U: 201 o 204 Created
+
+  U->>OC: GET remote.php webdav archivo.txt
+  OC->>FS: lee bloque cifrado
+  OC->>ENC: descifra con master key
+  ENC-->>OC: contenido en claro
+  OC-->>U: bytes en claro
+```
+
 ## 7. Carpetas compartidas y cifrado del lado destinatario
 
 El profesor pidió validar que el cifrado de archivos compartidos no rompe la lectura del destinatario. El script `scripts/owncloud-share-verify.sh` automatiza ese flujo:
@@ -138,6 +162,28 @@ El profesor pidió validar que el cifrado de archivos compartidos no rompe la le
 7. Descargar el archivo por WebDAV desde la cuenta del destinatario y comparar el contenido con el original.
 
 La salida `OK: <destinatario> descifró y leyó el archivo compartido` cierra la última pieza de las fases 5 y 6 del plan original.
+
+### Figura 6: Flujo de carpetas compartidas
+
+```mermaid
+sequenceDiagram
+  participant E as Emisor usuario.desarrollo1
+  participant OC as OwnCloud
+  participant FS as Volumen cifrado
+  participant D as Destinatario usuario.seguridad1
+
+  E->>OC: login LDAP + OTP
+  OC-->>E: cookie de sesion 2FA
+  E->>OC: PUT webdav demo-compartido.txt
+  OC->>FS: guarda con cabecera HBEGIN
+  E->>OC: POST OCS shares con cookie y requesttoken
+  OC-->>E: share id creado para destinatario
+  D->>OC: login LDAP + OTP
+  OC-->>D: cookie de sesion 2FA
+  D->>OC: GET webdav demo-compartido.txt
+  OC->>FS: lee bloque cifrado
+  OC-->>D: contenido en claro descifrado por OwnCloud
+```
 
 ## 8. Auditoría
 
