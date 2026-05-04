@@ -98,6 +98,7 @@ Operación y bitácoras:
 
 - [Estado del proyecto](docs/estado-proyecto.md): documento vivo con avance, bloqueadores y plan por fases
 - [Guía paso a paso para el equipo](docs/guia-equipo.md): cómo clonar y probar el proyecto en tu máquina
+- [Cómo probar el proyecto antes y durante la presentación](docs/como-probar.md): pre-flight, demo en vivo y plan B
 - [Cierre de sesión de trabajo](docs/cierre-sesion.md): puertos, credenciales y comandos para retomar
 - [Auditoría: muestreo de eventos](docs/auditoria.md): bitácoras reales de los 8 eventos clave (generadas por `scripts/audit-capture.sh`)
 - [Preguntas abiertas al profesor](docs/preguntas-abiertas.md)
@@ -118,16 +119,24 @@ Material para el entregable (40 por ciento de la nota):
 
 Ensamblado del PDF: `./scripts/build-pdf.sh` (requiere `pandoc` y un motor LaTeX como `xelatex` o `lualatex`).
 
+Material para la exposición (30 por ciento de la nota):
+
+- [Guion de exposición de 30 min](docs/guion-exposicion.md): bloques por integrante y plan B
+- [Slides en formato Marp](docs/presentacion.md): cada `---` separa una diapositiva, listo para abrir con Marp o reveal.js
+- [Manual para enrolar TOTP en FreeOTP físico](docs/manual-freeotp.md)
+
 ## Integrantes
 
 Equipo del proyecto final de Seguridad Informática Avanzada, semestre 2026-2:
 
-- Arellanes Conde Esteban
-- Ferreira Rojas Mauricio
-- López Segundo Luis Iván
-- Olvera González Arely
-- Rufino López María Elena
-- Salgado Miranda Jorge
+| Integrante | Correo |
+|---|---|
+| Arellanes Conde Esteban | esteban.arellanes@ingenieria.unam.edu |
+| Ferreira Rojas Mauricio | mauferreira183@gmail.com |
+| López Segundo Luis Iván | lopezsknd@gmail.com |
+| Olvera González Arely | arely.olvera@ingenieria.unam.edu |
+| Rufino López María Elena | mariaelena.rufino424@gmail.com |
+| Salgado Miranda Jorge | ohchochy@gmail.com |
 
 ## Licencia
 

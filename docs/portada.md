@@ -18,12 +18,14 @@
 
 **Equipo:**
 
-- Arellanes Conde Esteban
-- Ferreira Rojas Mauricio
-- López Segundo Luis Iván
-- Olvera González Arely
-- Rufino López María Elena
-- Salgado Miranda Jorge
+| Integrante | Correo |
+|---|---|
+| Arellanes Conde Esteban | esteban.arellanes@ingenieria.unam.edu |
+| Ferreira Rojas Mauricio | mauferreira183@gmail.com |
+| López Segundo Luis Iván | lopezsknd@gmail.com |
+| Olvera González Arely | arely.olvera@ingenieria.unam.edu |
+| Rufino López María Elena | mariaelena.rufino424@gmail.com |
+| Salgado Miranda Jorge | ohchochy@gmail.com |
 
 **Profesor:** (a confirmar por el equipo antes de imprimir)
 
