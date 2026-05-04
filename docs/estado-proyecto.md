@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-05-04
+**Última actualización:** 2026-05-04 (cierre del entregable, queda solo lo humano)
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -21,7 +21,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Auditoría reproducible | Funcional | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
 | Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
-| Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 31 páginas con las 6 figuras embebidas, validado |
+| Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 29 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
 | Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
 
@@ -35,19 +35,19 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 
 | Sección requerida | Estado | Archivo |
 |---|---|---|
-| Portada | Redactada (falta confirmar nombre del profesor) | [`portada.md`](portada.md) |
+| Portada | Redactada con el profesor (César Sanabria Pineda) | [`portada.md`](portada.md) |
 | Introducción | Redactada | [`introduccion.md`](introduccion.md) |
 | Índice | Redactado | [`indice.md`](indice.md) |
 | Índice de figuras con referencia | Redactado | [`indice-figuras.md`](indice-figuras.md) |
 | Conceptos básicos de 2FA mediante tokens OTP | Redactado | [`conceptos-basicos.md`](conceptos-basicos.md) |
-| Diagrama detallado de la solución | 6 figuras en mermaid listas; quedan binarios PNG por generar localmente | [`arquitectura.md`](arquitectura.md), [`arbol-ldap.md`](arbol-ldap.md), [`memoria-tecnica.md`](memoria-tecnica.md) |
+| Diagrama detallado de la solución | 6 figuras en mermaid renderizadas a PNG y embebidas en el PDF | [`arquitectura.md`](arquitectura.md), [`arbol-ldap.md`](arbol-ldap.md), [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Auditoría con extractos reales de logs | Generada y versionada | [`auditoria.md`](auditoria.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
-| Conclusiones individuales (6) | Primer borrador redactado, cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
+| Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200), cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
 | Glosario de términos | Redactado | [`glosario.md`](glosario.md) |
-| Ensamblado del PDF final | Documentado, se ejecuta cuando el equipo cierra conclusiones | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
+| Ensamblado del PDF, HTML y DOCX final | Funcional y validado: el último build produjo PDF de 29 páginas con las 6 figuras embebidas | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
 
 ### 2.2 Exposición del proyecto (30% de la evaluación)
 
@@ -110,7 +110,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
 
 ### Fase 5: OwnCloud y 2FA (cerrada)
-El profesor no respondió las preguntas abiertas. Se avanza con los supuestos declarados en [`preguntas-abiertas.md`](preguntas-abiertas.md): OwnCloud 10 Server, demo en navegador web y permisos administrados en OwnCloud.
+El profesor confirmó por correo las cuatro preguntas abiertas (ver [`preguntas-abiertas.md`](preguntas-abiertas.md)): cliente web suficiente, versión a elección del equipo (OwnCloud 10.15 Server), LDAP autentica y OwnCloud autoriza, auditoría como complemento no evaluable.
 
 - [x] Decisión: OwnCloud 10.15 Server con `twofactor_privacyidea`, demo solo web
 - [x] Servicios MariaDB 10.11, Redis 7 y OwnCloud 10.15 en `docker-compose.yml`
@@ -133,17 +133,17 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 - [x] Habilitar niveles de log adecuados en OpenLDAP, PrivacyIDEA, OwnCloud (loglevel ajustado en runtime, OwnCloud retorna a 1 al final del script)
 - [x] Capturar ejemplos reales de los 8 eventos clave con `scripts/audit-capture.sh` que escribe `docs/auditoria.md`
 
-### Fase 8: Documentación final y entrega (redactada, falta ensamblado)
-- [x] Portada en [`portada.md`](portada.md) (queda confirmar nombre del profesor en la línea de relleno)
+### Fase 8: Documentación final y entrega (cerrada)
+- [x] Portada en [`portada.md`](portada.md) con el profesor César Sanabria Pineda
 - [x] Introducción en [`introduccion.md`](introduccion.md)
 - [x] Conclusión de equipo en [`conclusiones.md`](conclusiones.md)
-- [x] Conclusiones individuales (primer borrador, cada integrante puede afinarlo)
+- [x] Conclusiones individuales (primer borrador equilibrado, cada integrante puede afinarlo)
 - [x] Glosario en [`glosario.md`](glosario.md) con 30+ términos
 - [x] Bibliografía en [`bibliografia.md`](bibliografia.md) con RFCs y docs oficiales
 - [x] Índice de figuras en [`indice-figuras.md`](indice-figuras.md), 6 figuras en mermaid
 - [x] Memoria técnica consolidada en [`memoria-tecnica.md`](memoria-tecnica.md)
-- [ ] Renderizar PNG de las figuras con `./scripts/build-figures.sh` (requiere `mermaid-cli`)
-- [ ] Ensamblar PDF final con `./scripts/build-pdf.sh` (requiere `pandoc` y motor LaTeX)
+- [x] PNG de las 6 figuras renderizadas con `./scripts/build-figures.sh` (mermaid-cli + tectonic instalados)
+- [x] PDF, HTML y DOCX ensamblados con `./scripts/build-pdf.sh` en `build/`
 
 ### Fase 9: Presentación (guion redactado, falta ensayo y respaldo)
 - [x] Guion de 30 min con división por integrante en [`guion-exposicion.md`](guion-exposicion.md)
@@ -217,4 +217,11 @@ Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad d
 
 ## 6. Próximo hito objetivo
 
-**Empaquetar y ensayar.** Toda la base técnica está cerrada (validaciones i a v, carpetas compartidas, cifrado en disco y auditoría reproducible). Toda la documentación está redactada (memoria técnica, glosario, bibliografía, conclusión de equipo, las seis conclusiones individuales en primer borrador, guion de exposición, slides Marp, manual de FreeOTP y guía operativa de la demo). Lo que queda son tareas locales del equipo: cada integrante revisa su párrafo en `conclusiones.md` si lo quiere afinar, se confirma el nombre del profesor, se instalan `mermaid-cli` y `pandoc` para generar las figuras y el PDF, se enrola el TOTP demo en un teléfono real con FreeOTP y se hace el ensayo grabado de la presentación.
+**Ensayar la presentación y revisar visualmente el PDF antes de imprimir.** Todo lo automatizable está cerrado: validaciones i a v, carpetas compartidas, cifrado en disco, auditoría como complemento, documentación redactada, profesor en portada, conclusiones equilibradas, figuras renderizadas, PDF/HTML/DOCX ensamblados en `build/`. Lo que queda son tareas que solo puede hacer el equipo:
+
+1. Cada integrante revisa su párrafo en `conclusiones.md` si lo quiere afinar.
+2. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente las páginas de bibliografía, glosario y tablas largas para detectar texto que se salga del margen (los warnings de tectonic están mitigados con `\sloppy` y `xurl`, pero es bueno confirmar a ojo).
+3. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
+4. Ensayo grabado completo de la presentación al menos 48 horas antes.
+5. Snapshot del entorno y/o grabación de la demo como respaldo.
+6. La noche anterior, correr la batería completa de `docs/como-probar.md`.
