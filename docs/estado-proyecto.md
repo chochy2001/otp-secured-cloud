@@ -21,7 +21,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Auditoría reproducible | Funcional, complemento académico no evaluable | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
 | Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
-| Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 29 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
+| Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 28 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
 | Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
 
@@ -47,7 +47,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200), cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
 | Glosario de términos | Redactado | [`glosario.md`](glosario.md) |
-| Ensamblado del PDF, HTML y DOCX final | Funcional y validado: el último build produjo PDF de 29 páginas con las 6 figuras embebidas | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
+| Ensamblado del PDF, HTML y DOCX final | Funcional y validado: el último build produjo PDF de 28 páginas con las 6 figuras embebidas | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
 
 ### 2.2 Exposición del proyecto (30% de la evaluación)
 

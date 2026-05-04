@@ -215,4 +215,4 @@ El resultado del último ejecutar contiene evidencia de las tres capas evaluable
 
 ## 9. Reproducibilidad
 
-Si se borran los volúmenes (`docker compose down -v`) el entorno se reconstruye exactamente igual ejecutando los siete scripts en el orden citado en la sección 2. La memoria técnica completa cabe en este flujo: cualquier integrante o evaluador puede partir de cero y, en menos de 10 minutos en una laptop moderna con Docker, llegar al mismo estado funcional que validan los scripts.
+Si se borran los volúmenes (`docker compose down -v`) el entorno se reconstruye exactamente igual ejecutando la secuencia indicada en la sección 2. La memoria técnica completa cabe en este flujo: cualquier integrante o evaluador puede partir de cero y, en menos de 10 minutos en una laptop moderna con Docker, llegar al mismo estado funcional que validan los scripts.
