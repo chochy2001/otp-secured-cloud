@@ -52,3 +52,12 @@ desktop.ini
 # Logs locales
 *.log
 logs/
+
+# PDF ensamblado por scripts/build-pdf.sh (no se versiona el binario)
+build/
+
+# Figuras renderizadas por scripts/build-figures.sh (binarios derivados
+# del mermaid en docs/arquitectura.md)
+docs/figuras/*.png
+docs/figuras/*.svg
+!docs/figuras/README.md

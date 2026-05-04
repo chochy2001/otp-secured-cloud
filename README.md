@@ -94,13 +94,29 @@ otp-secured-cloud/
 
 ## Documentación
 
+Operación y bitácoras:
+
 - [Estado del proyecto](docs/estado-proyecto.md): documento vivo con avance, bloqueadores y plan por fases
 - [Guía paso a paso para el equipo](docs/guia-equipo.md): cómo clonar y probar el proyecto en tu máquina
-- [Conceptos básicos de 2FA y OTP](docs/conceptos-basicos.md)
-- [Arquitectura del sistema](docs/arquitectura.md)
-- [Diseño del árbol LDAP](docs/arbol-ldap.md)
+- [Cierre de sesión de trabajo](docs/cierre-sesion.md): puertos, credenciales y comandos para retomar
+- [Auditoría: muestreo de eventos](docs/auditoria.md): bitácoras reales de los 8 eventos clave (generadas por `scripts/audit-capture.sh`)
 - [Preguntas abiertas al profesor](docs/preguntas-abiertas.md)
-- [Cierre de sesión de trabajo](docs/cierre-sesion.md)
+
+Material para el entregable (40 por ciento de la nota):
+
+- [Portada](docs/portada.md)
+- [Introducción](docs/introduccion.md)
+- [Conceptos básicos de 2FA y OTP](docs/conceptos-basicos.md)
+- [Diseño del árbol LDAP](docs/arbol-ldap.md)
+- [Arquitectura del sistema](docs/arquitectura.md)
+- [Memoria técnica paso a paso](docs/memoria-tecnica.md)
+- [Conclusiones](docs/conclusiones.md)
+- [Glosario de términos](docs/glosario.md)
+- [Bibliografía](docs/bibliografia.md)
+- [Índice de figuras](docs/indice-figuras.md)
+- [Índice del entregable](docs/indice.md)
+
+Ensamblado del PDF: `./scripts/build-pdf.sh` (requiere `pandoc` y un motor LaTeX como `xelatex` o `lualatex`).
 
 ## Integrantes
 

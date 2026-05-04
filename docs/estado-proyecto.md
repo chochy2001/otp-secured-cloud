@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-04-27
+**Última actualización:** 2026-05-04
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -100,7 +100,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] `scripts/ldap-verify.sh` extendido con un paso 8 que valida la cadena de certificación de LDAPS
 - [x] Documentar generación, confianza de la CA y precauciones de laboratorio (`certs/README.md`)
 
-### Fase 5: OwnCloud y 2FA
+### Fase 5: OwnCloud y 2FA (cerrada)
 El profesor no respondió las preguntas abiertas. Se avanza con los supuestos declarados en [`preguntas-abiertas.md`](preguntas-abiertas.md): OwnCloud 10 Server, demo en navegador web y permisos administrados en OwnCloud.
 
 - [x] Decisión: OwnCloud 10.15 Server con `twofactor_privacyidea`, demo solo web
@@ -112,18 +112,17 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 - [x] `scripts/owncloud-verify.sh` valida HTTPS, instalación, configuración LDAP, 6 usuarios, app 2FA y cifrado activo
 - [x] Hook `owncloud/10-trust-project-ca.sh` registra la CA local en el trust store del contenedor antes del arranque
 - [x] `scripts/owncloud-login-verify.sh` valida login web LDAP + OTP, subida WebDAV y archivo cifrado en disco
-- [ ] Permisos y carpetas compartidas entre usuarios para la demo (puede hacerse a mano desde la UI o automatizarse después)
+- [x] `scripts/owncloud-share-verify.sh` automatiza el flujo emisor + destinatario con OCS Sharing API y valida lectura cifrada por el destinatario
 
-### Fase 6: Cifrado de archivos compartidos
+### Fase 6: Cifrado de archivos compartidos (cerrada)
 - [x] Activar módulo *Server Side Encryption* con `OC_DEFAULT_MODULE`
 - [x] Demostrar archivos cifrados en disco con `scripts/owncloud-login-verify.sh`
-- [ ] Validar que el destinatario puede abrirlos al compartir
+- [x] Validar que el destinatario puede abrirlos al compartir (`scripts/owncloud-share-verify.sh`)
 
-### Fase 7: Auditoría y bitácoras
-Depende de respuesta del profesor sobre si se muestra en demo. Independientemente, documentar.
+### Fase 7: Auditoría y bitácoras (cerrada)
 
-- [ ] Habilitar niveles de log adecuados en OpenLDAP, PrivacyIDEA, OwnCloud
-- [ ] Mostrar ejemplos de eventos: login exitoso, login fallido, enrolamiento de token, acceso a archivo
+- [x] Habilitar niveles de log adecuados en OpenLDAP, PrivacyIDEA, OwnCloud (loglevel ajustado en runtime, OwnCloud retorna a 1 al final del script)
+- [x] Capturar ejemplos reales de los 8 eventos clave con `scripts/audit-capture.sh` que escribe `docs/auditoria.md`
 
 ### Fase 8: Documentación final y entrega
 - [ ] Portada
