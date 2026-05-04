@@ -75,6 +75,113 @@ El principio fundamental del diseño es que **OpenLDAP es la única fuente de id
 
 OpenLDAP, PrivacyIDEA y Caddy usan certificados firmados por la CA local del proyecto en `certs/`. El resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` dentro de la red Docker. OwnCloud también usa LDAPS hacia OpenLDAP y HTTPS interno hacia PrivacyIDEA.
 
-## Diagrama detallado
+## Diagramas para el entregable
 
-El diagrama ASCII de arriba es la versión de trabajo. Para el entregable final falta generar una versión renderizada y referenciada en el índice de figuras.
+Los diagramas de esta sección están en sintaxis Mermaid, que GitHub renderiza nativamente y que se puede exportar a PNG o SVG para incluir en el PDF final con `mermaid-cli` (`mmdc`).
+
+### Figura 1: Arquitectura del sistema
+
+```mermaid
+graph LR
+  subgraph host[Host del laboratorio]
+    user[Usuario]
+    phone[Telefono con FreeOTP]
+  end
+
+  subgraph docker[Red Docker otpsec]
+    caddy[Caddy 9443 HTTPS]
+    oc[OwnCloud server 10.15]
+    db[MariaDB 10.11]
+    redis[Redis 7]
+    pi[privacyIDEA 3.10.2 8443 HTTPS]
+    ldap[OpenLDAP 1.5.0 389 LDAP, 6636 LDAPS]
+  end
+
+  user -->|HTTPS 9443| caddy
+  caddy -->|HTTP 8080 interno| oc
+  oc -->|MySQL 3306| db
+  oc -->|Redis 6379| redis
+  oc -->|LDAPS 636| ldap
+  oc -->|HTTPS 8443| pi
+  pi -->|LDAPS 636| ldap
+  phone -.->|TOTP 6 digitos a usuario| user
+```
+
+### Figura 3: Flujo de autenticación 2FA
+
+```mermaid
+sequenceDiagram
+  participant U as Usuario
+  participant OC as OwnCloud
+  participant LD as OpenLDAP
+  participant PI as privacyIDEA
+  participant FO as FreeOTP en telefono
+
+  U->>OC: usuario y password LDAP
+  OC->>LD: bind LDAPS
+  LD-->>OC: 0 OK
+  OC-->>U: redirect a selector 2FA
+  U->>FO: lee codigo TOTP de 6 digitos
+  U->>OC: ingresa OTP
+  OC->>PI: POST validate check user OTP realm
+  PI->>LD: resuelve uid a token
+  LD-->>PI: token serial
+  PI-->>OC: authentication ACCEPT
+  OC-->>U: redirect a apps files
+```
+
+### Figura 4: Red Docker y puertos
+
+```mermaid
+graph TB
+  subgraph external[Externo: host del laboratorio]
+    h9443[localhost 9443]
+    h8443[localhost 8443]
+    h6636[localhost 6636]
+    h389[localhost 389]
+  end
+
+  subgraph net[Red Docker otpsec]
+    direction LR
+    caddy_n[caddy 9443]
+    oc_n[owncloud-server 8080]
+    db_n[owncloud-db 3306]
+    redis_n[owncloud-redis 6379]
+    pi_n[privacyidea 8443]
+    ldap_n[openldap 389 636]
+  end
+
+  h9443 --> caddy_n
+  h8443 --> pi_n
+  h6636 --> ldap_n
+  h389 --> ldap_n
+  caddy_n --> oc_n
+  oc_n --> db_n
+  oc_n --> redis_n
+  oc_n --> pi_n
+  oc_n --> ldap_n
+  pi_n --> ldap_n
+```
+
+## Cómo exportar los diagramas a PNG para el PDF
+
+Instalar mermaid-cli con npm:
+
+```bash
+npm install -g @mermaid-js/mermaid-cli
+```
+
+Renderizar todos los diagramas de este archivo a PNG en `docs/figuras/`:
+
+```bash
+mkdir -p docs/figuras
+# Extraer cada bloque mermaid a un archivo .mmd y renderizar.
+# Ejemplo manual:
+cat <<'EOF' > /tmp/figura1.mmd
+graph LR
+  ...  pega aqui el contenido del bloque mermaid de la figura ...
+EOF
+mmdc -i /tmp/figura1.mmd -o docs/figuras/figura1.png -t default
+```
+
+Repetir para figura 3 y figura 4. Luego, en el PDF, las figuras se referencian con `![Figura 1: Arquitectura](docs/figuras/figura1.png)`.
