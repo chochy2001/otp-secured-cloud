@@ -34,6 +34,11 @@ docker compose -f compose/docker-compose.yml --env-file .env up -d
 ./scripts/owncloud-configure.sh && ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+```
+
+Opcional (complemento académico no evaluable, ver sección 8):
+
+```bash
 ./scripts/audit-capture.sh
 ```
 

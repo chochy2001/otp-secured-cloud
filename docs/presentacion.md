@@ -377,10 +377,9 @@ docker compose -f compose/docker-compose.yml --env-file .env up -d
 ./scripts/owncloud-configure.sh && ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
-./scripts/audit-capture.sh
 ```
 
-Si todos terminan con `Todo OK` u `OK`, el laboratorio está operativo.
+Si todos terminan con `Todo OK` u `OK`, el laboratorio está operativo. `./scripts/audit-capture.sh` queda como complemento opcional, ya que la auditoría no se evalúa.
 
 ---
 

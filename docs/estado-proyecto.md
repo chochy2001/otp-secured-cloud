@@ -18,7 +18,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | OwnCloud | Funcional | Versión 10.15 con backend LDAP por LDAPS, plugin `twofactor_privacyidea` activo y Server Side Encryption con master key. `owncloud-verify.sh` pasa los 6 checks. |
 | Cifrado de archivos | Funcional | Server Side Encryption activo; `owncloud-login-verify.sh` sube un archivo y confirma que queda cifrado en el volumen |
 | Carpetas compartidas | Funcional | `scripts/owncloud-share-verify.sh` automatiza emisor, share por OCS API y descarga descifrada por el destinatario |
-| Auditoría reproducible | Funcional | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
+| Auditoría reproducible | Funcional, complemento académico no evaluable | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
 | Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
 | Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 29 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
@@ -42,7 +42,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Conceptos básicos de 2FA mediante tokens OTP | Redactado | [`conceptos-basicos.md`](conceptos-basicos.md) |
 | Diagrama detallado de la solución | 6 figuras en mermaid renderizadas a PNG y embebidas en el PDF | [`arquitectura.md`](arquitectura.md), [`arbol-ldap.md`](arbol-ldap.md), [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
-| Auditoría con extractos reales de logs | Generada y versionada | [`auditoria.md`](auditoria.md) |
+| Auditoría con extractos reales de logs | Generada y versionada (complemento académico no evaluable, el profesor confirmó que esta capa queda fuera del alcance evaluado) | [`auditoria.md`](auditoria.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
 | Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200), cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |

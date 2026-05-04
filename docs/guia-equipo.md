@@ -79,6 +79,11 @@ Corre los scripts en este orden desde la raíz del repo:
 ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+```
+
+Opcional (complemento académico, el profesor confirmó que la auditoría no se evalúa):
+
+```bash
 ./scripts/audit-capture.sh
 ```
 
