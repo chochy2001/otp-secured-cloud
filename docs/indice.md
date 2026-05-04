@@ -13,15 +13,14 @@
    - 6.5 Autenticación segundo factor: privacyIDEA y FreeOTP
    - 6.6 OwnCloud y orquestación 2FA
    - 6.7 Carpetas compartidas y cifrado del lado destinatario
-   - 6.8 Auditoría
+   - 6.8 Auditoría (complemento académico, no evaluable)
    - 6.9 Reproducibilidad
-7. Auditoría: muestreo de eventos de control de acceso
-8. Conclusiones
-   - 8.1 Conclusión por equipo
-   - 8.2 Conclusiones individuales
-9. Glosario de términos
-10. Bibliografía
-11. Índice de figuras
+7. Conclusiones
+   - 7.1 Conclusión por equipo
+   - 7.2 Conclusiones individuales
+8. Glosario de términos
+9. Bibliografía
+10. Índice de figuras
 
 ## Mapeo de secciones a archivos del repositorio
 
@@ -33,8 +32,9 @@
 | 4. Diseño del árbol LDAP | `arbol-ldap.md` |
 | 5. Arquitectura | `arquitectura.md` |
 | 6. Memoria técnica paso a paso | `memoria-tecnica.md` |
-| 7. Auditoría | `auditoria.md` |
-| 8. Conclusiones | `conclusiones.md` |
-| 9. Glosario | `glosario.md` |
-| 10. Bibliografía | `bibliografia.md` |
-| 11. Índice de figuras | `indice-figuras.md` |
+| 7. Conclusiones | `conclusiones.md` |
+| 8. Glosario | `glosario.md` |
+| 9. Bibliografía | `bibliografia.md` |
+| 10. Índice de figuras | `indice-figuras.md` |
+
+`docs/auditoria.md` queda fuera del entregable porque el profesor confirmó que la cuarta capa no se evalúa. Permanece en el repositorio como evidencia complementaria del marco conceptual.

@@ -35,13 +35,17 @@ if ! command -v pandoc >/dev/null 2>&1; then
   exit 1
 fi
 
-# Orden del entregable. Si se cambia, mantener consistencia con docs/indice.md.
+# Orden del entregable. Mantener consistencia con docs/indice.md.
+# El primer archivo (portada.md) actúa como cubierta del documento y va
+# antes de cualquier índice automático. docs/indice.md viene justo
+# después como tabla de contenidos manual.
 # Nota: docs/auditoria.md no se incluye porque el profesor confirmó que la
 # capa de auditoría no se evalúa, y los logs JSON crudos generan páginas
 # extensas con líneas largas. La memoria técnica ya describe el flujo y
 # referencia el archivo para quien quiera profundizar.
 DOC_ORDER=(
   "${ROOT_DIR}/docs/portada.md"
+  "${ROOT_DIR}/docs/indice.md"
   "${ROOT_DIR}/docs/introduccion.md"
   "${ROOT_DIR}/docs/conceptos-basicos.md"
   "${ROOT_DIR}/docs/arbol-ldap.md"
@@ -127,17 +131,15 @@ PYEOF
   PROCESSED_DOCS+=("${out}")
 done
 
+# Sin --toc ni --metadata title/author: la portada y el índice ya viven
+# como Markdown propios al inicio del orden de documentos. Pandoc en
+# modo article sin title/author no inserta su propia cubierta, así
+# docs/portada.md aparece como primera página tal cual la diseñamos.
 PANDOC_COMMON=(
-  --toc
-  --toc-depth=3
   -V documentclass=article
   -V geometry:margin=2.5cm
   -V fontsize=11pt
   -V lang=es
-  --metadata title="Servicio de almacenamiento con autenticación 2FA por OTP"
-  --metadata subtitle="Proyecto final de Seguridad Informática Avanzada"
-  --metadata author="Equipo SIA 2026-2, Facultad de Ingeniería UNAM"
-  --metadata date="29 de mayo de 2026"
 )
 
 # Variables específicas del PDF: mitigar líneas largas (URLs en
