@@ -47,9 +47,8 @@ El resto de este entregable está organizado así:
 1. Conceptos básicos de 2FA y OTP. Define los términos clave (HOTP, TOTP, FreeOTP, etc.) que la implementación referencia.
 2. Diseño del árbol LDAP. Explica las decisiones de base DN, OUs, objectClasses y la cuenta de servicio que conectan OwnCloud y privacyIDEA.
 3. Arquitectura del sistema. Diagrama de la solución, flujos de petición y red.
-4. Memoria técnica paso a paso. Cómo se instaló y configuró cada componente con scripts reproducibles.
-5. Auditoría. Bitácoras reales de los eventos clave.
-6. Conclusiones individuales y de equipo.
-7. Glosario, bibliografía e índice de figuras.
+4. Memoria técnica paso a paso. Cómo se instaló y configuró cada componente con scripts reproducibles. Incluye una sección final sobre auditoría como complemento académico no evaluable.
+5. Conclusiones individuales y de equipo.
+6. Glosario, bibliografía e índice de figuras.
 
 Los archivos del repositorio público se citan con su ruta relativa (`docs/`, `scripts/`, `compose/`, `ldap/`, `privacyidea/`, `owncloud/`, `certs/`).
