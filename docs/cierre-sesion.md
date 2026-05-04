@@ -58,6 +58,8 @@ Estas credenciales son de laboratorio y están versionadas a propósito para rep
 
 Desde la raíz del repositorio:
 
+Cadena principal evaluable (las tres capas que el profesor revisa):
+
 ```bash
 git pull origin main
 ./scripts/generate-certs.sh
@@ -69,10 +71,17 @@ docker compose -f compose/docker-compose.yml --env-file .env up -d --build
 ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+```
+
+Cierra identificación, autenticación 2FA y autorización. Si los ocho scripts terminan con `Todo OK` u `OK: ... descifró y leyó`, el entorno está listo en cinco a siete minutos.
+
+Complemento académico opcional (auditoría, no se evalúa):
+
+```bash
 ./scripts/audit-capture.sh
 ```
 
-Si los nueve scripts terminan con `Todo OK`, `OK: ... descifró y leyó` o `Auditoría escrita en ...`, el entorno está listo. Tiempo total estimado: cinco a siete minutos en una laptop moderna.
+Solo se corre si se quiere regenerar `docs/auditoria.md` con extractos frescos de los logs.
 
 ## Cómo generar los artefactos de entrega
 
@@ -136,8 +145,8 @@ El último comando debe regresar sin resultados.
 ## Pasos finales del equipo antes de la entrega
 
 1. Cada integrante revisa su párrafo en `docs/conclusiones.md` y lo afina si quiere ajustar tono o agregar anécdotas personales.
-2. El equipo confirma el nombre del profesor y lo escribe en `docs/portada.md` (línea con la línea de relleno).
-3. Generar las figuras (`./scripts/build-figures.sh`) y el PDF (`./scripts/build-pdf.sh`).
+2. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente la portada, el índice, las páginas de bibliografía y glosario, y los bloques con tablas. Confirmar que todo se ve presentable antes de imprimir.
+3. Si se editó algún `.md`, regenerar las figuras (`./scripts/build-figures.sh`) y el PDF (`./scripts/build-pdf.sh`).
 4. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
 5. Ensayo grabado de la presentación al menos 48 horas antes (con `docs/guion-exposicion.md` y los slides `docs/presentacion.md`).
 6. Snapshot del entorno o grabación de la demo como respaldo.

@@ -78,11 +78,12 @@ docker compose -f compose/docker-compose.yml --env-file .env up -d
 # 8. Probar carpetas compartidas y descifrado por el destinatario
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
 
-# 9. Capturar bitácoras reales de los 8 eventos clave
-./scripts/audit-capture.sh
+# 9. Opcional (complemento académico, el profesor confirmó que la
+# auditoría no se evalúa): regenerar bitácoras de los 8 eventos clave.
+# ./scripts/audit-capture.sh
 ```
 
-Si las verificaciones terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, privacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo, cifrado local verificado sobre un archivo real, archivo compartido descifrado por el destinatario y bitácoras de auditoría escritas en `docs/auditoria.md`.
+Si las verificaciones del paso 1 al 8 terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, privacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo, cifrado local verificado sobre un archivo real y archivo compartido descifrado por el destinatario.
 
 Para una guía exhaustiva del día de la presentación (pre-flight, demo en vivo y plan B), ver [`docs/como-probar.md`](docs/como-probar.md).
 

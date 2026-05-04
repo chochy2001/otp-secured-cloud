@@ -69,7 +69,6 @@ Esta es la cadena que demuestra que el proyecto funciona de extremo a extremo. C
 ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
-./scripts/audit-capture.sh
 ```
 
 Salidas esperadas:
@@ -81,9 +80,16 @@ Salidas esperadas:
 | `owncloud-verify.sh` | `Todo OK.` (6 checks) | Validación iv |
 | `owncloud-login-verify.sh` | `OK: archivo subido y cifrado en el volumen.` | Validaciones iii y v |
 | `owncloud-share-verify.sh` | `OK: <destinatario> descifró y leyó el archivo compartido.` | Cifrado de archivos compartidos |
-| `audit-capture.sh` | `Auditoría escrita en docs/auditoria.md.` | Cuarta capa (complemento académico, no evaluable) |
 
 Cualquier fallo aborta el script con `ERROR:` y un código distinto de 0. La regla es: ningún `ERROR:` en la salida = todo verde.
+
+Complemento opcional (auditoría, el profesor confirmó que no se evalúa):
+
+```bash
+./scripts/audit-capture.sh   # regenera docs/auditoria.md
+```
+
+Solo se corre si el equipo quiere bitácoras frescas o si el profesor pregunta por evidencia de logs durante la sesión.
 
 ## 5. Verificación visual en navegador
 
