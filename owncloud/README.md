@@ -2,15 +2,15 @@
 
 Servicio de almacenamiento del proyecto. Se usa OwnCloud Server 10.15 con MariaDB, Redis y Caddy como terminador TLS.
 
-## Decisiones asumidas
+## Decisiones del proyecto
 
-El profesor no respondió las preguntas abiertas, así que se avanza con estos supuestos:
+El profesor confirmó por correo cada uno de estos puntos (ver `docs/preguntas-abiertas.md` para las respuestas literales):
 
-1. OwnCloud Server 10 clásico, no OwnCloud Infinite Scale.
-2. La demo principal es por navegador web.
-3. LDAP es fuente de identidad y primer factor.
+1. OwnCloud Server 10 clásico, no OwnCloud Infinite Scale. (Respuesta: "la versión que gusten, debe funcionar"; OwnCloud 10.15 es la rama madura para `user_ldap` y `twofactor_privacyidea`.)
+2. La demo principal es por navegador web. (Respuesta: "con cliente web es suficiente".)
+3. LDAP es fuente de identidad y primer factor. (Respuesta: "la identificación y autenticación en LDAP".)
 4. PrivacyIDEA es el segundo factor vía el plugin `twofactor_privacyidea`.
-5. Los permisos de carpetas se gestionan en OwnCloud. Los grupos LDAP quedan preparados bajo `ou=Grupos`, pero no son obligatorios para la demo actual.
+5. Los permisos de carpetas se gestionan en OwnCloud, sin sincronizar grupos LDAP. (Respuesta: "la autorización en el aplicativo (OwnCloud)".) Los grupos LDAP quedan preparados bajo `ou=Grupos` por si se necesitaran después.
 
 ## Servicios
 

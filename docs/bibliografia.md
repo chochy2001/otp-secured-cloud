@@ -14,7 +14,7 @@
 
 ## Documentación oficial de los componentes
 
-10. The OpenLDAP Project. *OpenLDAP Software 2.6 Administrator's Guide*. https://www.openldap.org/doc/admin26/
+10. The OpenLDAP Project. *OpenLDAP Software 2.4 Administrator's Guide*. https://www.openldap.org/doc/admin24/. (La imagen `osixia/openldap:1.5.0` empaqueta `slapd 2.4.57+dfsg`; los conceptos del proyecto siguen siendo aplicables a las versiones 2.5 y 2.6 más recientes.)
 11. NetKnights GmbH. *privacyIDEA Documentation*. https://privacyidea.readthedocs.io/
 12. OwnCloud GmbH. *OwnCloud Server Administration Manual 10.x*. https://doc.owncloud.com/server/10.15/admin_manual/
 13. OwnCloud GmbH. *Encryption Configuration*. https://doc.owncloud.com/server/10.15/admin_manual/configuration/files/encryption/

@@ -19,9 +19,9 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Cifrado de archivos | Funcional | Server Side Encryption activo; `owncloud-login-verify.sh` sube un archivo y confirma que queda cifrado en el volumen |
 | Carpetas compartidas | Funcional | `scripts/owncloud-share-verify.sh` automatiza emisor, share por OCS API y descarga descifrada por el destinatario |
 | Auditoría reproducible | Funcional | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
-| Documentación del entregable | Redactada | Portada, introducción, memoria técnica, conclusiones, glosario, bibliografía e índices viven en `docs/`. Faltan las 6 conclusiones individuales y confirmar el nombre del profesor en la portada |
-| Diagramas para el PDF | Listos en código | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG cuando se instala `mermaid-cli` |
-| Ensamblado del PDF | Documentado | `scripts/build-pdf.sh` concatena los archivos de `docs/` en orden y delega en `pandoc` + un motor LaTeX |
+| Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
+| Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
+| Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 31 páginas con las 6 figuras embebidas, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
 | Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
 

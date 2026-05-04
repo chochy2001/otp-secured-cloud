@@ -198,10 +198,12 @@ Campos que pide el wizard, llenados por `scripts/owncloud-configure.sh`:
 App oficial de privacyIDEA para OwnCloud. Configurada con `occ`:
 
 ```
-twofactor_privacyidea:url      https://privacyidea:8443/validate/check
+twofactor_privacyidea:url      https://privacyidea:8443/
 twofactor_privacyidea:checkssl true
 twofactor_privacyidea:realm    sia
 ```
+
+El plugin compone la ruta `/validate/check` cuando llama a privacyIDEA; en `occ` solo se registra la URL base.
 
 Flujo de la app:
 
@@ -266,16 +268,15 @@ Componentes y conexiones del laboratorio:
 
 # Demo en vivo: orden de pruebas
 
-Tres scripts encadenados que cierran las cinco validaciones del profesor:
+Dos scripts encadenados cierran las cinco validaciones evaluables del profesor:
 
 1. `./scripts/owncloud-login-verify.sh usuario.desarrollo1`
-   Confirma que el login web exige LDAP + OTP y que el archivo subido queda cifrado en disco.
+   Confirma que el login web exige LDAP + OTP y que el archivo subido queda cifrado en disco. Cierra las validaciones iii, iv y v.
 
 2. `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1`
-   Confirma que un usuario comparte un archivo y otro usuario lo lee descifrado.
+   Confirma la capa de autorización (LDAP autentica, OwnCloud autoriza) y que el destinatario lee el archivo descifrado.
 
-3. `./scripts/audit-capture.sh`
-   Genera `docs/auditoria.md` con extractos reales de los tres componentes.
+`./scripts/audit-capture.sh` queda como complemento opcional. Solo se ejecuta si el profesor pregunta explícitamente por bitácoras; el bloque principal de la demo termina con los dos scripts de arriba.
 
 ---
 
