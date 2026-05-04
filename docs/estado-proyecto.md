@@ -17,8 +17,12 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
 | OwnCloud | Funcional | Versión 10.15 con backend LDAP por LDAPS, plugin `twofactor_privacyidea` activo y Server Side Encryption con master key. `owncloud-verify.sh` pasa los 6 checks. |
 | Cifrado de archivos | Funcional | Server Side Encryption activo; `owncloud-login-verify.sh` sube un archivo y confirma que queda cifrado en el volumen |
-| Documentación del entregable | Parcial | Conceptos básicos, árbol, arquitectura y guía de equipo listos; falta memoria técnica consolidada, conclusiones, glosario y bibliografía |
-| Presentación de 30 min | Por preparar | Pendiente |
+| Carpetas compartidas | Funcional | `scripts/owncloud-share-verify.sh` automatiza emisor, share por OCS API y descarga descifrada por el destinatario |
+| Auditoría reproducible | Funcional | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
+| Documentación del entregable | Redactada | Portada, introducción, memoria técnica, conclusiones, glosario, bibliografía e índices viven en `docs/`. Faltan las 6 conclusiones individuales y confirmar el nombre del profesor en la portada |
+| Diagramas para el PDF | Listos en código | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG cuando se instala `mermaid-cli` |
+| Ensamblado del PDF | Documentado | `scripts/build-pdf.sh` concatena los archivos de `docs/` en orden y delega en `pandoc` + un motor LaTeX |
+| Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
 | Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
 
 Los estados son descriptivos y se actualizan conforme avanza cada bloque.
@@ -31,23 +35,28 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 
 | Sección requerida | Estado | Archivo |
 |---|---|---|
-| Portada | Pendiente | Pendiente |
-| Introducción | Pendiente | Pendiente |
-| Índice | Pendiente, se genera al final | Pendiente |
-| Índice de figuras con referencia | Pendiente | Pendiente |
+| Portada | Redactada (falta confirmar nombre del profesor) | [`portada.md`](portada.md) |
+| Introducción | Redactada | [`introduccion.md`](introduccion.md) |
+| Índice | Redactado | [`indice.md`](indice.md) |
+| Índice de figuras con referencia | Redactado | [`indice-figuras.md`](indice-figuras.md) |
 | Conceptos básicos de 2FA mediante tokens OTP | Redactado | [`conceptos-basicos.md`](conceptos-basicos.md) |
-| Diagrama detallado de la solución | Diagrama de trabajo listo; falta versión renderizada | [`arquitectura.md`](arquitectura.md) |
-| Memoria técnica paso a paso | Parcial: LDAP, PrivacyIDEA, TLS y OwnCloud documentados en archivos de trabajo; falta consolidar el PDF final | varios |
-| Conclusiones individuales y por equipo | Pendiente | Pendiente |
-| Bibliografía | Pendiente | Pendiente |
-| Glosario de términos | Pendiente | Pendiente |
+| Diagrama detallado de la solución | 6 figuras en mermaid listas; quedan binarios PNG por generar localmente | [`arquitectura.md`](arquitectura.md), [`arbol-ldap.md`](arbol-ldap.md), [`memoria-tecnica.md`](memoria-tecnica.md) |
+| Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
+| Auditoría con extractos reales de logs | Generada y versionada | [`auditoria.md`](auditoria.md) |
+| Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
+| Conclusiones individuales (6) | Pendientes (las redacta cada integrante) | [`conclusiones.md`](conclusiones.md) |
+| Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
+| Glosario de términos | Redactado | [`glosario.md`](glosario.md) |
+| Ensamblado del PDF final | Documentado, se ejecuta cuando el equipo cierra conclusiones | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
 
 ### 2.2 Exposición del proyecto (30% de la evaluación)
 
 | Tarea | Estado |
 |---|---|
-| Definir orden de intervenciones y tiempos por integrante | Pendiente |
-| Guion de la demo en vivo | Pendiente |
+| Definir orden de intervenciones y tiempos por integrante | Redactado en [`guion-exposicion.md`](guion-exposicion.md) |
+| Guion de la demo en vivo | Redactado en [`guion-exposicion.md`](guion-exposicion.md), bloque 5 |
+| Manual para enrolar el TOTP demo en FreeOTP físico | Redactado | [`manual-freeotp.md`](manual-freeotp.md) |
+| Ensayo completo grabado | Pendiente (lo hace el equipo en vivo al menos 48 h antes) |
 | Snapshot del entorno como respaldo | Pendiente |
 | Grabación del flujo completo como respaldo | Pendiente |
 
@@ -124,19 +133,22 @@ El profesor no respondió las preguntas abiertas. Se avanza con los supuestos de
 - [x] Habilitar niveles de log adecuados en OpenLDAP, PrivacyIDEA, OwnCloud (loglevel ajustado en runtime, OwnCloud retorna a 1 al final del script)
 - [x] Capturar ejemplos reales de los 8 eventos clave con `scripts/audit-capture.sh` que escribe `docs/auditoria.md`
 
-### Fase 8: Documentación final y entrega
-- [ ] Portada
-- [ ] Introducción
-- [ ] Conclusiones individuales (6) + conclusión de equipo
-- [ ] Glosario (LDAP, OTP, TOTP, HOTP, IGA, NHI, ACL, RBAC, 2FA, MFA, deduplicación, etc.)
-- [ ] Bibliografía (RFCs, documentación oficial de cada componente)
-- [ ] Índice de figuras
-- [ ] Consolidar memoria técnica en un PDF final
+### Fase 8: Documentación final y entrega (redactada, falta ensamblado)
+- [x] Portada en [`portada.md`](portada.md) (queda confirmar nombre del profesor)
+- [x] Introducción en [`introduccion.md`](introduccion.md)
+- [x] Conclusión de equipo en [`conclusiones.md`](conclusiones.md)
+- [ ] Conclusiones individuales (6 integrantes redactan su párrafo)
+- [x] Glosario en [`glosario.md`](glosario.md) con 30+ términos
+- [x] Bibliografía en [`bibliografia.md`](bibliografia.md) con RFCs y docs oficiales
+- [x] Índice de figuras en [`indice-figuras.md`](indice-figuras.md), 6 figuras en mermaid
+- [x] Memoria técnica consolidada en [`memoria-tecnica.md`](memoria-tecnica.md)
+- [ ] Renderizar PNG de las figuras con `./scripts/build-figures.sh` (requiere `mermaid-cli`)
+- [ ] Ensamblar PDF final con `./scripts/build-pdf.sh` (requiere `pandoc` y motor LaTeX)
 
-### Fase 9: Presentación
-- [ ] Slides o guion de 30 min
-- [ ] División de tiempos por integrante
-- [ ] Ensayo al menos una vez completo
+### Fase 9: Presentación (guion redactado, falta ensayo y respaldo)
+- [x] Guion de 30 min con división por integrante en [`guion-exposicion.md`](guion-exposicion.md)
+- [x] Manual del enrolamiento físico en FreeOTP en [`manual-freeotp.md`](manual-freeotp.md)
+- [ ] Ensayo completo grabado al menos 48 h antes
 - [ ] Snapshot del entorno listo como plan B
 - [ ] Grabación del flujo completo como plan C
 
@@ -193,6 +205,14 @@ Ya no bloquean el desarrollo porque se decidió avanzar con supuestos documentad
 - `scripts/owncloud-login-verify.sh` valida login web con LDAP + OTP, subida WebDAV y cifrado del archivo en disco.
 - Se agrega `docs/cierre-sesion.md` con estado para retomar, puertos, credenciales de laboratorio, comandos de verificación, limpieza Docker y próximos pasos.
 
+### 2026-05-04
+- `scripts/owncloud-share-verify.sh` cierra carpetas compartidas: enrola TOTP para emisor y destinatario, sube archivo, crea share por OCS Sharing API con cookies y descarga descifrada por el destinatario.
+- `scripts/audit-capture.sh` produce `docs/auditoria.md` con extractos reales de logs de los 8 eventos clave; sube `loglevel` de OwnCloud a debug durante la captura y lo restaura al terminar.
+- Documentación del entregable redactada: portada, introducción, memoria técnica, conclusión de equipo, glosario, bibliografía, índice y índice de figuras.
+- 6 figuras del entregable migradas a `mermaid` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli`.
+- `scripts/build-pdf.sh` ensambla el PDF final con `pandoc` y un motor LaTeX.
+- Guion de exposición de 30 min repartido por integrante con plan B y manual para enrolar el TOTP demo en un teléfono real con FreeOTP.
+
 ## 6. Próximo hito objetivo
 
-**Preparar demo y documentación final.** La base técnica ya valida LDAP, PrivacyIDEA, TLS, OwnCloud, OTP y cifrado. Falta cerrar el flujo de carpetas compartidas para la demo, documentar auditoría con ejemplos de logs y consolidar la memoria técnica final.
+**Cerrar el entregable y la presentación.** Toda la base técnica está cerrada (validaciones i a v, carpetas compartidas, cifrado en disco y auditoría reproducible). Toda la documentación está redactada (memoria técnica, glosario, bibliografía, conclusión de equipo, guion de exposición y manual de FreeOTP). Lo que queda es trabajo humano: las 6 conclusiones individuales, confirmar el nombre del profesor en la portada, instalar `mermaid-cli` y `pandoc` para generar las figuras y el PDF, hacer el ensayo grabado y enrolar el TOTP demo en un teléfono real.
