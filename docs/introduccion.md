@@ -10,7 +10,9 @@ Por otra parte, el almacenamiento de archivos con servicios en la nube es una ne
 
 ## Alcance
 
-Se construye un laboratorio académico autocontenido, basado en software libre, donde un servicio de almacenamiento estilo Dropbox autoaloja archivos por usuario y por grupo. El alta de usuarios se centraliza en un directorio LDAP, el segundo factor se gestiona con un servidor de tokens OTP, los archivos se cifran del lado servidor y los eventos de acceso se registran en bitácoras consultables. Las cuatro capas del control de acceso quedan cubiertas y demostrables.
+Se construye un laboratorio académico autocontenido, basado en software libre, donde un servicio de almacenamiento estilo Dropbox autoaloja archivos por usuario y por grupo. El alta de usuarios se centraliza en un directorio LDAP, el segundo factor se gestiona con un servidor de tokens OTP, los archivos se cifran del lado servidor y los eventos de acceso se registran en bitácoras consultables.
+
+El profesor confirmó por correo que la evaluación se concentra en las tres primeras capas del control de acceso (identificación, autenticación y autorización) y que la cuarta capa (auditoría) no será revisada. La auditoría se mantiene en este documento y en los scripts del proyecto como complemento académico para que el marco de cuatro capas que el propio profesor presentó en clase quede ilustrado de extremo a extremo.
 
 El proyecto NO pretende producir un sistema productivo. Es material didáctico que prioriza la claridad pedagógica sobre la robustez. La sección "Aviso de seguridad" del README del repositorio enumera todas las decisiones académicas que serían inapropiadas en un entorno real (contraseñas compartidas en el repo, certificados autofirmados, sin alta disponibilidad, etc.).
 
@@ -31,12 +33,12 @@ La justificación detallada de cada decisión está en `docs/arquitectura.md` y 
 
 ## Mapeo a las cuatro capas del control de acceso
 
-| Capa | Componente del proyecto |
-|---|---|
-| Identificación | OpenLDAP centraliza el alta de usuarios con UIDs únicos en `dc=sia,dc=unam,dc=mx`. Las cuentas humanas viven en `ou=Usuarios` separadas por OU `Desarrollo` y `Seguridad`; las cuentas de servicio viven en `ou=Servicios`. |
-| Autenticación | El primer factor es la contraseña LDAP (algo que el usuario conoce). El segundo factor es un OTP TOTP de 6 dígitos generado por FreeOTP en el teléfono y validado por privacyIDEA (algo que el usuario tiene). OwnCloud orquesta los dos factores con su plugin `twofactor_privacyidea`. |
-| Autorización | OwnCloud define permisos por carpeta y por usuario. Los archivos compartidos definen lectura y escritura mediante la API OCS Sharing. |
-| Auditoría | Cada componente registra eventos. OpenLDAP escribe a stdout/stderr capturable con `docker logs`. PrivacyIDEA escribe a `/var/log/privacyidea/privacyidea.log` y a stdout con uwsgi access logs. OwnCloud escribe JSON estructurado a `/mnt/data/files/owncloud.log`. El script `scripts/audit-capture.sh` automatiza la captura de los 8 eventos clave del flujo. |
+| Capa | Componente del proyecto | Evaluable |
+|---|---|---|
+| Identificación | OpenLDAP centraliza el alta de usuarios con UIDs únicos en `dc=sia,dc=unam,dc=mx`. Las cuentas humanas viven en `ou=Usuarios` separadas por OU `Desarrollo` y `Seguridad`; las cuentas de servicio viven en `ou=Servicios`. | Sí |
+| Autenticación | El primer factor es la contraseña LDAP (algo que el usuario conoce). El segundo factor es un OTP TOTP de 6 dígitos generado por FreeOTP en el teléfono y validado por privacyIDEA (algo que el usuario tiene). OwnCloud orquesta los dos factores con su plugin `twofactor_privacyidea`. | Sí |
+| Autorización | OwnCloud define permisos por carpeta y por usuario, sin sincronizar grupos LDAP. Los archivos compartidos definen lectura y escritura mediante la API OCS Sharing. Esta división (LDAP autentica, OwnCloud autoriza) la confirmó el profesor de forma explícita. | Sí |
+| Auditoría | Cada componente registra eventos. OpenLDAP escribe a stdout/stderr capturable con `docker logs`. PrivacyIDEA escribe a `/var/log/privacyidea/privacyidea.log` y a stdout con uwsgi access logs. OwnCloud escribe JSON estructurado a `/mnt/data/files/owncloud.log`. El script `scripts/audit-capture.sh` automatiza la captura de los 8 eventos clave del flujo. | No (complemento académico) |
 
 ## Estructura del documento
 

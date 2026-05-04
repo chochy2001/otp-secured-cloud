@@ -185,7 +185,9 @@ sequenceDiagram
   OC-->>D: contenido en claro descifrado por OwnCloud
 ```
 
-## 8. Auditoría
+## 8. Auditoría (complemento académico, no evaluable)
+
+El profesor confirmó por correo que esta capa no será revisada en la evaluación. Se mantiene en la memoria técnica porque el propio profesor presentó en clase el marco de control de acceso de cuatro capas y omitirla dejaría incompleta la descripción.
 
 Ver `docs/auditoria.md` para los extractos reales de logs.
 
@@ -196,15 +198,15 @@ El script `scripts/audit-capture.sh`:
 3. Para cada evento, marca un timestamp UTC, dispara la acción y captura líneas relevantes del log de cada componente filtrando por usuario y por timestamp posterior al marcador.
 4. Escribe `docs/auditoria.md` con un encabezado por evento, la fuente del log y el extracto en bloques `code`.
 
-El resultado del último ejecutar contiene evidencia de las cuatro capas:
+El resultado del último ejecutar contiene evidencia de las tres capas evaluables más el complemento de auditoría:
 
-| Capa | Evidencia |
-|---|---|
-| Identificación | OpenLDAP registra el `BIND dn="uid=usuario.desarrollo2,ou=Desarrollo,..."` |
-| Autenticación primer factor | OpenLDAP registra `RESULT err=0` (éxito) o `err=49` (rechazo) |
-| Autenticación segundo factor | OwnCloud registra `"Send request to validate/check"` y la respuesta `{"authentication":"ACCEPT"|"REJECT"}` desde privacyIDEA |
-| Autorización | OwnCloud registra el WebDAV PUT/GET con `"user":"usuario.desarrolloN"` |
-| Auditoría | Los logs anteriores son exactamente la cuarta capa: registro de actividad consultable a posteriori |
+| Capa | Evidencia | Evaluable |
+|---|---|---|
+| Identificación | OpenLDAP registra el `BIND dn="uid=usuario.desarrollo2,ou=Desarrollo,..."` | Sí |
+| Autenticación primer factor | OpenLDAP registra `RESULT err=0` (éxito) o `err=49` (rechazo) | Sí |
+| Autenticación segundo factor | OwnCloud registra `"Send request to validate/check"` y la respuesta `{"authentication":"ACCEPT"|"REJECT"}` desde privacyIDEA | Sí |
+| Autorización | OwnCloud registra el WebDAV PUT/GET con `"user":"usuario.desarrolloN"`; permisos por carpeta y OCS Sharing | Sí |
+| Auditoría | Los logs anteriores son exactamente la cuarta capa: registro de actividad consultable a posteriori | No (complemento) |
 
 ## 9. Reproducibilidad
 

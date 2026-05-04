@@ -50,6 +50,8 @@ Registrar toda la actividad del usuario dentro del sistema: inicios de sesión, 
 
 En este proyecto: los logs de OpenLDAP (bind exitoso/fallido), PrivacyIDEA (validación de token) y OwnCloud (acceso a archivos) conforman la bitácora.
 
+> Nota sobre alcance: el profesor confirmó por correo que la cuarta capa no será evaluada en este proyecto. Se mantiene en este capítulo para no romper el marco conceptual de cuatro capas que él mismo presentó en clase y porque la implementación práctica (ver `scripts/audit-capture.sh` y `docs/auditoria.md`) ilustra dónde mirar en cada componente.
+
 ## 2. One Time Password (OTP)
 
 Un **OTP** es una contraseña que sirve **una sola vez**. Si un atacante la intercepta, ya expiró cuando intente reutilizarla. Hay dos variantes principales:

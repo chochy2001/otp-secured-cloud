@@ -18,7 +18,7 @@ La base técnica y el material del entregable están completos. Lo que queda dep
 | Login LDAP + OTP end-to-end | Listo | `./scripts/owncloud-login-verify.sh usuario.desarrollo1` |
 | Cifrado del archivo en disco | Listo | Verificado por `owncloud-login-verify.sh` con cabecera `HBEGIN` |
 | Carpetas compartidas y descifrado en destinatario | Listo | `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1` |
-| Auditoría reproducible de los 8 eventos clave | Listo | `./scripts/audit-capture.sh` produce `docs/auditoria.md` |
+| Auditoría reproducible (complemento académico, el profesor confirmó que no se evalúa) | Listo | `./scripts/audit-capture.sh` produce `docs/auditoria.md` |
 | Documentación del entregable (40% nota) | Redactada | Portada, introducción, memoria técnica, glosario, bibliografía, conclusiones, índices |
 | Guion de exposición de 30 min | Redactado | `docs/guion-exposicion.md` con división por integrante |
 | Slides en formato Marp | Redactados | `docs/presentacion.md`, 30 diapositivas separadas por `---` |

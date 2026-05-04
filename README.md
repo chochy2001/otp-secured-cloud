@@ -25,13 +25,13 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 
 ## Stack y mapeo al control de acceso
 
-| Capa de control de acceso | Componente | Función |
-|---|---|---|
-| Identificación | OpenLDAP 2.x | Directorio único de usuarios con UIDs |
-| Autenticación (algo que *conozco*) | OpenLDAP | Valida usuario + contraseña |
-| Autenticación (algo que *tengo*) | PrivacyIDEA + FreeOTP | Valida el token OTP generado en el móvil |
-| Autorización | OwnCloud | Permisos de lectura/escritura sobre carpetas |
-| Auditoría | Logs de OpenLDAP, PrivacyIDEA, OwnCloud | Registro de eventos de acceso |
+| Capa de control de acceso | Componente | Función | Evaluable |
+|---|---|---|---|
+| Identificación | OpenLDAP 2.x | Directorio único de usuarios con UIDs | Sí |
+| Autenticación (algo que *conozco*) | OpenLDAP | Valida usuario + contraseña | Sí |
+| Autenticación (algo que *tengo*) | PrivacyIDEA + FreeOTP | Valida el token OTP generado en el móvil | Sí |
+| Autorización | OwnCloud | Permisos de lectura/escritura por carpeta y por usuario, sin sincronizar grupos LDAP | Sí |
+| Auditoría | Logs de OpenLDAP, PrivacyIDEA, OwnCloud | Registro de eventos de acceso | No (complemento académico, el profesor confirmó que no se evalúa) |
 
 ## Estado del proyecto
 
@@ -46,7 +46,7 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] OwnCloud integrado con backend LDAP por LDAPS y plugin `twofactor_privacyidea`
 - [x] Cifrado de archivos compartidos activado (Server Side Encryption, master key)
 - [x] Carpetas compartidas con OCS Sharing API y descifrado por el destinatario (`scripts/owncloud-share-verify.sh`)
-- [x] Auditoría reproducible de los 8 eventos clave (`scripts/audit-capture.sh`)
+- [x] Auditoría reproducible de los 8 eventos clave (`scripts/audit-capture.sh`, complemento académico no evaluable)
 - [x] Memoria técnica, conclusiones, glosario, bibliografía y guion de exposición redactados
 
 ## Arranque rápido

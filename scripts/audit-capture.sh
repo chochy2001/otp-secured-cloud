@@ -210,11 +210,15 @@ mkdir -p "$(dirname "${OUTPUT_FILE}")"
   echo
   echo "Generado por \`scripts/audit-capture.sh\` el $(iso_now) UTC."
   echo
+  echo "**Nota sobre alcance:** el profesor confirmó por correo que la cuarta"
+  echo "capa (auditoría) no será evaluada. Este documento se mantiene como"
+  echo "complemento académico para ilustrar el marco de control de acceso de"
+  echo "cuatro capas que el profesor presentó en clase."
+  echo
   echo "Este documento contiene extractos de logs reales de los tres"
   echo "componentes del proyecto, capturados al disparar eventos clave"
-  echo "del flujo de autenticación. Sirve como evidencia de la cuarta"
-  echo "capa del control de acceso (auditoría) y para que el equipo y"
-  echo "el evaluador entiendan dónde mirar en cada componente."
+  echo "del flujo de autenticación. Sirve para que el equipo y, si lo"
+  echo "solicita, el evaluador entiendan dónde mirar en cada componente."
   echo
   echo "Componente | Fuente del log"
   echo "---|---"
