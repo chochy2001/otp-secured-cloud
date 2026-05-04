@@ -165,23 +165,9 @@ graph TB
 
 ## Cómo exportar los diagramas a PNG para el PDF
 
-Instalar mermaid-cli con npm:
-
 ```bash
 npm install -g @mermaid-js/mermaid-cli
+./scripts/build-figures.sh
 ```
 
-Renderizar todos los diagramas de este archivo a PNG en `docs/figuras/`:
-
-```bash
-mkdir -p docs/figuras
-# Extraer cada bloque mermaid a un archivo .mmd y renderizar.
-# Ejemplo manual:
-cat <<'EOF' > /tmp/figura1.mmd
-graph LR
-  ...  pega aqui el contenido del bloque mermaid de la figura ...
-EOF
-mmdc -i /tmp/figura1.mmd -o docs/figuras/figura1.png -t default
-```
-
-Repetir para figura 3 y figura 4. Luego, en el PDF, las figuras se referencian con `![Figura 1: Arquitectura](docs/figuras/figura1.png)`.
+El script localiza cada encabezado `### Figura N:` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`, extrae el bloque `mermaid` que sigue y produce `docs/figuras/figuraN.png`. Las imágenes se embeben automáticamente en el PDF y el DOCX cuando se ejecuta `./scripts/build-pdf.sh`.

@@ -1,39 +1,37 @@
 # Figuras renderizadas
 
-Esta carpeta contiene las versiones gráficas (PNG o SVG) de los diagramas que aparecen como bloques `mermaid` en `docs/arquitectura.md`. Las imágenes binarias NO se versionan en el repositorio público para no inflar el historial de git con archivos no de texto. Cada miembro del equipo regenera las imágenes localmente cuando arma el PDF del entregable.
+Esta carpeta contiene las versiones gráficas (PNG) de los seis diagramas que aparecen como bloques `mermaid` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. Las imágenes binarias NO se versionan en el repositorio público para no inflar el historial de git con archivos no de texto. Cada miembro del equipo regenera las imágenes localmente cuando arma el PDF del entregable.
 
-## Cómo regenerar todas las figuras
+## Cómo regenerar las figuras
 
-1. Instalar [mermaid-cli](https://github.com/mermaid-js/mermaid-cli):
+```bash
+npm install -g @mermaid-js/mermaid-cli
+./scripts/build-figures.sh
+```
 
-   ```bash
-   npm install -g @mermaid-js/mermaid-cli
-   ```
+El script:
 
-2. Desde la raíz del repo, ejecutar el script auxiliar (a crear si se decide automatizar):
+1. Lee los tres archivos fuente (`docs/arquitectura.md`, `docs/arbol-ldap.md`, `docs/memoria-tecnica.md`).
+2. Localiza cada encabezado `### Figura N:` y extrae el bloque `mermaid` que sigue.
+3. Exporta cada bloque a `docs/figuras/figuraN.png` con `mmdc` (mermaid-cli).
 
-   ```bash
-   ./scripts/build-figures.sh
-   ```
-
-   Si el script no existe aún, regenerar manualmente cada figura siguiendo las instrucciones de la sección final de `docs/arquitectura.md`.
-
-3. Verificar que `docs/figuras/figura1.png`, `figura3.png` y `figura4.png` existen antes de ejecutar `./scripts/build-pdf.sh`.
+Verificar que `docs/figuras/figura1.png` a `figura6.png` existen antes de ejecutar `./scripts/build-pdf.sh`. Si faltan, el PDF se genera de todas formas pero los bloques `mermaid` aparecen como código fuente en lugar de las imágenes.
 
 ## Listado de figuras
 
 Coordinado con `docs/indice-figuras.md`:
 
-| Archivo | Origen en `docs/arquitectura.md` | Descripción |
+| Archivo | Origen | Descripción |
 |---|---|---|
-| `figura1.png` | Bloque mermaid "Figura 1: Arquitectura del sistema" | Componentes y conexiones HTTPS/LDAPS |
-| `figura3.png` | Bloque mermaid "Figura 3: Flujo de autenticación 2FA" | Diagrama de secuencia LDAP + OTP |
-| `figura4.png` | Bloque mermaid "Figura 4: Red Docker y puertos" | Mapa de la red Docker `otpsec` |
-
-Las figuras 2 (árbol LDAP) y 5 (cifrado de archivos) se mantienen como ASCII en sus archivos correspondientes (`docs/arbol-ldap.md` y `docs/memoria-tecnica.md`); pueden migrarse a mermaid si el equipo decide unificar el formato visual del PDF.
+| `figura1.png` | `docs/arquitectura.md`, `### Figura 1: Arquitectura del sistema` | Componentes y conexiones HTTPS y LDAPS |
+| `figura2.png` | `docs/arbol-ldap.md`, `### Figura 2: Árbol LDAP del proyecto` | Base DN, OUs, usuarios y cuenta de servicio |
+| `figura3.png` | `docs/arquitectura.md`, `### Figura 3: Flujo de autenticación 2FA` | Diagrama de secuencia LDAP + OTP |
+| `figura4.png` | `docs/arquitectura.md`, `### Figura 4: Red Docker y puertos` | Mapa de la red Docker `otpsec` |
+| `figura5.png` | `docs/memoria-tecnica.md`, `### Figura 5: Flujo de cifrado del lado servidor` | Subida, almacenamiento cifrado y descarga descifrada |
+| `figura6.png` | `docs/memoria-tecnica.md`, `### Figura 6: Flujo de carpetas compartidas` | Emisor, OCS Sharing API y destinatario |
 
 ## Por qué no se versionan los binarios
 
 1. Git maneja mal los binarios: cada cambio mínimo (nuevo color, nueva fuente) sobrescribe el blob entero, infla el repo y dificulta los diffs.
-2. La fuente de verdad es el código mermaid en `docs/arquitectura.md`. Si las imágenes y el código se desincronizan, prevalece el código.
+2. La fuente de verdad es el código mermaid en los tres archivos `docs/*.md` mencionados arriba. Si las imágenes y el código se desincronizan, prevalece el código.
 3. La regeneración local toma menos de 10 segundos y solo se hace cuando se ensambla el PDF final.
