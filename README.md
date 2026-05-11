@@ -86,6 +86,7 @@ otp-secured-cloud/
 
 Operación y bitácoras:
 
+- [Documento final operativo](docs/documento-final.md): resumen ejecutivo, arquitectura, funcionamiento, pruebas y defensa del proyecto
 - [Estado del proyecto](docs/estado-proyecto.md): documento vivo con avance y trazabilidad por fases
 - [Guía paso a paso para el equipo](docs/guia-equipo.md): cómo clonar y probar el proyecto en tu máquina
 - [Cómo probar el proyecto antes y durante la presentación](docs/como-probar.md): pre-flight, demo en vivo y plan B
