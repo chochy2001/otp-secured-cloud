@@ -104,7 +104,7 @@ graph LR
   oc -->|LDAPS 636| ldap
   oc -->|HTTPS 8443| pi
   pi -->|LDAPS 636| ldap
-  phone -.->|TOTP 6 digitos a usuario| user
+  phone -.->|TOTP 6 dígitos a usuario| user
 ```
 
 ### Figura 3: Flujo de autenticación 2FA
@@ -115,13 +115,13 @@ sequenceDiagram
   participant OC as OwnCloud
   participant LD as OpenLDAP
   participant PI as privacyIDEA
-  participant FO as FreeOTP en telefono
+  participant FO as FreeOTP en teléfono
 
   U->>OC: usuario y password LDAP
   OC->>LD: bind LDAPS
   LD-->>OC: 0 OK
   OC-->>U: redirect a selector 2FA
-  U->>FO: lee codigo TOTP de 6 digitos
+  U->>FO: lee código TOTP de 6 dígitos
   U->>OC: ingresa OTP
   OC->>PI: POST validate check user OTP realm
   PI->>LD: resuelve uid a token

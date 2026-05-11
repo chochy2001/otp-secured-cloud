@@ -2,7 +2,7 @@
 #
 # Arranque completo del laboratorio desde un clone limpio.
 # Genera certificados, levanta Docker Compose, configura servicios y
-# ejecuta la bateria evaluable de pruebas end-to-end.
+# ejecuta la batería evaluable de pruebas end-to-end.
 #
 # Uso:
 #   ./scripts/bootstrap.sh
@@ -31,9 +31,9 @@ usage() {
 Uso: ./scripts/bootstrap.sh [opciones]
 
 Opciones:
-  --no-build     No reconstruye imagenes; solo levanta contenedores.
+  --no-build     No reconstruye imágenes; solo levanta contenedores.
   --skip-tests   Levanta y configura el stack, pero omite validaciones.
-  --with-audit   Tambien regenera docs/auditoria.md al final.
+  --with-audit   También regenera docs/auditoria.md al final.
   -h, --help     Muestra esta ayuda.
 EOF
 }
@@ -54,7 +54,7 @@ while (( $# > 0 )); do
       exit 0
       ;;
     *)
-      echo "ERROR: opcion no reconocida: $1"
+      echo "ERROR: opción no reconocida: $1"
       usage
       exit 2
       ;;
@@ -110,18 +110,18 @@ wait_for_healthy() {
     done
 
     if (( ${#pending[@]} == 0 )); then
-      echo "OK: todos los contenedores estan healthy."
+      echo "OK: todos los contenedores están healthy."
       return 0
     fi
 
-    printf 'Aun iniciando: %s\n' "${pending[*]}"
+    printf 'Aún iniciando: %s\n' "${pending[*]}"
     sleep 5
   done
 
-  echo "ERROR: algun contenedor no quedo healthy antes de ${timeout_seconds}s."
+  echo "ERROR: algún contenedor no quedó healthy antes de ${timeout_seconds}s."
   compose ps || true
   echo
-  echo "Ultimas lineas de logs por contenedor:"
+  echo "Últimas líneas de logs por contenedor:"
   for container in "${CONTAINERS[@]}"; do
     echo
     echo "--- ${container} ---"
@@ -131,7 +131,7 @@ wait_for_healthy() {
 }
 
 if [[ ! -f "${ENV_FILE}" ]]; then
-  echo "ERROR: no existe ${ENV_FILE}. El repo debe incluir .env para reproducibilidad academica."
+  echo "ERROR: no existe ${ENV_FILE}. El repo debe incluir .env para reproducibilidad académica."
   exit 1
 fi
 
@@ -141,7 +141,7 @@ require_cmd openssl
 require_cmd python3
 
 if ! docker compose version >/dev/null 2>&1; then
-  echo "ERROR: Docker Compose v2 no esta disponible como 'docker compose'."
+  echo "ERROR: Docker Compose v2 no está disponible como 'docker compose'."
   exit 1
 fi
 
@@ -168,7 +168,7 @@ if [[ "${RUN_TESTS}" == "true" ]]; then
 fi
 
 if [[ "${RUN_AUDIT}" == "true" ]]; then
-  run_step "Regenerando auditoria" ./scripts/audit-capture.sh
+  run_step "Regenerando auditoría" ./scripts/audit-capture.sh
 fi
 
 if [[ "${RUN_TESTS}" == "true" ]]; then
@@ -179,7 +179,7 @@ fi
 
 cat <<EOF
 
-Listo: el laboratorio quedo ${FINAL_STATUS}.
+Listo: el laboratorio quedó ${FINAL_STATUS}.
 
 Servicios:
   OwnCloud:     https://localhost:9443

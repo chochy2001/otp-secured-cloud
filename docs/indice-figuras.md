@@ -18,4 +18,4 @@ npm install -g @mermaid-js/mermaid-cli
 ./scripts/build-figures.sh
 ```
 
-Las PNG quedan en `docs/figuras/figuraN.png`. Los binarios no se versionan en el repositorio público porque la fuente de verdad es el código `mermaid` en los archivos `.md`.
+Las PNG quedan en `docs/figuras/figuraN.png`. Los binarios no se versionan en el repositorio porque la fuente de verdad es el código `mermaid` en los archivos `.md`.

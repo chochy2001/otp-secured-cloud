@@ -1,6 +1,6 @@
 # Memoria técnica
 
-Este capítulo describe paso a paso la implementación del laboratorio. Cada sección referencia los archivos del repositorio público que la materializan y, donde aplica, el script que la valida automáticamente.
+Este capítulo describe paso a paso la implementación del laboratorio. Cada sección referencia los archivos del repositorio que la materializan y, donde aplica, el script que la valida automáticamente.
 
 ## 1. Estructura del repositorio
 

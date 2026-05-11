@@ -51,4 +51,4 @@ El resto de este entregable está organizado así:
 5. Conclusiones individuales y de equipo.
 6. Glosario, bibliografía e índice de figuras.
 
-Los archivos del repositorio público se citan con su ruta relativa (`docs/`, `scripts/`, `compose/`, `ldap/`, `privacyidea/`, `owncloud/`, `certs/`).
+Los archivos del repositorio se citan con su ruta relativa (`docs/`, `scripts/`, `compose/`, `ldap/`, `privacyidea/`, `owncloud/`, `certs/`).

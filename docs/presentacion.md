@@ -3,7 +3,7 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-header: "Seguridad Informatica Avanzada - Proyecto final 2026-2"
+header: "Seguridad Informática Avanzada - Proyecto final 2026-2"
 footer: "FI UNAM - Equipo otp-secured-cloud"
 ---
 
@@ -118,7 +118,7 @@ Servicio de almacenamiento con **LDAP + OTP + OwnCloud**, listo para demostrarse
 
 <br>
 
-**Una sola instruccion levanta, configura y valida el laboratorio:**
+**Una sola instrucción levanta, configura y valida el laboratorio:**
 
 ```bash
 ./scripts/bootstrap.sh
@@ -129,13 +129,13 @@ Servicio de almacenamiento con **LDAP + OTP + OwnCloud**, listo para demostrarse
 # La promesa
 
 <div class="claim">
-No solo montamos servicios: construimos un flujo completo donde cada acceso queda probado por codigo.
+No solo montamos servicios: construimos un flujo completo donde cada acceso queda probado por código.
 </div>
 
-| Lo que se evalua | Como se demuestra |
+| Lo que se evalúa | Cómo se demuestra |
 |---|---|
 | Alta de usuarios LDAP | Directorio con 6 usuarios humanos y cuenta de servicio |
-| Integracion privacyIDEA | Resolver LDAP por LDAPS y realm `sia` |
+| Integración privacyIDEA | Resolver LDAP por LDAPS y realm `sia` |
 | Token OTP | TOTP enrolado y validado contra API |
 | OwnCloud | LDAP, 2FA, TLS y cifrado activos |
 | 2FA LDAP + OTP | Login web real con primer y segundo factor |
@@ -181,33 +181,33 @@ Comando para levantar y validar todo.
 
 | Integrante | Aporte principal |
 |---|---|
-| **Salgado Miranda Jorge** | Integracion general, Docker Compose, automatizacion, QA, cierre tecnico y repositorio |
-| Arellanes Conde Esteban | Demo en vivo y explicacion del flujo end-to-end |
-| Ferreira Rojas Mauricio | privacyIDEA, FreeOTP y validacion del segundo factor |
-| Lopez Segundo Luis Ivan | Diseno del arbol LDAP y modelo de usuarios |
-| Olvera Gonzalez Arely | Marco conceptual 2FA/OTP y documentacion base |
-| Rufino Lopez Maria Elena | OwnCloud, permisos, comparticion y cifrado |
+| **Salgado Miranda Jorge** | Integración general, Docker Compose, automatización, QA, cierre técnico y repositorio |
+| Arellanes Conde Esteban | Demo en vivo y explicación del flujo end-to-end |
+| Ferreira Rojas Mauricio | privacyIDEA, FreeOTP y validación del segundo factor |
+| López Segundo Luis Iván | Diseño del árbol LDAP y modelo de usuarios |
+| Olvera González Arely | Marco conceptual 2FA/OTP y documentación base |
+| Rufino López María Elena | OwnCloud, permisos, compartición y cifrado |
 
 ---
 
-# Que hizo Jorge
+# Qué hizo Jorge
 
 <div class="claim">
-El rol de integracion fue convertir piezas sueltas en un sistema que se pueda clonar, levantar y defender frente al profesor.
+El rol de integración fue convertir piezas sueltas en un sistema que se pueda clonar, levantar y defender frente al profesor.
 </div>
 
-- Orquestacion Docker Compose de OpenLDAP, privacyIDEA, OwnCloud, MariaDB, Redis y Caddy.
-- Script `bootstrap.sh`: certificados, build, healthchecks, configuracion y pruebas.
+- Orquestación Docker Compose de OpenLDAP, privacyIDEA, OwnCloud, MariaDB, Redis y Caddy.
+- Script `bootstrap.sh`: certificados, build, healthchecks, configuración y pruebas.
 - QA de consistencia: `shellcheck`, `bash -n`, `docker compose config`, `git diff --check`.
 - Cierre funcional: LDAPS, HTTPS, 2FA, cifrado, carpetas compartidas y docs alineadas.
-- Repositorio publico, README, estado del proyecto y notas de cierre.
+- Repositorio GitHub, README, estado del proyecto y notas de cierre.
 
 ---
 
 # Arquitectura en una frase
 
 <div class="claim">
-LDAP identifica y valida password; privacyIDEA valida posesion del token; OwnCloud decide permisos y almacena archivos cifrados.
+LDAP identifica y valida password; privacyIDEA valida posesión del token; OwnCloud decide permisos y almacena archivos cifrados.
 </div>
 
 <span class="tag">OpenLDAP</span>
@@ -226,7 +226,7 @@ LDAP identifica y valida password; privacyIDEA valida posesion del token; OwnClo
 ![bg right:52% fit](figuras/figura1.png)
 
 1. Usuario entra por `https://localhost:9443`.
-2. Caddy termina TLS y reenvia a OwnCloud.
+2. Caddy termina TLS y reenvía a OwnCloud.
 3. OwnCloud consulta usuarios por LDAPS.
 4. OwnCloud valida OTP con privacyIDEA.
 5. privacyIDEA usa el mismo LDAP como fuente de identidad.
@@ -234,20 +234,20 @@ LDAP identifica y valida password; privacyIDEA valida posesion del token; OwnClo
 
 ---
 
-# Flujo de autenticacion
+# Flujo de autenticación
 
 ![bg right:52% fit](figuras/figura2.png)
 
-1. Usuario envia `uid + password`.
+1. Usuario envía `uid + password`.
 2. OwnCloud hace bind LDAPS contra OpenLDAP.
 3. Si el password es correcto, OwnCloud pide segundo factor.
 4. Usuario escribe TOTP generado por FreeOTP.
 5. Plugin `twofactor_privacyidea` consulta `/validate/check`.
-6. Si privacyIDEA acepta, OwnCloud abre la sesion.
+6. Si privacyIDEA acepta, OwnCloud abre la sesión.
 
 ---
 
-# Arbol LDAP
+# Árbol LDAP
 
 ```text
 dc=sia,dc=unam,dc=mx
@@ -269,16 +269,16 @@ La cuenta de servicio no es usuario humano: queda fuera del filtro `(objectClass
 
 ---
 
-# Decisiones LDAP que si importan
+# Decisiones LDAP que sí importan
 
-| Decision | Motivo |
+| Decisión | Motivo |
 |---|---|
-| `uid` como login | Convencion LDAP simple y estable |
-| 6 usuarios humanos | Permite probar dos areas sin ruido |
+| `uid` como login | Convención LDAP simple y estable |
+| 6 usuarios humanos | Permite probar dos áreas sin ruido |
 | `svc-owncloud` separado | OwnCloud y privacyIDEA no usan `cn=admin` |
 | ACL dedicada | Servicio lee usuarios, pero no `userPassword` |
 | LDAPS | Passwords y binds no viajan en claro |
-| Passwords `{SSHA}` en LDIF | No quedan contrasenas planas en bootstrap |
+| Passwords `{SSHA}` en LDIF | No quedan contraseñas planas en bootstrap |
 
 ---
 
@@ -292,24 +292,24 @@ privacyIDEA no duplica identidades. Lee a los usuarios desde LDAP mediante:
 | URI | `ldaps://openldap:636` |
 | Realm | `sia` |
 | API | `https://localhost:8443` |
-| Token | TOTP de 6 digitos cada 30 s |
+| Token | TOTP de 6 dígitos cada 30 s |
 
-FreeOTP solo guarda el secreto TOTP y muestra el codigo; no se conecta al servidor.
+FreeOTP solo guarda el secreto TOTP y muestra el código; no se conecta al servidor.
 
 ---
 
 # Enrolamiento TOTP
 
-El script `privacyidea-enroll-test-token.sh` automatiza el flujo que normalmente se haria desde la UI:
+El script `privacyidea-enroll-test-token.sh` automatiza el flujo que normalmente se haría desde la UI:
 
 1. Autentica al admin en privacyIDEA.
 2. Borra token de prueba anterior del usuario.
 3. Crea token TOTP con `genkey=1`.
 4. Imprime la URL `otpauth://` para FreeOTP.
 5. Calcula el TOTP localmente en Python.
-6. Valida el codigo contra `/validate/check`.
+6. Valida el código contra `/validate/check`.
 
-Esto prueba emision de token sin depender de que el telefono este disponible.
+Esto prueba emisión de token sin depender de que el teléfono esté disponible.
 
 ---
 
@@ -321,7 +321,7 @@ OwnCloud queda configurado con tres responsabilidades:
 |---|---|
 | Usuarios | App `user_ldap` conectado por LDAPS |
 | Segundo factor | App `twofactor_privacyidea` |
-| Autorizacion | Permisos de carpetas y OCS Sharing API |
+| Autorización | Permisos de carpetas y OCS Sharing API |
 | Cifrado | Server Side Encryption con master key |
 
 Punto clave para defender: **LDAP autentica; OwnCloud autoriza**.
@@ -330,14 +330,14 @@ Punto clave para defender: **LDAP autentica; OwnCloud autoriza**.
 
 # Cifrado de archivos
 
-Se activa el modulo de cifrado de OwnCloud y se verifica con:
+Se activa el módulo de cifrado de OwnCloud y se verifica con:
 
 ```bash
 occ encryption:status
 occ config:app:get encryption useMasterKey
 ```
 
-En disco, un archivo real empieza asi:
+En disco, un archivo real empieza así:
 
 ```text
 HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND
@@ -349,15 +349,15 @@ El usuario autorizado lo lee en claro por WebDAV, pero el volumen Docker no guar
 
 # Carpeta compartida
 
-El flujo de autorizacion se prueba con dos usuarios distintos:
+El flujo de autorización se prueba con dos usuarios distintos:
 
 1. `usuario.desarrollo1` sube un archivo por WebDAV.
 2. Crea un share hacia `usuario.seguridad1` por OCS Sharing API.
 3. Se verifica que el archivo en disco sigue cifrado.
-4. `usuario.seguridad1` inicia sesion con LDAP + OTP.
+4. `usuario.seguridad1` inicia sesión con LDAP + OTP.
 5. El destinatario descarga el archivo y lee el contenido descifrado.
 
-Esto demuestra que la autorizacion vive en OwnCloud, no en LDAP.
+Esto demuestra que la autorización vive en OwnCloud, no en LDAP.
 
 ---
 
@@ -367,15 +367,15 @@ Esto demuestra que la autorizacion vive en OwnCloud, no en LDAP.
 |---|---|
 | OpenLDAP | `ldaps://openldap:636`, publicado en `localhost:6636` |
 | privacyIDEA | `https://localhost:8443` |
-| OwnCloud | `https://localhost:9443`, detras de Caddy |
+| OwnCloud | `https://localhost:9443`, detrás de Caddy |
 
 `scripts/generate-certs.sh` crea una CA local y tres certificados con SANs correctos.
 
-Los scripts usan `--cacert certs/ca.crt`, asi que no se valida con `-k` ni se desactiva TLS.
+Los scripts usan `--cacert certs/ca.crt`, así que no se valida con `-k` ni se desactiva TLS.
 
 ---
 
-# Automatizacion de arranque
+# Automatización de arranque
 
 ```bash
 ./scripts/bootstrap.sh
@@ -389,7 +389,7 @@ Hace todo lo necesario:
 - Configura privacyIDEA y OwnCloud.
 - Corre pruebas de LDAP, OTP, OwnCloud, login 2FA, cifrado y share.
 
-Para demo rapida con repo ya clonado:
+Para demo rápida con repo ya clonado:
 
 ```bash
 ./scripts/bootstrap.sh --no-build
@@ -410,13 +410,13 @@ La estabilidad de la demo no depende de "esperar a ojo".
 | OwnCloud | `status.php` |
 | Caddy | `status.php` por HTTPS |
 
-Compose arranca servicios segun dependencias sanas, no solo contenedores encendidos.
+Compose arranca servicios según dependencias sanas, no solo contenedores encendidos.
 
 ---
 
-# Auditoria como complemento
+# Auditoría como complemento
 
-No se evalua, pero queda lista si el profesor pregunta:
+No se evalúa, pero queda lista si el profesor pregunta:
 
 ```bash
 ./scripts/audit-capture.sh
@@ -439,11 +439,11 @@ La evidencia queda en `docs/auditoria.md`.
 | Punto solicitado | Estado | Evidencia |
 |---|---|---|
 | Alta de usuarios LDAP | Cerrado | `ldap-verify.sh` |
-| Integracion privacyIDEA | Cerrado | `privacyidea-verify.sh` |
-| Emision OTP FreeOTP | Cerrado | `privacyidea-enroll-test-token.sh` |
-| Implementacion OwnCloud | Cerrado | `owncloud-verify.sh` |
+| Integración privacyIDEA | Cerrado | `privacyidea-verify.sh` |
+| Emisión OTP FreeOTP | Cerrado | `privacyidea-enroll-test-token.sh` |
+| Implementación OwnCloud | Cerrado | `owncloud-verify.sh` |
 | 2FA LDAP + OTP | Cerrado | `owncloud-login-verify.sh` |
-| Comparticion y cifrado | Cerrado | `owncloud-share-verify.sh` |
+| Compartición y cifrado | Cerrado | `owncloud-share-verify.sh` |
 
 ---
 
@@ -451,66 +451,66 @@ La evidencia queda en `docs/auditoria.md`.
 
 El evaluador no necesita memorizar comandos.
 
-Si el repo ya esta clonado:
+Si el repo ya está clonado:
 
 ```bash
 cd otp-secured-cloud
 ./scripts/bootstrap.sh
 ```
 
-Si solo queremos levantar sin reconstruir imagenes:
+Si solo queremos levantar sin reconstruir imágenes:
 
 ```bash
 ./scripts/bootstrap.sh --no-build
 ```
 
-Si termina con `Listo`, el laboratorio quedo operativo.
+Si termina con `Listo`, el laboratorio quedó operativo.
 
 ---
 
-# Que nos puede preguntar el profesor
+# Qué nos puede preguntar el profesor
 
 | Pregunta probable | Respuesta corta |
 |---|---|
-| Por que LDAP y no usuarios locales | LDAP centraliza identidad; OwnCloud solo consume |
-| Donde vive autorizacion | En OwnCloud: permisos y OCS Sharing |
-| Que valida privacyIDEA | Posesion del secreto TOTP asociado al usuario |
-| Por que FreeOTP no se conecta | TOTP se calcula localmente; solo el codigo se escribe |
-| Que pasa si roban password | Sin OTP no se abre sesion |
-| Que pasa si roban el servidor | Master key local no protege contra admin del servidor |
+| Por qué LDAP y no usuarios locales | LDAP centraliza identidad; OwnCloud solo consume |
+| Dónde vive autorización | En OwnCloud: permisos y OCS Sharing |
+| Qué valida privacyIDEA | Posesión del secreto TOTP asociado al usuario |
+| Por qué FreeOTP no se conecta | TOTP se calcula localmente; solo el código se escribe |
+| Qué pasa si roban password | Sin OTP no se abre sesión |
+| Qué pasa si roban el servidor | Master key local no protege contra admin del servidor |
 
 ---
 
 # Limitaciones honestas
 
-| Decision academica | Produccion real |
+| Decisión académica | Producción real |
 |---|---|
 | `.env` versionado | Gestor de secretos |
-| Password compartido | Password unico, rotacion, MFA recovery |
-| CA local | CA corporativa o publica |
+| Password compartido | Password único, rotación, MFA recovery |
+| CA local | CA corporativa o pública |
 | Una instancia por servicio | HA, backups, monitoreo |
 | Master key local | Cifrado extremo a extremo |
-| Sin SIEM | Envio a Loki, Splunk o ELK |
+| Sin SIEM | Envío a Loki, Splunk o ELK |
 
-No se ocultan: estan en el README porque forman parte del criterio tecnico.
+No se ocultan: están en el README porque forman parte del criterio técnico.
 
 ---
 
-# Como se vende el proyecto
+# Cómo se vende el proyecto
 
 <div class="claim">
-Es un laboratorio pequeno, pero con disciplina de sistema real: TLS, cuentas de servicio, healthchecks, pruebas, reproducibilidad y limites documentados.
+Es un laboratorio pequeño, pero con disciplina de sistema real: TLS, cuentas de servicio, healthchecks, pruebas, reproducibilidad y límites documentados.
 </div>
 
-El valor no esta solo en que "encienda". Esta en que podemos explicar por que cada pieza existe y demostrarla con salida verificable.
+El valor no está solo en que "encienda". Está en que podemos explicar por qué cada pieza existe y demostrarla con salida verificable.
 
 ---
 
 # Demo al final
 
-La demo se hace **despues de terminar las diapositivas**.
+La demo se hace **después de terminar las diapositivas**.
 
-No clonamos en vivo. El repositorio ya esta en la laptop.
+No clonamos en vivo. El repositorio ya está en la laptop.
 
 ```bash
 cd /Users/jorge/Documents/Escuela/SIA/Proyecto_Final
@@ -523,7 +523,7 @@ Si el profesor pide ver la UI: abrir `https://localhost:9443`.
 
 ---
 
-# Demo: que debe verse
+# Demo: qué debe verse
 
 1. Los 6 contenedores `healthy`.
 2. OpenLDAP encuentra exactamente 6 usuarios humanos.
@@ -533,14 +533,14 @@ Si el profesor pide ver la UI: abrir `https://localhost:9443`.
 6. Archivo queda cifrado en disco.
 7. Usuario destino lee archivo compartido descifrado.
 
-La demo no agrega promesas nuevas: muestra exactamente lo que ya se implemento.
+La demo no agrega promesas nuevas: muestra exactamente lo que ya se implementó.
 
 ---
 
 # Cierre
 
 <div class="claim">
-El proyecto cumple el PDF, se puede defender tecnicamente y se puede reproducir sin depender de memoria.
+El proyecto cumple el PDF, se puede defender técnicamente y se puede reproducir sin depender de memoria.
 </div>
 
 Repositorio:
@@ -557,9 +557,9 @@ Documentos clave: `README.md`, `docs/memoria-tecnica.md`, `docs/como-probar.md`.
 
 Estamos listos para profundizar en:
 
-- Diseno LDAP y ACLs.
+- Diseño LDAP y ACLs.
 - Flujo TOTP y privacyIDEA.
-- OwnCloud, autorizacion y cifrado.
+- OwnCloud, autorización y cifrado.
 - TLS y CA local.
-- Automatizacion con Docker Compose.
-- Limitaciones y cambios necesarios para produccion.
+- Automatización con Docker Compose.
+- Limitaciones y cambios necesarios para producción.

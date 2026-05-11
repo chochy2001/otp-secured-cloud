@@ -31,4 +31,4 @@
 
 **Fecha de entrega:** 29 de mayo de 2026
 
-**Repositorio público:** https://github.com/chochy2001/otp-secured-cloud
+**Repositorio GitHub:** https://github.com/chochy2001/otp-secured-cloud

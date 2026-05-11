@@ -1,6 +1,6 @@
 # Figuras renderizadas
 
-Esta carpeta contiene las versiones gráficas (PNG) de los seis diagramas que aparecen como bloques `mermaid` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. Las imágenes binarias NO se versionan en el repositorio público para no inflar el historial de git con archivos no de texto. Cada miembro del equipo regenera las imágenes localmente cuando arma el PDF del entregable.
+Esta carpeta contiene las versiones gráficas (PNG) de los seis diagramas que aparecen como bloques `mermaid` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. Las imágenes binarias NO se versionan en el repositorio para no inflar el historial de git con archivos no de texto. Cada miembro del equipo regenera las imágenes localmente cuando arma el PDF del entregable.
 
 ## Cómo regenerar las figuras
 
