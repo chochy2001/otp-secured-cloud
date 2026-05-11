@@ -116,6 +116,8 @@ PI_APP_URL="$(occ config:app:get twofactor_privacyidea url)"
 PI_APP_SSL="$(occ config:app:get twofactor_privacyidea checkssl)"
 PI_APP_ACTIVE="$(occ config:app:get twofactor_privacyidea piactive)"
 PI_APP_REALM="$(occ config:app:get twofactor_privacyidea realm)"
+PI_APP_EXCLUDE="$(occ config:app:get twofactor_privacyidea piexclude)"
+PI_APP_EXCLUDE_GROUPS="$(occ config:app:get twofactor_privacyidea piexcludegroups)"
 
 if [[ "${PI_APP_URL}" != "https://privacyidea:8443/" ]]; then
   echo "ERROR: URL privacyIDEA inesperada: ${PI_APP_URL}"
@@ -129,6 +131,11 @@ fi
 
 if [[ "${PI_APP_REALM}" != "${PI_REALM_NAME:-sia}" ]]; then
   echo "ERROR: realm privacyIDEA inesperado: ${PI_APP_REALM}"
+  exit 1
+fi
+
+if [[ "${PI_APP_EXCLUDE}" != "1" || "${PI_APP_EXCLUDE_GROUPS}" != "admin" ]]; then
+  echo "ERROR: exclusión de admin inesperada: piexclude=${PI_APP_EXCLUDE}, piexcludegroups=${PI_APP_EXCLUDE_GROUPS}"
   exit 1
 fi
 

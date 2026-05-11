@@ -119,7 +119,9 @@ set_app_config twofactor_privacyidea passOnNoUser "0"
 set_app_config twofactor_privacyidea autoSubmitOtpLength "6"
 set_app_config twofactor_privacyidea noproxy "1"
 set_app_config twofactor_privacyidea piexclude "1"
-set_app_config twofactor_privacyidea piexcludegroups ""
+# El admin local no vive en el realm LDAP de privacyIDEA. Se conserva como
+# cuenta de mantenimiento y se excluye; los usuarios LDAP siguen requiriendo OTP.
+set_app_config twofactor_privacyidea piexcludegroups "admin"
 echo "OK"
 
 echo

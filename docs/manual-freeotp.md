@@ -1,6 +1,6 @@
-# Manual del equipo: enrolar el TOTP demo en FreeOTP
+# Manual del equipo: enrolar el TOTP demo en FreeOTP o Proton Authenticator
 
-Antes de la exposición, al menos un integrante debe tener un teléfono real con FreeOTP listo para mostrar el segundo factor en vivo. Este documento describe el procedimiento completo.
+Antes de la exposición, al menos un integrante debe tener un teléfono real con una app TOTP lista para mostrar el segundo factor en vivo. FreeOTP y Proton Authenticator funcionan con la URL `otpauth://` que genera privacyIDEA. Este documento describe el procedimiento completo.
 
 ## Requisitos previos
 
@@ -9,9 +9,10 @@ Antes de la exposición, al menos un integrante debe tener un teléfono real con
    ./scripts/bootstrap.sh
    ```
    Ejecuta este comando antes de enrolar el teléfono, porque las pruebas automáticas crean tokens TOTP de prueba para validar el flujo.
-2. Un teléfono Android o iOS con FreeOTP instalada:
+2. Un teléfono Android o iOS con FreeOTP o Proton Authenticator instalada:
    - Android: Google Play, búsqueda "FreeOTP" (autor Red Hat). Repositorio del proyecto: https://github.com/freeotp/freeotp-android
    - iOS: App Store, búsqueda "FreeOTP". Repositorio: https://github.com/freeotp/freeotp-ios
+   - Proton Authenticator: escanea el mismo QR y muestra un código TOTP de 6 dígitos cada 30 segundos.
 3. Una herramienta para generar códigos QR a partir de la URL `otpauth://`. Opciones:
    - Línea de comandos: `qrencode` (en macOS: `brew install qrencode`; en Debian/Ubuntu: `sudo apt install qrencode`).
    - Generador en línea: NO recomendado para uso real porque la URL contiene el secreto del token. Para fines académicos se acepta como respaldo, pero el equipo debe entender el riesgo.
@@ -52,12 +53,12 @@ open /tmp/qr.png   # macOS
 xdg-open /tmp/qr.png   # Linux
 ```
 
-### 3. Escanear con FreeOTP
+### 3. Escanear con FreeOTP o Proton Authenticator
 
-1. Abre FreeOTP en el teléfono.
+1. Abre FreeOTP o Proton Authenticator en el teléfono.
 2. Toca el botón "+" o el icono de cámara para agregar un nuevo token.
-3. Apunta la cámara al QR. FreeOTP detecta la URL `otpauth://`, extrae el secreto y crea una entrada con etiqueta `TOTP_usuario_desarrollo1` (o el serial que privacyIDEA haya asignado).
-4. Inmediatamente FreeOTP muestra un código de 6 dígitos que se renueva cada 30 segundos.
+3. Apunta la cámara al QR. La app detecta la URL `otpauth://`, extrae el secreto y crea una entrada con etiqueta `TOTP_usuario_desarrollo1` (o el serial que privacyIDEA haya asignado).
+4. Inmediatamente la app muestra un código de 6 dígitos que se renueva cada 30 segundos.
 
 ### 4. Validar el primer código en vivo
 
@@ -115,5 +116,6 @@ Esto invalida la semilla compartida; ningún código generado por la app servir�
 | FreeOTP muestra "Cannot decode QR code" | El QR está borroso o el escáner no enfoca | Aumenta el zoom de la imagen, mejora la iluminación, o usa entrada manual del secreto |
 | El OTP del teléfono se rechaza siempre | Reloj del teléfono fuera de sincronía | Ajusta hora del teléfono a "automática" (NTP) o sincroniza manualmente |
 | `privacyidea-validate-otp.sh` falla con "wrong otp value. previous otp used again" | Reusaste un OTP antes de que cambiara la ventana | Espera 30 segundos para que el código se renueve antes de validar |
+| OwnCloud muestra `Internal Server Error` después del OTP | Se intentó usar el token de `usuario.desarrollo1` mientras la sesión del navegador estaba como `admin` u otro usuario | Cierra sesión, abre modo incógnito y entra con `usuario.desarrollo1` / `sia-user-2026`; el token solo sirve para el usuario al que fue enrolado |
 | El navegador rechaza el certificado de OwnCloud sin opción de continuar | El cliente no confía en la CA local | Importa `certs/ca.crt` al keychain/almacén de certificados del sistema operativo, o acepta la excepción manualmente |
 | FreeOTP no aparece como app de escáner cuando uso el QR del navegador | iOS bloqueó el acceso de la app a la cámara | Ajustes a Privacidad a Cámara: habilita FreeOTP |

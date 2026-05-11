@@ -30,6 +30,8 @@ cd otp-secured-cloud
 
 El script genera certificados, levanta Docker Compose, espera a que los seis contenedores queden `healthy`, configura privacyIDEA y OwnCloud, y corre la batería completa de pruebas. Si termina con `Listo`, el laboratorio quedó funcional para la demo.
 
+Para la demo web usa siempre un usuario LDAP, por ejemplo `usuario.desarrollo1` con contraseña `sia-user-2026`. La cuenta `admin` es solo de mantenimiento local de OwnCloud y queda excluida del segundo factor porque no existe en el realm LDAP `sia` de privacyIDEA.
+
 Confirmación visual opcional:
 
 ```bash
