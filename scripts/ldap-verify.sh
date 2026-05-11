@@ -9,7 +9,8 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [[ ! -f "$ROOT_DIR/.env" ]]; then
-  echo "ERROR: no existe $ROOT_DIR/.env. Cópialo desde .env.example primero."
+  echo "ERROR: no existe $ROOT_DIR/.env."
+  echo "Usa el .env académico versionado o copia .env.example y rellena valores reales."
   exit 1
 fi
 

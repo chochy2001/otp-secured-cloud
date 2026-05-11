@@ -143,7 +143,12 @@ if ! echo "${ENCRYPTION_STATUS}" | grep -qi "enabled: true"; then
   echo "ERROR: cifrado no está activo."
   exit 1
 fi
-echo "OK"
+USE_MASTER_KEY="$(occ config:app:get encryption useMasterKey)"
+if [[ "${USE_MASTER_KEY}" != "1" ]]; then
+  echo "ERROR: OwnCloud no reporta cifrado en modo master key."
+  exit 1
+fi
+echo "OK: master key activa"
 
 echo
 echo "Todo OK."

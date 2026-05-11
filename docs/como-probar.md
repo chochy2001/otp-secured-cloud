@@ -25,43 +25,44 @@ Las cuatro últimas filas son opcionales: solo se necesitan si se va a generar e
 ```bash
 git clone git@github.com:chochy2001/otp-secured-cloud.git
 cd otp-secured-cloud
-./scripts/generate-certs.sh
-docker compose -f compose/docker-compose.yml --env-file .env up -d
+./scripts/bootstrap.sh
 ```
 
-Esperar 30 segundos a que los contenedores arranquen. Confirmar con:
+El script genera certificados, levanta Docker Compose, espera a que los seis contenedores queden `healthy`, configura privacyIDEA y OwnCloud, y corre la batería completa de pruebas. Si termina con `Listo`, el laboratorio quedó funcional para la demo.
+
+Confirmación visual opcional:
 
 ```bash
 docker compose -f compose/docker-compose.yml --env-file .env ps
 ```
 
-Los seis contenedores deben estar `Up`:
+Los seis contenedores deben estar `Up` y `healthy`:
 
 ```
-otpsec-openldap          Up
+otpsec-openldap          Up (healthy)
 otpsec-privacyidea       Up (healthy)
-otpsec-owncloud-db       Up
-otpsec-owncloud-redis    Up
-otpsec-owncloud-server   Up
-otpsec-owncloud-proxy    Up
+otpsec-owncloud-db       Up (healthy)
+otpsec-owncloud-redis    Up (healthy)
+otpsec-owncloud-server   Up (healthy)
+otpsec-owncloud-proxy    Up (healthy)
 ```
 
-Si OpenLDAP queda en estado de inicialización, el primer `ldap-verify.sh` puede tardar. Esperar 30 s adicionales y reintentar.
+Si un servicio tarda, `bootstrap.sh` espera hasta 7 minutos y muestra logs si algo no llega a `healthy`.
 
 ## 3. Configurar privacyIDEA y OwnCloud
 
-Solo es necesario la primera vez tras `docker compose up` o cuando se borren los volúmenes.
+El flujo normal no requiere configurar nada a mano: `./scripts/bootstrap.sh` ejecuta estos dos scripts internamente.
 
 ```bash
 ./scripts/privacyidea-configure.sh
 ./scripts/owncloud-configure.sh
 ```
 
-Cada uno termina con `Configuración completa` o equivalente. Son idempotentes.
+Se mantienen como comandos de diagnóstico cuando se quiere reconfigurar solo una capa. Cada uno termina con `Configuración completa` o equivalente y es idempotente.
 
 ## 4. Batería de validación completa
 
-Esta es la cadena que demuestra que el proyecto funciona de extremo a extremo. Correr **una vez** unas horas antes de la presentación para confirmar el entorno y **otra vez** justo al inicio de la demo.
+`./scripts/bootstrap.sh` ya ejecuta esta cadena. Si el entorno ya está levantado y solo se quiere repetir la validación sin reconstruir contenedores, correr:
 
 ```bash
 ./scripts/ldap-verify.sh
@@ -86,7 +87,9 @@ Cualquier fallo aborta el script con `ERROR:` y un código distinto de 0. La reg
 Complemento opcional (auditoría, el profesor confirmó que no se evalúa):
 
 ```bash
-./scripts/audit-capture.sh   # regenera docs/auditoria.md
+./scripts/bootstrap.sh --with-audit
+# o solo la auditoría, si el stack ya está arriba:
+./scripts/audit-capture.sh
 ```
 
 Solo se corre si el equipo quiere bitácoras frescas o si el profesor pregunta por evidencia de logs durante la sesión.
@@ -124,19 +127,22 @@ Si en cambio se ve el texto `sia-demo-confidencial-...`, el cifrado NO está act
 
 Lista a ejecutar el día anterior a la presentación, en la laptop que se usará en vivo:
 
-- [ ] `git pull origin main` y `git status` deben mostrar `working tree clean`.
-- [ ] `docker compose ps` muestra los 6 contenedores `Up`.
-- [ ] `./scripts/ldap-verify.sh`, `privacyidea-verify.sh`, `owncloud-verify.sh` terminan con `Todo OK`.
-- [ ] `./scripts/owncloud-login-verify.sh usuario.desarrollo1` termina sin errores.
-- [ ] `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1` termina sin errores.
-- [ ] El navegador en modo incógnito tiene aceptada la excepción del cert de `https://localhost:9443`.
-- [ ] El teléfono con FreeOTP tiene un token enrolado para el usuario demo (ver `docs/manual-freeotp.md`).
-- [ ] Si se va a presentar el PDF: `./scripts/build-figures.sh` y `./scripts/build-pdf.sh` ejecutados con éxito.
-- [ ] Charge del teléfono al 100 %.
+```bash
+git pull origin main
+./scripts/bootstrap.sh
+```
+
+Verificaciones de presentación:
+
+- `docker compose -f compose/docker-compose.yml --env-file .env ps` muestra los 6 contenedores `Up` y `healthy`.
+- El navegador en modo incógnito tiene aceptada la excepción del cert de `https://localhost:9443`.
+- El teléfono con FreeOTP tiene un token enrolado para el usuario demo (ver `docs/manual-freeotp.md`).
+- Si se va a presentar el PDF: `./scripts/build-figures.sh` y `./scripts/build-pdf.sh` ejecutados con éxito.
+- El teléfono de la demo tiene batería suficiente.
 
 Solo si se va a mostrar auditoría durante la sesión (el profesor confirmó que esa capa no se evalúa, así que normalmente se omite):
 
-- [ ] `./scripts/audit-capture.sh` ejecutado y `docs/auditoria.md` regenerado con sus 8 secciones.
+- `./scripts/audit-capture.sh` ejecutado y `docs/auditoria.md` regenerado con sus 8 secciones.
 
 ## 8. Día de la presentación
 
@@ -145,16 +151,20 @@ Llegar al salón 20 minutos antes. Pasos:
 1. Encender la laptop, conectar al proyector, ajustar resolución.
 2. Abrir tres terminales en pestañas separadas:
    - Pestaña 1: raíz del repo, lista para correr scripts.
-   - Pestaña 2: `docker compose logs -f` (no usar en vivo, solo por si algo falla).
+   - Pestaña 2: `docker compose -f compose/docker-compose.yml --env-file .env logs -f` (no usar en vivo, solo por si algo falla).
    - Pestaña 3: para el comando `head -c 80` que demuestra cifrado en disco.
 3. Abrir el navegador en modo incógnito. Cargar `https://localhost:9443/login` y aceptar el cert de la CA local.
-4. Abrir `docs/presentacion.md` en Marp (VS Code con extensión Marp, o `marp --pdf docs/presentacion.md`) o cargar el PDF generado.
-5. Confirmar que FreeOTP en el teléfono muestra un código de 6 dígitos para el usuario demo.
-6. Correr la batería de validación una sola vez para calentar caches:
+4. Confirmar el estado del entorno antes de enrolar el teléfono físico:
    ```bash
-   ./scripts/ldap-verify.sh && ./scripts/privacyidea-verify.sh && ./scripts/owncloud-verify.sh
+   ./scripts/bootstrap.sh --no-build
    ```
-   Tres `Todo OK` en menos de 30 segundos.
+   Debe terminar con `Listo`.
+5. Enrolar o confirmar el token de FreeOTP para el usuario demo. Las pruebas automáticas rotan tokens de prueba, por eso este paso va después de `bootstrap.sh`.
+6. Abrir `docs/presentacion.md` en Marp (VS Code con extensión Marp, o `marp --pdf docs/presentacion.md`) o cargar el PDF generado.
+7. Si solo se quiere revisar salud sin volver a tocar tokens:
+   ```bash
+   ./scripts/bootstrap.sh --no-build --skip-tests
+   ```
 
 ## 9. Demo en vivo (orden ensayado)
 
@@ -192,11 +202,11 @@ Cada comando produce salida visible al público. Pausar 5 segundos después de c
 | `Connection refused` en privacyIDEA | El contenedor no terminó de arrancar | Esperar 20 s y reintentar el script |
 | `wrong otp value. previous otp used again` | El OTP se reutilizó en la misma ventana de 30 s | Esperar al siguiente cambio de OTP en FreeOTP |
 | `401 Unauthorized` en WebDAV | Sesión 2FA expiró | Reejecutar el script desde el principio (es idempotente) |
-| Caddy no responde en `:9443` | Conflicto de puertos en el host | `docker compose ps` y `lsof -i:9443` para diagnosticar |
+| Caddy no responde en `:9443` | Conflicto de puertos en el host | `docker compose -f compose/docker-compose.yml --env-file .env ps` y `lsof -i:9443` para diagnosticar |
 | Docker no levanta | Memoria insuficiente | Aumentar recursos en Docker Desktop o reiniciar la VM |
 | Internet no conecta en el salón | No es necesario en vivo | El stack es local, no afecta |
 
-Si TODO falla:
+Si el entorno falla por completo:
 
 - Reproducir la grabación de respaldo de la demo (sugerencia: grabar con `asciinema rec` los pasos del bloque 9 antes del día de la entrega).
 - Mostrar capturas de pantalla en el deck con los `OK:` finales de cada script.

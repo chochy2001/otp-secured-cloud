@@ -101,6 +101,18 @@ print(f"{code:06d}")
 PYEOF
 }
 
+ldap_user_dn() {
+  local user="$1"
+
+  docker exec otpsec-openldap ldapsearch -x -LLL \
+    -H ldap://localhost \
+    -b "${LDAP_BASE_DN}" \
+    -D "cn=admin,${LDAP_BASE_DN}" \
+    -w "${LDAP_ADMIN_PASSWORD}" \
+    "(&(objectClass=inetOrgPerson)(uid=${user}))" dn \
+    | awk '/^dn: / {sub(/^dn: /, ""); print; exit}'
+}
+
 # Captura las líneas relevantes de un componente desde un timestamp dado.
 # Filtros suaves: simplemente saca las últimas N líneas. Para mayor
 # precisión se incluye un grep posterior por usuario o palabra clave.
@@ -251,8 +263,13 @@ trap 'cleanup; restore_owncloud_loglevel' EXIT
 echo
 echo "==> 1. Login LDAP exitoso"
 MARK="$(iso_now)"
+TEST_USER_DN="$(ldap_user_dn "${TEST_USER}")"
+if [[ -z "${TEST_USER_DN}" ]]; then
+  echo "ERROR: no se encontró DN LDAP para ${TEST_USER}"
+  exit 1
+fi
 docker exec otpsec-openldap ldapwhoami -x -H ldap://localhost \
-  -D "uid=${TEST_USER},ou=Desarrollo,ou=Usuarios,${LDAP_BASE_DN}" \
+  -D "${TEST_USER_DN}" \
   -w "${LDAP_USER_PASSWORD}" >/dev/null
 let_logs_settle
 LDAP_OK_LOG="$(capture_ldap_for_user "${TEST_USER}" 30)"
@@ -268,7 +285,7 @@ write_section \
 echo "==> 2. Login LDAP fallido"
 MARK="$(iso_now)"
 docker exec otpsec-openldap ldapwhoami -x -H ldap://localhost \
-  -D "uid=${TEST_USER},ou=Desarrollo,ou=Usuarios,${LDAP_BASE_DN}" \
+  -D "${TEST_USER_DN}" \
   -w "password-incorrecto" >/dev/null 2>&1 || true
 let_logs_settle
 LDAP_FAIL_LOG="$(capture_ldap_for_user "${TEST_USER}" 30)"

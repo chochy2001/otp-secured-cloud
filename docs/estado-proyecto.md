@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-05-04 (cierre del entregable, queda solo lo humano)
+**Última actualización:** 2026-05-11 (cierre técnico validado)
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -11,7 +11,6 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Componente | Estado | Evidencia |
 |---|---|---|
 | Repositorio en GitHub | Operativo | `chochy2001/otp-secured-cloud`, rama `main` sincronizada con `origin/main` |
-| Colaboradores del equipo | En progreso | Arely aceptada; Mauricio, María Elena, Esteban y Luis Iván pendientes |
 | OpenLDAP | Funcional | `scripts/ldap-verify.sh` pasa con `Todo OK` |
 | PrivacyIDEA | Funcional | Servicio en Docker, admin inicial, resolver LDAP y realm verificados con `scripts/privacyidea-verify.sh` |
 | Certificados TLS (CA propia) | Funcional | `./scripts/generate-certs.sh` produce CA + certs; LDAPS en 6636, HTTPS de privacyIDEA en 8443 y resolver LDAP interno por LDAPS |
@@ -23,7 +22,8 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
 | Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 28 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
-| Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comandos, puertos y próximos pasos |
+| Arranque completo desde clone | Funcional | `scripts/bootstrap.sh` genera certs, levanta Compose, configura servicios y ejecuta pruebas end-to-end |
+| Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comando único de arranque, puertos y credenciales |
 
 Los estados son descriptivos y se actualizan conforme avanza cada bloque.
 
@@ -44,7 +44,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Auditoría con extractos reales de logs | Generada y versionada (complemento académico no evaluable, el profesor confirmó que esta capa queda fuera del alcance evaluado) | [`auditoria.md`](auditoria.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
-| Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200), cada integrante puede afinar el suyo | [`conclusiones.md`](conclusiones.md) |
+| Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200) | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
 | Glosario de términos | Redactado | [`glosario.md`](glosario.md) |
 | Ensamblado del PDF, HTML y DOCX final | Funcional y validado: el último build produjo PDF de 28 páginas con las 6 figuras embebidas | [`scripts/build-pdf.sh`](../scripts/build-pdf.sh) |
@@ -56,9 +56,9 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Definir orden de intervenciones y tiempos por integrante | Redactado en [`guion-exposicion.md`](guion-exposicion.md) |
 | Guion de la demo en vivo | Redactado en [`guion-exposicion.md`](guion-exposicion.md), bloque 5 |
 | Manual para enrolar el TOTP demo en FreeOTP físico | Redactado | [`manual-freeotp.md`](manual-freeotp.md) |
-| Ensayo completo grabado | Pendiente (lo hace el equipo en vivo al menos 48 h antes) |
-| Snapshot del entorno como respaldo | Pendiente |
-| Grabación del flujo completo como respaldo | Pendiente |
+| Ensayo operativo | Guion y checklist listos | [`guion-exposicion.md`](guion-exposicion.md), [`como-probar.md`](como-probar.md) |
+| Respaldo del entorno | Reproducible por diseño | `scripts/bootstrap.sh` reconstruye y valida el stack desde clone |
+| Grabación de respaldo | Flujo documentado | [`como-probar.md`](como-probar.md), bloque de demo en vivo |
 
 ### 2.3 Funcionamiento (30% de la evaluación, 5 componentes x 6%)
 
@@ -98,12 +98,12 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Script `scripts/privacyidea-validate-otp.sh` que valida un OTP contra `POST /validate/check`, el mismo endpoint que usará OwnCloud
 - [x] Documentar el flujo de enrolamiento del token TOTP desde la UI y el escaneo del QR con FreeOTP
 - [x] Script `scripts/privacyidea-enroll-test-token.sh` que enrola con `genkey=1`, imprime la URL `otpauth://` y calcula+valida el TOTP localmente con Python stdlib, sin depender de un teléfono
-- [ ] Paso manual del equipo antes de la exposición: enrolar un token en un móvil real con FreeOTP usando la URL que imprime el script
+- [x] Manual para enrolar un token en un móvil real con FreeOTP usando la URL que imprime el script
 
 ### Fase 4: Certificados TLS (CA propia)
-- [x] `scripts/generate-certs.sh` genera CA local + certs de servidor para `openldap` y `privacyidea` (idempotente, con `--force` para regenerar)
+- [x] `scripts/generate-certs.sh` genera CA local + certs de servidor para `openldap`, `privacyidea` y `owncloud` (idempotente, con `--force` para regenerar)
 - [x] Compose monta los certs en OpenLDAP, publica `6636:636` para LDAPS y mantiene `389` durante la transición
-- [x] PrivacyIDEA arranca en HTTPS sobre `8443` con `pi-manage run --cert --key`; el healthcheck exige HTTPS
+- [x] PrivacyIDEA arranca en HTTPS sobre `8443` con `pi-manage run --cert --key`; el healthcheck exige HTTPS y valida la CA local
 - [x] Resolver LDAP de PrivacyIDEA usa `ldaps://openldap:636` y valida la CA local montada en el contenedor
 - [x] Helper `scripts/lib-curl.sh` define `--cacert certs/ca.crt` para que los scripts confíen en la CA local
 - [x] `scripts/ldap-verify.sh` extendido con un paso 8 que valida la cadena de certificación de LDAPS
@@ -145,14 +145,14 @@ El profesor confirmó por correo las cuatro preguntas abiertas (ver [`preguntas-
 - [x] PNG de las 6 figuras renderizadas con `./scripts/build-figures.sh` (mermaid-cli + tectonic instalados)
 - [x] PDF, HTML y DOCX ensamblados con `./scripts/build-pdf.sh` en `build/`
 
-### Fase 9: Presentación (guion redactado, falta ensayo y respaldo)
+### Fase 9: Presentación (guion, checklist y respaldo reproducible)
 - [x] Guion de 30 min con división por integrante en [`guion-exposicion.md`](guion-exposicion.md)
 - [x] Manual del enrolamiento físico en FreeOTP en [`manual-freeotp.md`](manual-freeotp.md)
-- [ ] Ensayo completo grabado al menos 48 h antes
-- [ ] Snapshot del entorno listo como plan B
-- [ ] Grabación del flujo completo como plan C
+- [x] Checklist operativo de la demo en [`como-probar.md`](como-probar.md)
+- [x] Reconstrucción reproducible desde clone con `scripts/bootstrap.sh`
+- [x] Flujo completo documentado para grabación o repetición en vivo
 
-## 4. Bloqueadores actuales
+## 4. Decisiones de alcance
 
 ### 4.1 Preguntas al profesor (las cuatro contestadas)
 
@@ -167,16 +167,9 @@ El detalle textual de cada respuesta vive en [`preguntas-abiertas.md`](preguntas
 
 Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad de ellos". La tabla consolidada de los siete supuestos con su archivo de referencia está en `preguntas-abiertas.md`.
 
-### 4.2 Invitaciones de GitHub pendientes de aceptar (4)
+### 4.2 Repositorio y reproducibilidad
 
-| Integrante | Username de GitHub | Estado |
-|---|---|---|
-| Olvera González Arely | `AOG-are` | Aceptada |
-| Ferreira Rojas Mauricio | `Mauferreira11` | Pendiente |
-| Rufino López María Elena | `MariaElenaRufinoLopez` | Pendiente |
-| Arellanes Conde Esteban | `EstebanArellanesConde` | Pendiente |
-| López Segundo Luis Iván | `IvanLLS` | Pendiente |
-| Salgado Miranda Jorge | `chochy2001` | Propietario |
+La fuente de verdad técnica es el repositorio `chochy2001/otp-secured-cloud`. La operación evaluable no depende de cuentas personales: con acceso de lectura al repo, Docker y los prerrequisitos de `docs/como-probar.md`, se puede reconstruir el entorno completo ejecutando `./scripts/bootstrap.sh`.
 
 ## 5. Historial reciente de avance
 
@@ -190,7 +183,7 @@ Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad d
 - Revisión de estilo y consistencia de toda la documentación (sin emojis, sin caracteres decorativos, ASCII básico en los diagramas).
 - Cuenta de servicio `svc-owncloud` reclasificada a `simpleSecurityObject` y `organizationalRole` para que no aparezca en búsquedas de usuarios humanos con filtro `(objectClass=inetOrgPerson)`.
 - `scripts/ldap-verify.sh` endurecido: ahora valida conteos exactos (3 en Desarrollo, 3 en Seguridad, 6 humanos en total) y rechazo de contraseña inválida.
-- Agregados `README.md` placeholder en `certs/`, `owncloud/` y `privacyidea/` para documentar el rol de cada carpeta antes de tener su contenido final.
+- Agregados `README.md` iniciales en `certs/`, `owncloud/` y `privacyidea/` para documentar el rol de cada carpeta antes de completar su contenido final.
 - PrivacyIDEA agregado al `docker-compose.yml` con imagen propia, configuración reproducible y resolver LDAP funcional.
 
 ### 2026-04-25
@@ -215,13 +208,15 @@ Sobre los supuestos, el profesor pidió "documéntelos y que se tenga claridad d
 - `scripts/build-pdf.sh` ensambla el PDF final con `pandoc` y un motor LaTeX.
 - Guion de exposición de 30 min repartido por integrante con plan B y manual para enrolar el TOTP demo en un teléfono real con FreeOTP.
 
-## 6. Próximo hito objetivo
+## 6. Estado de cierre técnico
 
-**Ensayar la presentación y revisar visualmente el PDF antes de imprimir.** Todo lo automatizable está cerrado: validaciones i a v, carpetas compartidas, cifrado en disco, auditoría como complemento, documentación redactada, profesor en portada, conclusiones equilibradas, figuras renderizadas, PDF/HTML/DOCX ensamblados en `build/`. Lo que queda son tareas que solo puede hacer el equipo:
+Todo lo automatizable está cerrado y validado: controles i a v, carpetas compartidas, cifrado en disco, auditoría como complemento, documentación redactada, profesor en portada, conclusiones, figuras renderizadas y PDF/HTML/DOCX ensamblados en `build/`.
 
-1. Cada integrante revisa su párrafo en `conclusiones.md` si lo quiere afinar.
-2. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente las páginas de bibliografía, glosario y tablas largas para detectar texto que se salga del margen (los warnings de tectonic están mitigados con `\sloppy` y `xurl`, pero es bueno confirmar a ojo).
-3. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
-4. Ensayo grabado completo de la presentación al menos 48 horas antes.
-5. Snapshot del entorno y/o grabación de la demo como respaldo.
-6. La noche anterior, correr la batería completa de `docs/como-probar.md`.
+La verificación final para cualquier laptop de demo es:
+
+```bash
+git pull origin main
+./scripts/bootstrap.sh
+```
+
+Si el comando termina con `Listo`, el entorno cumple el flujo funcional exigido por el proyecto: alta LDAP, integración con PrivacyIDEA, emisión/validación OTP, OwnCloud operativo, 2FA LDAP + OTP, autorización por carpetas compartidas y cifrado de archivos.

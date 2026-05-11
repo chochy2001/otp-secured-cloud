@@ -24,25 +24,21 @@ Las contraseñas viven en `.env` con el patrón memorable `sia-<rol>-2026`. Se v
 
 ## 2. Levantamiento del stack
 
-La validación principal se reproduce con esta secuencia desde la raíz del repositorio:
+La validación principal se reproduce con un solo comando desde la raíz del repositorio:
 
 ```bash
-./scripts/generate-certs.sh
-docker compose -f compose/docker-compose.yml --env-file .env up -d
-./scripts/ldap-verify.sh
-./scripts/privacyidea-configure.sh && ./scripts/privacyidea-verify.sh
-./scripts/owncloud-configure.sh && ./scripts/owncloud-verify.sh
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/bootstrap.sh
 ```
+
+El script ejecuta internamente estos pasos: generación de certificados, `docker compose up -d --build`, espera de healthchecks, configuración de privacyIDEA, configuración de OwnCloud, validación LDAP, validación privacyIDEA, validación OwnCloud, login LDAP + OTP, cifrado local y archivo compartido descifrado por el destinatario.
 
 Opcional (complemento académico no evaluable, ver sección 8):
 
 ```bash
-./scripts/audit-capture.sh
+./scripts/bootstrap.sh --with-audit
 ```
 
-Los scripts son idempotentes: pueden ejecutarse N veces sin romper el estado. La salida `Todo OK` (o `OK` por bloque, según el script) es la condición de éxito.
+Los scripts son idempotentes: pueden ejecutarse N veces sin romper el estado. La salida `Listo` de `bootstrap.sh` es la condición de éxito para el flujo completo.
 
 ## 3. Identificación: OpenLDAP
 
@@ -60,9 +56,10 @@ Ver detalles de diseño en `docs/arbol-ldap.md`.
 ### Archivos relevantes
 
 - `compose/docker-compose.yml`: servicio `openldap`.
-- `ldap/bootstrap/01-base-structure.ldif`: define raíz, OUs y la cuenta de servicio.
+- `ldap/bootstrap/01-ous.ldif`: define OUs de usuarios, grupos y servicios.
 - `ldap/bootstrap/02-users-desarrollo.ldif`, `03-users-seguridad.ldif`: siembran 6 usuarios.
-- `ldap/bootstrap/04-acls.ldif`: ACL específica para la cuenta de servicio.
+- `ldap/bootstrap/04-service-account.ldif`: crea la cuenta de servicio.
+- `ldap/bootstrap/00-acl-service-read.ldif`: ACL específica para la cuenta de servicio.
 - `scripts/ldap-verify.sh`: 8 checks que confirman admin bind, conteo de usuarios humanos exactamente 6, ACL operativa, rechazo de credenciales inválidas y validación de la cadena de TLS LDAPS.
 
 ### Qué prueba el verify
@@ -95,7 +92,7 @@ Ver detalles de configuración en `privacyidea/README.md`.
 
 ### Archivos relevantes
 
-- `privacyidea/Dockerfile`, `privacyidea/entrypoint.sh`, `privacyidea/pi.cfg.template`.
+- `privacyidea/Dockerfile`, `privacyidea/entrypoint.sh`, `privacyidea/pi.cfg`.
 - `compose/docker-compose.yml`: servicio `privacyidea`.
 - `scripts/privacyidea-configure.sh`: crea/actualiza el resolver y el realm con la API.
 - `scripts/privacyidea-verify.sh`: 6 checks (servicio responde, admin bind, resolver, conteo de 6 usuarios, realm).
@@ -119,7 +116,7 @@ Ver detalles de configuración en `privacyidea/README.md`.
 - Caddy `2-alpine` como terminador TLS, con el cert `owncloud.crt` (SANs: `owncloud`, `owncloud-server`, `owncloud-proxy`, `localhost`, `127.0.0.1`, `::1`). Publica el portal en `https://localhost:9443`.
 - Backend de usuarios LDAP a través del app `user_ldap`, configurado por `occ ldap:create-empty-config` y `occ ldap:set-config`. Conexión en LDAPS contra `openldap:636`.
 - Plugin `twofactor_privacyidea` configurado para apuntar a `https://privacyidea:8443` (interno) usando la CA local.
-- Cifrado del lado servidor con módulo por defecto `OC_DEFAULT_MODULE` y `master key` habilitado. Los archivos quedan cifrados en disco (cabecera `HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND`).
+- Cifrado del lado servidor con módulo por defecto `OC_DEFAULT_MODULE`. En OwnCloud 10.15 el tipo de cifrado disponible para instalaciones nuevas es master-key-based; el estado se verifica con `occ config:app:get encryption useMasterKey`, que debe devolver `1`. Los archivos quedan cifrados en disco (cabecera `HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND`).
 
 ### Archivos relevantes
 
@@ -203,7 +200,7 @@ El script `scripts/audit-capture.sh`:
 3. Para cada evento, marca un timestamp UTC, dispara la acción y captura líneas relevantes del log de cada componente filtrando por usuario y por timestamp posterior al marcador.
 4. Escribe `docs/auditoria.md` con un encabezado por evento, la fuente del log y el extracto en bloques `code`.
 
-El resultado del último ejecutar contiene evidencia de las tres capas evaluables más el complemento de auditoría:
+El resultado de la última ejecución contiene evidencia de las tres capas evaluables más el complemento de auditoría:
 
 | Capa | Evidencia | Evaluable |
 |---|---|---|
@@ -215,4 +212,4 @@ El resultado del último ejecutar contiene evidencia de las tres capas evaluable
 
 ## 9. Reproducibilidad
 
-Si se borran los volúmenes (`docker compose down -v`) el entorno se reconstruye exactamente igual ejecutando la secuencia indicada en la sección 2. La memoria técnica completa cabe en este flujo: cualquier integrante o evaluador puede partir de cero y, en menos de 10 minutos en una laptop moderna con Docker, llegar al mismo estado funcional que validan los scripts.
+Si se borran los volúmenes (`docker compose down -v`) el entorno se reconstruye exactamente igual con `./scripts/bootstrap.sh`. La memoria técnica completa cabe en este flujo: cualquier integrante o evaluador puede partir de cero y, en menos de 10 minutos en una laptop moderna con Docker, llegar al mismo estado funcional que validan los scripts.

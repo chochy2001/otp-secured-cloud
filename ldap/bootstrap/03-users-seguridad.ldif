@@ -8,7 +8,7 @@ cn: Usuario Seguridad Uno
 sn: Seguridad
 givenName: Usuario Uno
 mail: usuario.seguridad1@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}wW7LwMhzC21nANWPzbydd3aiTjCIIP+F
 
 dn: uid=usuario.seguridad2,ou=Seguridad,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
@@ -20,7 +20,7 @@ cn: Usuario Seguridad Dos
 sn: Seguridad
 givenName: Usuario Dos
 mail: usuario.seguridad2@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}KcYUWJqHV8zGTbL/zQMgn5pa3Se47eUC
 
 dn: uid=usuario.seguridad3,ou=Seguridad,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
@@ -32,4 +32,4 @@ cn: Usuario Seguridad Tres
 sn: Seguridad
 givenName: Usuario Tres
 mail: usuario.seguridad3@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}rIYPDgeXp5wADkRnIW9xtZn4cAzuZKra

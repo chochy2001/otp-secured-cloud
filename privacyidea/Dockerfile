@@ -37,7 +37,7 @@ RUN curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
 # evita que el resolvedor repita descargas pequeñas que suelen fallar por
 # timeouts intermitentes en PyPI.
 RUN pip install --no-cache-dir --retries 10 --timeout 180 \
-      "pycparser==3.0" \
+      "pycparser==2.23" \
       "cffi==1.16.0" \
       "argon2-cffi-bindings==21.2.0"
 
@@ -76,9 +76,9 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8443
 
-# El healthcheck exige HTTPS porque la Fase 4 requiere certs montados.
+# El healthcheck exige HTTPS y valida el certificado con la CA local.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD curl -fsSk https://localhost:8443/ > /dev/null \
+  CMD curl -fsS --cacert /etc/privacyidea/ssl/ca.crt https://localhost:8443/ > /dev/null \
    || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

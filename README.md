@@ -12,7 +12,7 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 
 1. **El archivo `.env` con contraseñas se versiona a propósito.** Es una mala práctica reconocida: lo hacemos para que los integrantes del equipo y quien revise el proyecto puedan levantar el entorno sin intercambiar secretos por otro canal. En producción las credenciales deben estar fuera del repositorio (gestor de secretos, variables en CI, etc.).
 2. **Las contraseñas por defecto son débiles y compartidas.** Todos los usuarios comparten una misma contraseña (`sia-user-2026`). En producción debería existir política de contraseñas, rotación, y contraseñas únicas por usuario.
-3. **Los LDIFs almacenan `userPassword` en texto plano.** OpenLDAP las hashea al importar, pero el LDIF original deja el valor expuesto en el repo. En producción se generan los hashes con `slappasswd -s` y solo el hash se escribe al archivo.
+3. **Las contraseñas académicas siguen versionadas en `.env`.** Los LDIFs ya siembran `userPassword` como hashes `{SSHA}` generados con `slappasswd`, pero el archivo `.env` conserva los valores en claro para reproducibilidad del laboratorio. En producción esos secretos no deben versionarse.
 4. **Los certificados TLS son autofirmados** con una CA del propio proyecto. Esto es válido para un laboratorio cerrado pero inservible en internet público: cualquier cliente verá advertencias de certificado si no confía explícitamente en la CA local.
 5. **No hay backup, alta disponibilidad, ni hardening del sistema operativo.** Un solo contenedor por servicio, volúmenes locales, sin replicación.
 6. **No hay rate limiting, lockout de cuentas, ni protección contra fuerza bruta** más allá de lo que trae cada componente por defecto.
@@ -35,7 +35,7 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 
 ## Estado del proyecto
 
-El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado-proyecto.md`](docs/estado-proyecto.md), que se actualiza en cada avance. Resumen actual:
+El estado detallado y la trazabilidad por fases viven en [`docs/estado-proyecto.md`](docs/estado-proyecto.md). Resumen actual:
 
 - [x] Estructura del repositorio y documentación base
 - [x] OpenLDAP con dos unidades organizacionales (Desarrollo, Seguridad) y usuarios sembrados
@@ -48,42 +48,23 @@ El estado detallado, los bloqueadores y el plan por fases viven en [`docs/estado
 - [x] Carpetas compartidas con OCS Sharing API y descifrado por el destinatario (`scripts/owncloud-share-verify.sh`)
 - [x] Auditoría reproducible de los 8 eventos clave (`scripts/audit-capture.sh`, complemento académico no evaluable)
 - [x] Memoria técnica, conclusiones, glosario, bibliografía y guion de exposición redactados
+- [x] Arranque completo con un solo comando (`scripts/bootstrap.sh`)
 
 ## Arranque rápido
 
 ```bash
-# 1. Generar la CA local y los certs de servidor
-./scripts/generate-certs.sh
-
-# 2. Levantar todo el stack
-docker compose -f compose/docker-compose.yml --env-file .env up -d
-
-# 3. Verificar OpenLDAP (incluye prueba de LDAPS contra la CA)
-./scripts/ldap-verify.sh
-
-# 4. Configurar resolver y realm en privacyIDEA y verificarlo
-./scripts/privacyidea-configure.sh
-./scripts/privacyidea-verify.sh
-
-# 5. Enrolar un TOTP de prueba y validarlo de extremo a extremo
-./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1
-
-# 6. Configurar OwnCloud (LDAP backend + 2FA + encryption) y validar
-./scripts/owncloud-configure.sh
-./scripts/owncloud-verify.sh
-
-# 7. Probar login web LDAP + OTP y archivo cifrado en disco
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-
-# 8. Probar carpetas compartidas y descifrado por el destinatario
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
-
-# 9. Opcional (complemento académico, el profesor confirmó que la
-# auditoría no se evalúa): regenerar bitácoras de los 8 eventos clave.
-# ./scripts/audit-capture.sh
+git clone git@github.com:chochy2001/otp-secured-cloud.git
+cd otp-secured-cloud
+./scripts/bootstrap.sh
 ```
 
-Si las verificaciones del paso 1 al 8 terminan con `Todo OK` (o el mensaje equivalente del último script), el stack está operativo: directorio LDAP con TLS, privacyIDEA con HTTPS, validación de OTP funcionando, OwnCloud accesible vía HTTPS detrás de Caddy, segundo factor activo, cifrado local verificado sobre un archivo real y archivo compartido descifrado por el destinatario.
+`bootstrap.sh` genera la CA local, levanta Docker Compose con build, espera los healthchecks, configura privacyIDEA y OwnCloud, y corre la batería evaluable: LDAP, PrivacyIDEA, OwnCloud, login LDAP + OTP, cifrado local y archivo compartido descifrado por el destinatario. Si termina con `Listo`, el stack está operativo.
+
+Para regenerar también las bitácoras de auditoría no evaluables:
+
+```bash
+./scripts/bootstrap.sh --with-audit
+```
 
 Para una guía exhaustiva del día de la presentación (pre-flight, demo en vivo y plan B), ver [`docs/como-probar.md`](docs/como-probar.md).
 
@@ -105,7 +86,7 @@ otp-secured-cloud/
 
 Operación y bitácoras:
 
-- [Estado del proyecto](docs/estado-proyecto.md): documento vivo con avance, bloqueadores y plan por fases
+- [Estado del proyecto](docs/estado-proyecto.md): documento vivo con avance y trazabilidad por fases
 - [Guía paso a paso para el equipo](docs/guia-equipo.md): cómo clonar y probar el proyecto en tu máquina
 - [Cómo probar el proyecto antes y durante la presentación](docs/como-probar.md): pre-flight, demo en vivo y plan B
 - [Cierre de sesión de trabajo](docs/cierre-sesion.md): puertos, credenciales y comandos para retomar

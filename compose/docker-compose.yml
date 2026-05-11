@@ -37,6 +37,12 @@ services:
       - ldap_config:/etc/ldap/slapd.d
     networks:
       - otpsec
+    healthcheck:
+      test: ["CMD", "ldapwhoami", "-x", "-H", "ldap://localhost"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 12
     restart: unless-stopped
 
   privacyidea:
@@ -47,7 +53,8 @@ services:
     container_name: otpsec-privacyidea
     hostname: privacyidea
     depends_on:
-      - openldap
+      openldap:
+        condition: service_healthy
     environment:
       PI_ADMIN_USERNAME: "${PI_ADMIN_USERNAME}"
       PI_ADMIN_PASSWORD: "${PI_ADMIN_PASSWORD}"
@@ -83,6 +90,12 @@ services:
       - owncloud_db_data:/var/lib/mysql
     networks:
       - otpsec
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u\"$${MYSQL_USER}\" -p\"$${MYSQL_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 12
     restart: unless-stopped
 
   owncloud-redis:
@@ -91,6 +104,12 @@ services:
     hostname: owncloud-redis
     networks:
       - otpsec
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 12
     restart: unless-stopped
 
   owncloud-server:
@@ -98,9 +117,12 @@ services:
     container_name: otpsec-owncloud-server
     hostname: owncloud-server
     depends_on:
-      - owncloud-db
-      - owncloud-redis
-      - openldap
+      owncloud-db:
+        condition: service_healthy
+      owncloud-redis:
+        condition: service_healthy
+      openldap:
+        condition: service_healthy
     environment:
       OWNCLOUD_DOMAIN: "localhost:9443"
       OWNCLOUD_TRUSTED_DOMAINS: "localhost,owncloud-server,owncloud-proxy"
@@ -129,6 +151,12 @@ services:
       - ../owncloud/10-trust-project-ca.sh:/etc/entrypoint.d/10-trust-project-ca.sh:ro
     networks:
       - otpsec
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/status.php -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 18
     restart: unless-stopped
 
   owncloud-proxy:
@@ -136,7 +164,8 @@ services:
     container_name: otpsec-owncloud-proxy
     hostname: owncloud-proxy
     depends_on:
-      - owncloud-server
+      owncloud-server:
+        condition: service_healthy
     ports:
       - "9443:9443"
     volumes:
@@ -147,6 +176,12 @@ services:
       - caddy_config:/config
     networks:
       - otpsec
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-check-certificate -q -O- https://localhost:9443/status.php >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 12
     restart: unless-stopped
 
 volumes:

@@ -11,7 +11,8 @@ Antes de empezar necesitas tener instalado:
 | Docker Desktop (Mac/Windows) o Docker Engine (Linux) | 24.0 o superior | Correr los contenedores |
 | Docker Compose | v2.x (viene con Docker Desktop) | Orquestar varios servicios |
 | Git | 2.30 o superior | Clonar el repositorio |
-| Bash | 4.x o superior | Correr el script de verificación (`scripts/ldap-verify.sh`) |
+| Bash | 3.2 o superior | Correr los scripts del proyecto |
+| Python 3, curl y OpenSSL | Versiones del sistema | Calcular TOTP, probar HTTPS y generar certificados |
 
 En macOS, `bash` viene en versión 3.2 por compatibilidad histórica, pero el script de verificación funciona también con esa versión. Si tienes una más nueva instalada vía Homebrew, mejor.
 
@@ -45,18 +46,15 @@ Las credenciales siguen el patrón `sia-<rol>-2026`:
 | Admin de PrivacyIDEA | `sia-pi-admin-2026` |
 | Admin de OwnCloud | `sia-oc-admin-2026` |
 
-## 4. Levantar el stack
+## 4. Levantar y validar el stack
 
 Desde la raíz del repositorio:
 
 ```bash
-./scripts/generate-certs.sh
-cd compose
-docker compose --env-file ../.env up -d --build
-cd ..
+./scripts/bootstrap.sh
 ```
 
-El primer arranque puede tardar varios minutos porque descarga imágenes y construye PrivacyIDEA. Los siguientes son más rápidos.
+El primer arranque puede tardar varios minutos porque descarga imágenes y construye PrivacyIDEA. Los siguientes son más rápidos. El script genera certificados, levanta Docker Compose, configura privacyIDEA y OwnCloud, y ejecuta la batería completa de pruebas.
 
 Para ver los logs del contenedor mientras arranca:
 
@@ -68,14 +66,11 @@ Ctrl-C para salir del `tail` (el contenedor sigue corriendo).
 
 ## 5. Configurar y verificar
 
-Corre los scripts en este orden desde la raíz del repo:
+El flujo normal no necesita comandos adicionales: `./scripts/bootstrap.sh` ya configura y verifica todo. Si quieres repetir solo las pruebas con el stack ya levantado:
 
 ```bash
 ./scripts/ldap-verify.sh
-./scripts/privacyidea-configure.sh
 ./scripts/privacyidea-verify.sh
-./scripts/privacyidea-enroll-test-token.sh
-./scripts/owncloud-configure.sh
 ./scripts/owncloud-verify.sh
 ./scripts/owncloud-login-verify.sh usuario.desarrollo1
 ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
@@ -84,7 +79,7 @@ Corre los scripts en este orden desde la raíz del repo:
 Opcional (complemento académico, el profesor confirmó que la auditoría no se evalúa):
 
 ```bash
-./scripts/audit-capture.sh
+./scripts/bootstrap.sh --with-audit
 ```
 
 Deberías ver:
@@ -154,9 +149,8 @@ Si es un contenedor de otro proyecto, detén ese contenedor o cambia temporalmen
 Osixia solo ejecuta los LDIFs de `ldap/bootstrap/` **una vez**, en el primer arranque sobre volúmenes vacíos. Si ya había corrido el contenedor antes, los LDIFs posteriores se ignoran. Para forzar la reimportación:
 
 ```bash
-cd compose
-docker compose down -v    # la -v borra volúmenes y datos del LDAP
-docker compose --env-file ../.env up -d openldap
+docker compose -f compose/docker-compose.yml --env-file .env down -v
+./scripts/bootstrap.sh
 ```
 
 Atención: esto borra todos los datos actuales del LDAP. En desarrollo no importa; en producción sería catastrófico.
@@ -174,9 +168,8 @@ Asegúrate de que el archivo `.env` está en la raíz del repo. El script lo car
 Docker Compose pasa las variables al momento de crear el contenedor. Si cambias `.env` después, tienes que recrear:
 
 ```bash
-cd compose
-docker compose down
-docker compose --env-file ../.env up -d openldap
+docker compose -f compose/docker-compose.yml --env-file .env down
+./scripts/bootstrap.sh
 ```
 
 Y si además cambiaste contraseñas usadas en los LDIFs, necesitas además `down -v` para que el LDAP las recargue desde cero.
@@ -184,10 +177,9 @@ Y si además cambiaste contraseñas usadas en los LDIFs, necesitas además `down
 ## 8. Apagar el entorno
 
 ```bash
-cd compose
-docker compose down          # apaga los contenedores pero mantiene los datos
+docker compose -f compose/docker-compose.yml --env-file .env down
 # ó:
-docker compose down -v       # apaga y borra los volúmenes (datos del LDAP)
+docker compose -f compose/docker-compose.yml --env-file .env down -v
 ```
 
 ## 9. Generar artefactos de entrega

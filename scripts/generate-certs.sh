@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Genera la CA del proyecto y los certificados de servidor para
-# OpenLDAP y PrivacyIDEA.
+# OpenLDAP, PrivacyIDEA y OwnCloud.
 #
 # Idempotente: si la CA o un cert ya existen, no se regenera. Para
 # forzar la regeneración pasar el flag --force.
@@ -10,6 +10,7 @@
 #   certs/ca.key, certs/ca.crt
 #   certs/openldap.key, certs/openldap.crt
 #   certs/privacyidea.key, certs/privacyidea.crt
+#   certs/owncloud.key, certs/owncloud.crt
 #
 # Las llaves privadas (.key) están listadas en .gitignore y NO deben
 # subirse al repositorio. Solo se versionan ejemplos de configuración.

@@ -8,7 +8,7 @@ cn: Usuario Desarrollo Uno
 sn: Desarrollo
 givenName: Usuario Uno
 mail: usuario.desarrollo1@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}dmpdEG9ZhdzP1c83q8cv3UJ3Py0hjhJn
 
 dn: uid=usuario.desarrollo2,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
@@ -20,7 +20,7 @@ cn: Usuario Desarrollo Dos
 sn: Desarrollo
 givenName: Usuario Dos
 mail: usuario.desarrollo2@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}bRsJa3Iqa6vUsZUd2CR6rDofNFbUrO/w
 
 dn: uid=usuario.desarrollo3,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
 objectClass: inetOrgPerson
@@ -32,4 +32,4 @@ cn: Usuario Desarrollo Tres
 sn: Desarrollo
 givenName: Usuario Tres
 mail: usuario.desarrollo3@sia.unam.mx
-userPassword: sia-user-2026
+userPassword: {SSHA}JZu8ia3s5dbqcwkNzVi9MBkCxF67VLgr

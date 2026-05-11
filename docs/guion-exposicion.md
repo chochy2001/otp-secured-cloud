@@ -1,137 +1,184 @@
 # Guion de exposición - 30 minutos
 
-Material de trabajo para el ensayo. Distribuye los 30 minutos entre los 6 integrantes y deja la demo en vivo como punto central. La distribución se ajusta a lo que el profesor confirmó que va a evaluar: identificación, autenticación y autorización (las tres primeras capas del control de acceso). La auditoría se menciona brevemente como contexto académico pero no se la usa como bloque principal.
+Material de trabajo para el ensayo. La presentación primero vende la solución y explica la arquitectura; la demo queda al final para mostrar el sistema ya construido, sin improvisar comandos ni clonar en vivo.
 
-## Distribución por integrante
+## Distribución general
 
 | Bloque | Tiempo | Responsable | Tema |
-|---|---|---|---|
-| 0. Intro y contexto | 2 min | Salgado Miranda Jorge | Apertura, integrantes, objetivo, mapeo a las 3 capas evaluadas |
-| 1. Marco conceptual: 2FA, OTP, TOTP, HOTP | 4 min | Olvera González Arely | Por qué 2FA, definiciones formales, diferencias entre HOTP y TOTP |
-| 2. Diseño del árbol LDAP y cuentas de servicio | 5 min | López Segundo Luis Iván | Base DN, OUs, NHI, ACL, evidencia con `ldap-verify.sh` |
-| 3. privacyIDEA y enrolamiento con FreeOTP | 4 min | Ferreira Rojas Mauricio | Resolver, realm, ciclo de vida del token, FreeOTP en pantalla |
-| 4. OwnCloud: autorización, 2FA y cifrado | 5 min | Rufino López María Elena | Plugin twofactor_privacyidea, permisos por carpeta dentro de OwnCloud, cifrado del lado servidor |
-| 5. Demo en vivo: login + share + cifrado en disco | 7 min | Arellanes Conde Esteban | `owncloud-login-verify.sh`, `owncloud-share-verify.sh`, mostrar HBEGIN, casos de error |
-| 6. Conclusiones, limitaciones y preguntas | 3 min | Todos rotando | Lo aceptado a propósito, mención breve de auditoría como contexto, dudas del profesor |
+|---|---:|---|---|
+| 0. Apertura y promesa | 3 min | Salgado Miranda Jorge | Qué se construyó, qué evalúa el profesor y por qué el proyecto es defendible |
+| 1. Marco conceptual | 3 min | Olvera González Arely | 2FA, OTP, HOTP vs TOTP, rol de FreeOTP |
+| 2. Identidad LDAP | 4 min | López Segundo Luis Iván | Árbol LDAP, usuarios, cuenta de servicio, ACL y LDAPS |
+| 3. Segundo factor | 4 min | Ferreira Rojas Mauricio | privacyIDEA, resolver, realm, enrolamiento TOTP |
+| 4. OwnCloud | 4 min | Rufino López María Elena | LDAP, plugin 2FA, autorización, cifrado y shares |
+| 5. Integración y cierre técnico | 4 min | Salgado Miranda Jorge | Docker Compose, healthchecks, `bootstrap.sh`, pruebas y QA |
+| 6. Demo final | 7 min | Arellanes Conde Esteban, con apoyo de Jorge | Levantar/verificar, login LDAP+OTP, cifrado, share |
+| 7. Cierre | 1 min | Todos | Limitaciones honestas y preguntas |
 
-Total: 30 minutos exactos. Si la demo (bloque 5) se atrasa, se acorta el bloque 6.
+Total: 30 minutos. Si el tiempo se aprieta, se recortan explicaciones, no la demo.
 
-Nota sobre auditoría: el profesor confirmó por correo que no va a revisar la cuarta capa, así que no tiene bloque propio. El equipo puede mencionar `scripts/audit-capture.sh` y `docs/auditoria.md` durante el bloque 6 si surge la pregunta, sin necesidad de demostrarlo en vivo.
+## Tesis de la presentación
 
-## Apertura (2 minutos) - Salgado Miranda Jorge
+Frase que debe quedar clara desde el inicio:
 
-**Apertura, ronda de presentación, marco general del proyecto.**
+> "LDAP identifica y valida la contraseña; privacyIDEA valida la posesión del token; OwnCloud decide permisos y almacena archivos cifrados. Todo se levanta y se prueba con un comando."
 
-Mensaje clave: "Construimos un servicio de almacenamiento que demuestra las tres capas evaluables del control de acceso: identificación, autenticación y autorización. La cuarta capa, auditoría, queda como complemento académico."
+## Bloque 0: Apertura - Jorge (3 min)
 
-Pasos:
-1. Saludo y nombre del proyecto.
-2. Presentar al equipo en orden alfabético (apellido).
-3. Mostrar la diapositiva con el mapeo de las cuatro capas a los componentes (LDAP, privacyIDEA, OwnCloud, logs) y aclarar que la evaluación se concentra en las tres primeras según indicación del profesor.
-4. Anunciar el formato: 4 bloques temáticos, 1 demo, conclusiones y preguntas.
+Objetivo: vender el proyecto sin sonar exagerado.
 
-## Bloque 1: Marco conceptual - Olvera González Arely (4 minutos)
+Puntos:
 
-**Por qué 2FA y qué tipos de OTP existen.**
+1. Proyecto: `otp-secured-cloud`, servicio de almacenamiento con doble factor.
+2. Mapeo al PDF: alta LDAP, privacyIDEA, emisión OTP, OwnCloud, 2FA LDAP+OTP.
+3. Idea fuerte: no es una maqueta suelta; es un stack reproducible con pruebas.
+4. Presentar al equipo y roles, destacando que Jorge llevó integración, automatización, QA y cierre técnico.
 
-Mensaje clave: "Una contraseña sola no alcanza; OTP basado en tiempo es el estándar industrial de bajo costo."
+Mensaje clave:
 
-Pasos:
-1. Tres factores de autenticación (conocer/tener/ser). Ejemplo concreto de cada uno.
-2. Por qué 2FA reduce drásticamente el riesgo de robo de cuenta. Cifra de Verizon DBIR si quieren citarla.
-3. HOTP (RFC 4226) vs TOTP (RFC 6238). Por qué TOTP ganó.
-4. Estructura de un código TOTP: secreto compartido + tiempo dividido en ventanas de 30 s.
-5. Mencionar FreeOTP como cliente y privacyIDEA como servidor del proyecto.
+> "Cualquier integrante o evaluador puede levantarlo desde el repo con `./scripts/bootstrap.sh` y obtener el mismo resultado."
 
-Apoyo visual: una sola lámina con un diagrama de TOTP (semilla + reloj = código).
+## Bloque 1: Marco conceptual - Arely (3 min)
 
-## Bloque 2: Diseño del árbol LDAP - López Segundo Luis Iván (4 minutos)
+Objetivo: que el profesor vea que el equipo entiende el fundamento, no solo instaló herramientas.
 
-**Cómo se modeló el directorio y por qué.**
+Puntos:
 
-Mensaje clave: "El árbol LDAP es la fuente de verdad de identidades; cada decisión de DN tiene una razón."
+1. Autenticación por factores: conocimiento, posesión, inherencia.
+2. Por qué contraseña + OTP sí es 2FA.
+3. HOTP vs TOTP: TOTP usa tiempo, ventana de 30 s y secreto compartido.
+4. FreeOTP solo calcula el código; no se conecta al servidor.
 
-Pasos:
-1. Mostrar el árbol final: `dc=sia,dc=unam,dc=mx` con OUs `Usuarios/Desarrollo`, `Usuarios/Seguridad`, `Servicios`.
-2. Por qué separamos cuentas humanas de cuentas de servicio (NHI). Filtro `(objectClass=inetOrgPerson)` retorna 6, no 7.
-3. Cuenta `cn=svc-owncloud,ou=Servicios,...` con `simpleSecurityObject + organizationalRole`. ACL específica que niega lectura de `userPassword`.
-4. LDAPS publicado en `localhost:6636` con la CA del proyecto.
-5. Ejecutar en vivo `./scripts/ldap-verify.sh`. Esperan ver "Todo OK" con los 8 checks.
+Respuesta preparada:
 
-## Bloque 3: privacyIDEA y FreeOTP - Ferreira Rojas Mauricio (4 minutos)
+> Si preguntan por seguridad de TOTP: el secreto compartido es el activo sensible. Si se filtra, el atacante puede generar códigos.
 
-**Cómo se administran y validan los OTP.**
+## Bloque 2: LDAP - Luis Iván (4 min)
 
-Mensaje clave: "privacyIDEA es el servidor de tokens; FreeOTP es solo un cliente que sigue el estándar TOTP."
+Objetivo: defender el diseño de identidad.
 
-Pasos:
-1. Mostrar el panel de privacyIDEA en `https://localhost:8443`. Login con `admin`.
-2. Concepto de Resolver y Realm. Mostrar `sia-ldap` y `sia` por defecto.
-3. Enrolar un token TOTP en vivo: `./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo3`. Mostrar la URL `otpauth://`.
-4. Si hay tiempo, escanear el QR en un teléfono real con FreeOTP previamente preparado, o explicar que el script ya valida el OTP localmente sin teléfono.
-5. Validar un OTP arbitrario contra `/validate/check` con `./scripts/privacyidea-validate-otp.sh`.
+Puntos:
 
-## Bloque 4: OwnCloud, autorización y cifrado - Rufino López María Elena (5 minutos)
+1. Base DN: `dc=sia,dc=unam,dc=mx`.
+2. OUs: `Usuarios/Desarrollo`, `Usuarios/Seguridad`, `Servicios`.
+3. Seis usuarios humanos con `inetOrgPerson`.
+4. Cuenta `svc-owncloud` separada: no contamina el conteo de usuarios.
+5. ACL: la cuenta de servicio lee usuarios pero no `userPassword`.
+6. LDAPS con CA local; no se manda password en claro.
 
-**Cómo se orquesta todo desde la perspectiva del usuario final, con énfasis en la capa de autorización que el profesor confirmó como responsabilidad de OwnCloud.**
+Respuesta preparada:
 
-Mensaje clave: "LDAP autentica, OwnCloud autoriza. El plugin oficial twofactor_privacyidea cubre el segundo factor."
+> LDAP autentica identidad y contraseña. La autorización de archivos no está en LDAP; vive en OwnCloud.
 
-Pasos:
-1. Abrir `https://localhost:9443` en un navegador limpio (modo incógnito recomendado para la demo).
-2. Mostrar el flujo: usuario + password LDAP, redirección al selector de 2FA, ingreso del OTP, vista de archivos.
-3. Explicar la configuración: `user_ldap` apunta a LDAPS, `twofactor_privacyidea` apunta a HTTPS interno con la CA local.
-4. Capa de autorización: mostrar la pantalla de compartir archivos en OwnCloud, donde se elige usuario destino y permisos (lectura, escritura, compartir). Aclarar que esta autorización vive enteramente dentro de OwnCloud, sin sincronizar grupos LDAP, tal como el profesor confirmó.
-5. Mostrar que el cifrado del lado servidor está activo (`occ encryption:status` o desde el panel admin).
-6. Subir un archivo desde la UI y abrir el volumen de Docker para mostrar la cabecera `HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND`.
+## Bloque 3: privacyIDEA y FreeOTP - Mauricio (4 min)
 
-## Bloque 5: Demo en vivo - Arellanes Conde Esteban (7 minutos)
+Objetivo: explicar segundo factor como sistema, no como "código mágico".
 
-**Reproducción end-to-end con scripts.**
+Puntos:
 
-Mensaje clave: "No describimos la solución; la demostramos. Los scripts son la prueba."
+1. privacyIDEA es servidor de tokens.
+2. Resolver `sia-ldap` lee usuarios por LDAPS.
+3. Realm `sia` agrupa el resolver.
+4. Token TOTP se enrola con `genkey=1`.
+5. La URL `otpauth://` es lo que FreeOTP escanea.
+6. El script calcula el TOTP localmente para probar emisión sin depender del teléfono.
 
-Pasos:
-1. Mostrar la terminal con la raíz del repo. Verificar que `docker compose ps` muestra los seis contenedores en `Up`.
-2. Ejecutar `./scripts/owncloud-login-verify.sh usuario.desarrollo1`. Cuando termine "OK: archivo subido y cifrado en el volumen", explicar paso a paso lo que validó: bind LDAPS contra OpenLDAP (identificación + autenticación primer factor), validación OTP contra privacyIDEA (autenticación segundo factor) y subida WebDAV con cifrado en disco.
-3. Ejecutar `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1`. Cuando termine "OK: usuario.seguridad1 descifró y leyó el archivo compartido", aclarar que ese mensaje demuestra la capa de autorización (definida en OwnCloud, no en LDAP) y que el destinatario lee el archivo descifrado a pesar de que en disco sigue cifrado.
-4. Mostrar el archivo en disco con `docker exec otpsec-owncloud-server head -c 80 /mnt/data/files/usuario.desarrollo1/files/demo-compartido-usuario.desarrollo1.txt`. La cabecera `HBEGIN` debe ser visible.
-5. Caso de error (opcional, si queda tiempo): repetir el login con un OTP incorrecto para mostrar que OwnCloud no abre la sesión.
-6. Plan B: si la demo en vivo falla, mostrar la grabación de respaldo (ver bloque "Plan B" abajo).
+Respuesta preparada:
 
-## Bloque 6: Conclusiones y preguntas - Todos (3 minutos)
+> FreeOTP no valida contra privacyIDEA. Solo muestra un número; OwnCloud manda ese número a privacyIDEA para validarlo.
 
-**Cierre sincero y honesto.**
+## Bloque 4: OwnCloud - María Elena (4 min)
 
-Mensaje clave: "Sabemos qué cosas serían inaceptables en producción y por qué las dejamos así para fines didácticos."
+Objetivo: cerrar la parte visible para el usuario.
 
-Pasos:
-1. Cada integrante (en una sola línea cada uno) menciona un aprendizaje técnico personal.
-2. Listar las limitaciones aceptadas a propósito: `.env` versionado, certs autofirmados, master key en el mismo servidor, sin alta disponibilidad. Recordar la sección "Aviso de seguridad" del README.
-3. Mencionar brevemente que el proyecto incluye `scripts/audit-capture.sh` y `docs/auditoria.md` como complemento académico de la cuarta capa de control de acceso, aunque el profesor confirmó que esa capa no será evaluada. No demostrar en vivo a menos que él lo pida.
-4. Listar las dos o tres cosas que cambiaríamos en un entorno real.
-5. Abrir preguntas del profesor.
+Puntos:
 
-## Plan B: si la demo falla
+1. OwnCloud usa `user_ldap` para resolver usuarios.
+2. Plugin `twofactor_privacyidea` exige segundo factor después del password.
+3. Permisos y shares se administran en OwnCloud.
+4. Cifrado Server Side Encryption con master key.
+5. El archivo queda cifrado en disco pero el usuario autorizado lo lee en claro.
 
-1. **Snapshot del entorno**: tener una grabación de pantalla de los scripts corriendo correctamente, lista para reproducir si docker no levanta. Hacer la grabación con `asciinema` o un screen recorder al menos 24 h antes de la presentación. Ubicación sugerida: `docs/respaldos/demo-end-to-end.cast` (no se versiona en el repo público).
-2. **Ambiente respaldo**: tener el laptop de un segundo integrante listo con el repo clonado y los contenedores levantados, encendido durante toda la presentación.
-3. **Slides con capturas de pantalla**: que muestren el `Todo OK` final de cada script, por si lo demás falla.
+Respuesta preparada:
 
-## Logística
+> El cifrado protege el archivo dentro del volumen, pero la master key vive en el servidor; no protege contra un administrador del servidor. En producción se evaluaría cifrado extremo a extremo.
 
-- Llegar 20 minutos antes para verificar proyector, audio, conexión y ambiente Docker.
-- Una sola laptop al frente. Cambiar de presentador NO debe implicar cambiar de máquina.
-- Tener `https://localhost:9443` ya abierto en una pestaña antes de empezar.
-- Tener una segunda terminal abierta con la raíz del proyecto, lista para ejecutar comandos sin teclear desde cero.
-- Si vuestro horario es a primera hora, calienta el stack 5 minutos antes para que los caches estén templados.
+## Bloque 5: Integración y cierre técnico - Jorge (4 min)
 
-## Apuntes para el ensayo
+Objetivo: dar relevancia al trabajo de integración y mostrar madurez técnica.
 
-Hacer al menos un ensayo completo grabado al menos 48 horas antes. El objetivo del ensayo:
-- Detectar bloques que rebasan su tiempo asignado.
-- Confirmar que las transiciones entre integrantes son fluidas.
-- Confirmar que la demo corre completa sin intervenciones.
-- Resolver dudas del equipo entre sí en privado, no frente al profesor.
+Puntos:
 
-Si en el ensayo el total se va a 35 minutos, recortar conscientemente bloques 1 y 7 antes de tocar la demo.
+1. Docker Compose une seis servicios: OpenLDAP, privacyIDEA, OwnCloud, MariaDB, Redis y Caddy.
+2. Cada servicio tiene healthcheck; no se espera "a ojo".
+3. `bootstrap.sh` hace certificados, build, arranque, configuración y pruebas.
+4. Se corrigieron detalles de consistencia: LDIF con hashes `{SSHA}`, healthchecks TLS, verificación de master key, docs sin comandos largos.
+5. QA ejecutado: `shellcheck`, `bash -n`, `docker compose config`, `git diff --check`, pruebas end-to-end.
+
+Mensaje clave:
+
+> "Mi parte fue convertir integraciones frágiles en un sistema repetible: clonar, levantar, validar y defender."
+
+## Bloque 6: Demo final - Esteban con apoyo de Jorge (7 min)
+
+Regla: la demo ocurre al final de las diapositivas. No se clona en vivo; el repo ya está en la laptop.
+
+Comandos principales:
+
+```bash
+cd /Users/jorge/Documents/Escuela/SIA/Proyecto_Final
+./scripts/bootstrap.sh --no-build
+./scripts/owncloud-login-verify.sh usuario.desarrollo1
+./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+```
+
+Qué explicar mientras corre:
+
+1. `bootstrap.sh --no-build` confirma certificados, servicios, configuración y pruebas sin reconstruir la imagen.
+2. `owncloud-login-verify.sh` prueba LDAP + OTP + cifrado de archivo real.
+3. `owncloud-share-verify.sh` prueba autorización por share y lectura descifrada por destinatario.
+4. Mostrar `HBEGIN` si el profesor pide evidencia visual del cifrado en disco.
+5. Abrir `https://localhost:9443` solo si pide ver la UI.
+
+Frase de cierre de demo:
+
+> "La demo muestra exactamente lo que se explicó: identidad en LDAP, segundo factor en privacyIDEA, autorización y cifrado en OwnCloud."
+
+## Bloque 7: Cierre y preguntas - Todos (1 min)
+
+Puntos:
+
+1. Cumplimos los cinco puntos evaluables del PDF.
+2. Auditoría queda como complemento documentado.
+3. Limitaciones reales están declaradas: `.env` versionado, CA local, master key local, sin HA.
+4. Invitar preguntas específicas por componente.
+
+## Preguntas probables del profesor
+
+| Pregunta | Respuesta corta |
+|---|---|
+| ¿Dónde se autentica el password? | En OpenLDAP, vía bind LDAPS. |
+| ¿Dónde se valida el OTP? | En privacyIDEA, endpoint `/validate/check`. |
+| ¿Dónde vive la autorización? | En OwnCloud, con permisos y OCS Sharing API. |
+| ¿FreeOTP se conecta al servidor? | No. Genera TOTP localmente a partir del secreto. |
+| ¿Qué pasa si roban el password? | Sin OTP, OwnCloud no abre sesión. |
+| ¿Qué pasa si cae privacyIDEA? | El login 2FA falla; en producción se requeriría HA o política de break-glass. |
+| ¿El cifrado protege contra el admin? | No con master key local; para eso se requiere cifrado extremo a extremo. |
+| ¿Por qué no sincronizar grupos LDAP? | El profesor confirmó que LDAP autentica y OwnCloud autoriza; simplifica la demo y evita acoplar permisos al directorio. |
+
+## Plan B
+
+1. Si Docker está lento: correr `docker compose -f compose/docker-compose.yml --env-file .env ps` y mostrar que los contenedores están `healthy`.
+2. Si falla el OTP por ventana de tiempo: esperar 30 s y repetir.
+3. Si falla Caddy o puerto 9443: mostrar salida de scripts y abrir privacyIDEA/OwnCloud solo si el servicio responde.
+4. Si falla todo el ambiente: usar el PDF, `docs/auditoria.md` y capturas de los `OK` finales como respaldo.
+
+## Ensayo recomendado
+
+Ensayar una vez con cronómetro:
+
+- 22 minutos de explicación.
+- 7 minutos de demo.
+- 1 minuto de cierre.
+
+El equipo debe practicar respuestas cortas. Si una pregunta se vuelve larga, responder primero en una frase y luego profundizar solo si el profesor pide más.

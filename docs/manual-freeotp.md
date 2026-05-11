@@ -6,11 +6,9 @@ Antes de la exposición, al menos un integrante debe tener un teléfono real con
 
 1. Tener el stack levantado y verificado:
    ```bash
-   docker compose -f compose/docker-compose.yml --env-file .env up -d
-   ./scripts/ldap-verify.sh
-   ./scripts/privacyidea-configure.sh && ./scripts/privacyidea-verify.sh
-   ./scripts/owncloud-configure.sh && ./scripts/owncloud-verify.sh
+   ./scripts/bootstrap.sh
    ```
+   Ejecuta este comando antes de enrolar el teléfono, porque las pruebas automáticas crean tokens TOTP de prueba para validar el flujo.
 2. Un teléfono Android o iOS con FreeOTP instalada:
    - Android: Google Play, búsqueda "FreeOTP" (autor Red Hat). Repositorio del proyecto: https://github.com/freeotp/freeotp-android
    - iOS: App Store, búsqueda "FreeOTP". Repositorio: https://github.com/freeotp/freeotp-ios

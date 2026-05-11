@@ -1,12 +1,12 @@
 # Cierre de sesión de trabajo
 
-**Fecha:** 2026-05-04
+**Fecha:** 2026-05-11
 
 Este documento resume el estado exacto para retomar el proyecto sin depender de memoria de sesiones anteriores.
 
 ## Estado actual
 
-La base técnica y el material del entregable están completos. Lo que queda depende del equipo (ensayo, snapshot, conclusiones individuales si se quieren afinar).
+La base técnica, el arranque automatizado, las pruebas end-to-end y el material del entregable están completos. Desde un clone limpio, el laboratorio se levanta y valida con un solo comando: `./scripts/bootstrap.sh`.
 
 | Bloque | Estado | Verificación |
 |---|---|---|
@@ -24,6 +24,7 @@ La base técnica y el material del entregable están completos. Lo que queda dep
 | Slides en formato Marp | Redactados | `docs/presentacion.md`, 30 diapositivas separadas por `---` |
 | Manual para enrolar FreeOTP físico | Redactado | `docs/manual-freeotp.md` |
 | Guía operativa de la demo | Redactada | `docs/como-probar.md` con pre-flight, demo y plan B |
+| Arranque completo desde clone | Listo | `./scripts/bootstrap.sh` genera certs, levanta Compose, configura servicios y corre pruebas |
 
 ## Servicios del proyecto
 
@@ -58,30 +59,22 @@ Estas credenciales son de laboratorio y están versionadas a propósito para rep
 
 Desde la raíz del repositorio:
 
-Cadena principal evaluable (las tres capas que el profesor revisa):
+Cadena principal evaluable:
 
 ```bash
 git pull origin main
-./scripts/generate-certs.sh
-docker compose -f compose/docker-compose.yml --env-file .env up -d --build
-./scripts/ldap-verify.sh
-./scripts/privacyidea-configure.sh
-./scripts/privacyidea-verify.sh
-./scripts/owncloud-configure.sh
-./scripts/owncloud-verify.sh
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/bootstrap.sh
 ```
 
-Cierra identificación, autenticación 2FA y autorización. Si los ocho scripts terminan con `Todo OK` u `OK: ... descifró y leyó`, el entorno está listo en cinco a siete minutos.
+El script cierra identificación, autenticación 2FA, autorización, cifrado y carpetas compartidas. Si termina con `Listo`, el entorno está listo.
 
 Complemento académico opcional (auditoría, no se evalúa):
 
 ```bash
-./scripts/audit-capture.sh
+./scripts/bootstrap.sh --with-audit
 ```
 
-Solo se corre si se quiere regenerar `docs/auditoria.md` con extractos frescos de los logs.
+Se corre si se quiere regenerar `docs/auditoria.md` con extractos frescos de los logs.
 
 ## Cómo generar los artefactos de entrega
 
@@ -114,8 +107,7 @@ Para reiniciar desde cero y volver a importar los LDIF:
 
 ```bash
 docker compose -f compose/docker-compose.yml --env-file .env down -v
-./scripts/generate-certs.sh
-docker compose -f compose/docker-compose.yml --env-file .env up -d --build
+./scripts/bootstrap.sh
 ```
 
 ## Limpieza de Docker
@@ -144,14 +136,12 @@ El último comando debe regresar sin resultados.
 
 ## Pasos finales del equipo antes de la entrega
 
-1. Cada integrante revisa su párrafo en `docs/conclusiones.md` y lo afina si quiere ajustar tono o agregar anécdotas personales.
-2. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente la portada, el índice, las páginas de bibliografía y glosario, y los bloques con tablas. Confirmar que todo se ve presentable antes de imprimir.
-3. Si se editó algún `.md`, regenerar las figuras (`./scripts/build-figures.sh`) y el PDF (`./scripts/build-pdf.sh`).
-4. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
-5. Ensayo grabado de la presentación al menos 48 horas antes (con `docs/guion-exposicion.md` y los slides `docs/presentacion.md`).
-6. Snapshot del entorno o grabación de la demo como respaldo.
-7. La noche anterior, correr la batería completa de `docs/como-probar.md` para confirmar que la laptop sigue verde.
+1. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente portada, índice, bibliografía, glosario y tablas antes de imprimir.
+2. Si se edita algún `.md`, regenerar figuras (`./scripts/build-figures.sh`) y PDF (`./scripts/build-pdf.sh`).
+3. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
+4. Ejecutar `./scripts/bootstrap.sh` en la laptop de la presentación para confirmar que la base técnica sigue verde.
+5. Usar `docs/guion-exposicion.md` y `docs/presentacion.md` para el ensayo operativo del equipo.
 
 ## Nota sobre historia de Git
 
-Los archivos actuales y los mensajes de commit están limpios de referencias a herramientas de asistencia y de caracteres prohibidos por las convenciones del repo. Las verificaciones automáticas (`shellcheck`, `git diff --check`, búsqueda de Unicode prohibido y de referencias a IA) corren en cada cierre de sesión.
+Los archivos actuales y los mensajes de commit están limpios de referencias ajenas al proyecto y de caracteres prohibidos por las convenciones del repo. Las verificaciones automáticas (`shellcheck`, `git diff --check` y búsqueda de Unicode prohibido) corren en cada cierre de sesión.

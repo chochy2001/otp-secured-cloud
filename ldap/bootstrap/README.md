@@ -14,14 +14,16 @@ Los archivos LDIF de este directorio se cargan automáticamente la primera vez q
 
 ## Nota sobre contraseñas
 
-En estos LDIFs las contraseñas están en texto plano por claridad del ejemplo académico. OpenLDAP las hashea al importar de acuerdo con la política configurada. Para un entorno productivo, generar los hashes previamente con:
+Los LDIFs usan hashes `{SSHA}` generados con `slappasswd` para no sembrar `userPassword` en texto plano dentro del directorio. Las contraseñas académicas equivalentes siguen documentadas en `.env` para que el equipo pueda levantar el laboratorio sin intercambiar secretos por otro canal.
+
+Si cambias `LDAP_USER_PASSWORD` o `LDAP_SERVICE_PASSWORD` en `.env`, también debes regenerar y reemplazar los hashes de estos LDIFs antes de reconstruir el directorio:
 
 ```bash
 slappasswd -s "contrasena"
 # genera una cadena con formato {SSHA}xxxxx...
 ```
 
-y reemplazar el valor de `userPassword` por la cadena resultante.
+En producción, además de usar hashes, las contraseñas no deberían versionarse en `.env`.
 
 ## Reimportar si cambias los LDIFs
 
