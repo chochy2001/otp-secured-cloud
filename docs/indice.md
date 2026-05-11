@@ -10,7 +10,7 @@
    - 6.2 Levantamiento del stack
    - 6.3 Identificación: OpenLDAP
    - 6.4 Autenticación primer factor: contraseña LDAP
-   - 6.5 Autenticación segundo factor: privacyIDEA y FreeOTP
+   - 6.5 Autenticación segundo factor: privacyIDEA y app TOTP
    - 6.6 OwnCloud y orquestación 2FA
    - 6.7 Carpetas compartidas y cifrado del lado destinatario
    - 6.8 Auditoría (complemento académico, no evaluable)

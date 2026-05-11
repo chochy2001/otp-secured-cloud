@@ -12,17 +12,19 @@ La base técnica, el arranque automatizado, las pruebas end-to-end y el material
 |---|---|---|
 | OpenLDAP | Listo | `./scripts/ldap-verify.sh` (8 checks) |
 | PrivacyIDEA | Listo | `./scripts/privacyidea-configure.sh` y `./scripts/privacyidea-verify.sh` (6 checks) |
-| TOTP reproducible | Listo | `./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1` |
+| TOTP reproducible | Listo | `./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo2` para pruebas automáticas |
+| TOTP físico de demo | Listo | `usuario.desarrollo1` enrolado en Proton Authenticator; no rotar ese usuario antes de presentar |
 | TLS local con CA propia | Listo | `./scripts/generate-certs.sh` y verificaciones incluidas |
 | OwnCloud | Listo | `./scripts/owncloud-configure.sh` y `./scripts/owncloud-verify.sh` (6 checks) |
-| Login LDAP + OTP end-to-end | Listo | `./scripts/owncloud-login-verify.sh usuario.desarrollo1` |
+| Login LDAP + OTP end-to-end | Listo | `./scripts/owncloud-login-verify.sh usuario.desarrollo2` |
 | Cifrado del archivo en disco | Listo | Verificado por `owncloud-login-verify.sh` con cabecera `HBEGIN` |
-| Carpetas compartidas y descifrado en destinatario | Listo | `./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1` |
+| Carpetas compartidas y descifrado en destinatario | Listo | `./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1` |
 | Auditoría reproducible (complemento académico, el profesor confirmó que no se evalúa) | Listo | `./scripts/audit-capture.sh` produce `docs/auditoria.md` |
 | Documentación del entregable (40% nota) | Redactada | Portada, introducción, memoria técnica, glosario, bibliografía, conclusiones, índices |
+| Documento final operativo | Redactado | `docs/documento-final.md` resume arquitectura, pruebas, demo y defensa |
 | Guion de exposición de 30 min | Redactado | `docs/guion-exposicion.md` con división por integrante |
 | Slides en formato Marp | Redactados | `docs/presentacion.md`, 30 diapositivas separadas por `---` |
-| Manual para enrolar FreeOTP físico | Redactado | `docs/manual-freeotp.md` |
+| Manual para enrolar TOTP físico | Redactado | `docs/manual-freeotp.md` cubre FreeOTP y Proton Authenticator |
 | Guía operativa de la demo | Redactada | `docs/como-probar.md` con pre-flight, demo y plan B |
 | Arranque completo desde clone | Listo | `./scripts/bootstrap.sh` genera certs, levanta Compose, configura servicios y corre pruebas |
 
@@ -67,6 +69,16 @@ git pull origin main
 ```
 
 El script cierra identificación, autenticación 2FA, autorización, cifrado y carpetas compartidas. Si termina con `Listo`, el entorno está listo.
+
+Si el teléfono ya tiene enrolado el token real de `usuario.desarrollo1`, no correr pruebas automáticas pasando ese usuario explícitamente. Para validar sin romper el token físico:
+
+```bash
+./scripts/ldap-verify.sh
+./scripts/privacyidea-verify.sh
+./scripts/owncloud-verify.sh
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
+```
 
 Complemento académico opcional (auditoría, no se evalúa):
 
@@ -138,8 +150,8 @@ El último comando debe regresar sin resultados.
 
 1. Abrir `build/entregable-otp-secured-cloud.pdf` y revisar visualmente portada, índice, bibliografía, glosario y tablas antes de imprimir.
 2. Si se edita algún `.md`, regenerar figuras (`./scripts/build-figures.sh`) y PDF (`./scripts/build-pdf.sh`).
-3. Enrolar el TOTP demo en un teléfono real con FreeOTP siguiendo `docs/manual-freeotp.md`.
-4. Ejecutar `./scripts/bootstrap.sh` en la laptop de la presentación para confirmar que la base técnica sigue verde.
+3. Enrolar o confirmar el TOTP demo en un teléfono real con Proton Authenticator o FreeOTP siguiendo `docs/manual-freeotp.md`.
+4. Ejecutar las validaciones seguras con `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1` para no rotar el token físico de `usuario.desarrollo1`.
 5. Usar `docs/guion-exposicion.md` y `docs/presentacion.md` para el ensayo operativo del equipo.
 
 ## Nota sobre historia de Git

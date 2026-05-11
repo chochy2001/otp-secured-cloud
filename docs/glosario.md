@@ -94,7 +94,7 @@ Este glosario reúne los términos técnicos y los acrónimos que aparecen en el
 
 **TLS (Transport Layer Security).** Protocolo criptográfico que cifra y autentica conexiones de red. Las versiones 1.2 y 1.3 son las que se consideran seguras al día de hoy. Reemplaza al obsoleto SSL.
 
-**TOTP (Time-based One-Time Password, RFC 6238).** Variante de HOTP donde el contador es el tiempo dividido en ventanas de 30 segundos por defecto. Es el algoritmo OTP que generan FreeOTP, Google Authenticator y la mayoría de los apps móviles. Es el que usa este proyecto.
+**TOTP (Time-based One-Time Password, RFC 6238).** Variante de HOTP donde el contador es el tiempo dividido en ventanas de 30 segundos por defecto. Es el algoritmo OTP que generan FreeOTP, Proton Authenticator, Google Authenticator y la mayoría de las apps móviles. Es el que usa este proyecto.
 
 **Twofactor_privacyidea.** App de OwnCloud que delega el segundo factor al servidor privacyIDEA. Configura un endpoint HTTPS de privacyIDEA y un nombre de realm. OwnCloud, tras validar el primer factor LDAP, redirige al usuario al selector de challenge donde se ingresa el OTP que privacyIDEA valida.
 

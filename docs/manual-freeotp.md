@@ -8,7 +8,7 @@ Antes de la exposición, al menos un integrante debe tener un teléfono real con
    ```bash
    ./scripts/bootstrap.sh
    ```
-   Ejecuta este comando antes de enrolar el teléfono, porque las pruebas automáticas crean tokens TOTP de prueba para validar el flujo.
+   Ejecuta este comando antes de enrolar el teléfono. Las pruebas automáticas usan usuarios alternos para no reemplazar el token físico de `usuario.desarrollo1`.
 2. Un teléfono Android o iOS con FreeOTP o Proton Authenticator instalada:
    - Android: Google Play, búsqueda "FreeOTP" (autor Red Hat). Repositorio del proyecto: https://github.com/freeotp/freeotp-android
    - iOS: App Store, búsqueda "FreeOTP". Repositorio: https://github.com/freeotp/freeotp-ios
@@ -27,8 +27,10 @@ Elige el usuario que se va a usar en la demo (el guion sugiere `usuario.desarrol
 ./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1
 ```
 
+Este comando reemplaza cualquier token anterior de `usuario.desarrollo1`. Úsalo solo para el primer enrolamiento del teléfono o cuando quieras rotar intencionalmente el QR de la demo.
+
 El script:
-- Borra cualquier token de prueba previo del mismo usuario para evitar conflictos.
+- Borra cualquier token previo del mismo usuario para evitar conflictos.
 - Crea un token TOTP nuevo con `genkey=1` (privacyIDEA genera la semilla).
 - Imprime una URL `otpauth://totp/...?secret=...&period=30&digits=6&issuer=privacyIDEA`.
 - Verifica que el token funciona calculando un OTP local con Python y validándolo contra `/validate/check`.
@@ -79,15 +81,15 @@ Con el código actual del teléfono:
 3. Login con:
    - Usuario: `usuario.desarrollo1`
    - Contraseña: `sia-user-2026`
-4. Cuando OwnCloud redirija a `/login/selectchallenge`, ingresa el OTP de 6 dígitos visible en FreeOTP.
+4. Cuando OwnCloud redirija a `/login/selectchallenge`, ingresa el OTP de 6 dígitos visible en la app TOTP.
 5. La sesión debe abrir en `/apps/files/` y mostrar la carpeta personal del usuario.
 
 Listo: el segundo factor con un dispositivo real está validado.
 
 ## Consejos para la demo en vivo
 
-- **Tener dos tokens enrolados**: uno con FreeOTP para mostrar la generación visual del código y otro generado por el script `privacyidea-enroll-test-token.sh` que el script puede validar automáticamente sin interacción humana. Si el código del teléfono se vence durante la demo, hay respaldo.
-- **No cierres la app**: mantén FreeOTP abierta en pantalla durante la demo para que el público vea el contador descender de 30 a 0 segundos.
+- **Separar demo y pruebas automáticas**: usa `usuario.desarrollo1` para el teléfono real, y deja que los scripts automáticos trabajen con `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1`.
+- **No cierres la app**: mantén FreeOTP o Proton Authenticator abierta en pantalla durante la demo para que el público vea el contador descender de 30 a 0 segundos.
 - **Brillo alto y modo claro**: facilita la lectura del código a los que están al fondo del salón.
 - **Modo no-molestar**: silencia notificaciones del teléfono. Una llamada o un mensaje cubriendo la pantalla rompe el momento.
 - **Practica con el código exacto**: en el ensayo, escribe los 6 dígitos sin verificar dos veces. Practica el ritmo entre leer y teclear.
@@ -96,7 +98,7 @@ Listo: el segundo factor con un dispositivo real está validado.
 
 Si el teléfono que usaste es personal y no quieres dejar el token enrolado:
 
-1. En FreeOTP, mantén pulsada la entrada del token y elige "Eliminar".
+1. En FreeOTP o Proton Authenticator, elimina la entrada del token desde la app.
 2. En privacyIDEA, ejecuta:
    ```bash
    ADMIN_TOKEN=$(curl --cacert ./certs/ca.crt -s -X POST https://localhost:8443/auth \
@@ -113,9 +115,9 @@ Esto invalida la semilla compartida; ningún código generado por la app servir�
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
-| FreeOTP muestra "Cannot decode QR code" | El QR está borroso o el escáner no enfoca | Aumenta el zoom de la imagen, mejora la iluminación, o usa entrada manual del secreto |
+| La app muestra "Cannot decode QR code" | El QR está borroso o el escáner no enfoca | Aumenta el zoom de la imagen, mejora la iluminación, o usa entrada manual del secreto |
 | El OTP del teléfono se rechaza siempre | Reloj del teléfono fuera de sincronía | Ajusta hora del teléfono a "automática" (NTP) o sincroniza manualmente |
 | `privacyidea-validate-otp.sh` falla con "wrong otp value. previous otp used again" | Reusaste un OTP antes de que cambiara la ventana | Espera 30 segundos para que el código se renueve antes de validar |
 | OwnCloud muestra `Internal Server Error` después del OTP | Se intentó usar el token de `usuario.desarrollo1` mientras la sesión del navegador estaba como `admin` u otro usuario | Cierra sesión, abre modo incógnito y entra con `usuario.desarrollo1` / `sia-user-2026`; el token solo sirve para el usuario al que fue enrolado |
 | El navegador rechaza el certificado de OwnCloud sin opción de continuar | El cliente no confía en la CA local | Importa `certs/ca.crt` al keychain/almacén de certificados del sistema operativo, o acepta la excepción manualmente |
-| FreeOTP no aparece como app de escáner cuando uso el QR del navegador | iOS bloqueó el acceso de la app a la cámara | Ajustes a Privacidad a Cámara: habilita FreeOTP |
+| La app TOTP no puede escanear el QR | iOS o Android bloqueó el acceso a la cámara | Habilita permisos de cámara para FreeOTP o Proton Authenticator |

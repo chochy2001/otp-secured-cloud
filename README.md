@@ -1,6 +1,6 @@
 # otp-secured-cloud
 
-Servicio de almacenamiento de información con doble factor de autenticación (2FA) vía OTP, construido con **OpenLDAP**, **PrivacyIDEA**, **FreeOTP** y **OwnCloud**.
+Servicio de almacenamiento de información con doble factor de autenticación (2FA) vía OTP, construido con **OpenLDAP**, **PrivacyIDEA**, una **app TOTP** (FreeOTP o Proton Authenticator) y **OwnCloud**.
 
 Proyecto final de la materia **Seguridad Informática Avanzada** (SIA), Facultad de Ingeniería, UNAM, semestre 2026-2.
 
@@ -29,7 +29,7 @@ Antes de reutilizar este código para cualquier cosa que no sea estudiar, consid
 |---|---|---|---|
 | Identificación | OpenLDAP 2.x | Directorio único de usuarios con UIDs | Sí |
 | Autenticación (algo que *conozco*) | OpenLDAP | Valida usuario + contraseña | Sí |
-| Autenticación (algo que *tengo*) | PrivacyIDEA + FreeOTP | Valida el token OTP generado en el móvil | Sí |
+| Autenticación (algo que *tengo*) | PrivacyIDEA + app TOTP | Valida el token OTP generado en el móvil | Sí |
 | Autorización | OwnCloud | Permisos de lectura/escritura por carpeta y por usuario, sin sincronizar grupos LDAP | Sí |
 | Auditoría | Logs de OpenLDAP, PrivacyIDEA, OwnCloud | Registro de eventos de acceso | No (complemento académico, el profesor confirmó que no se evalúa) |
 
@@ -58,7 +58,7 @@ cd otp-secured-cloud
 ./scripts/bootstrap.sh
 ```
 
-`bootstrap.sh` genera la CA local, levanta Docker Compose con build, espera los healthchecks, configura privacyIDEA y OwnCloud, y corre la batería evaluable: LDAP, PrivacyIDEA, OwnCloud, login LDAP + OTP, cifrado local y archivo compartido descifrado por el destinatario. Si termina con `Listo`, el stack está operativo.
+`bootstrap.sh` genera la CA local, levanta Docker Compose con build, espera los healthchecks, configura privacyIDEA y OwnCloud, y corre la batería evaluable: LDAP, PrivacyIDEA, OwnCloud, login LDAP + OTP, cifrado local y archivo compartido descifrado por el destinatario. Las pruebas automáticas usan usuarios alternos para no reemplazar el token físico de `usuario.desarrollo1`, que queda reservado para la demo con el teléfono. Si termina con `Listo`, el stack está operativo.
 
 Para regenerar también las bitácoras de auditoría no evaluables:
 
@@ -114,7 +114,7 @@ Material para la exposición (30 por ciento de la nota):
 
 - [Guion de exposición de 30 min](docs/guion-exposicion.md): bloques por integrante y plan B
 - [Slides en formato Marp](docs/presentacion.md): cada `---` separa una diapositiva, listo para abrir con Marp o reveal.js
-- [Manual para enrolar TOTP en FreeOTP físico](docs/manual-freeotp.md)
+- [Manual para enrolar TOTP en FreeOTP o Proton Authenticator](docs/manual-freeotp.md)
 
 ## Integrantes
 

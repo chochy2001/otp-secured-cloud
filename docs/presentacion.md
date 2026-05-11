@@ -183,7 +183,7 @@ Comando para levantar y validar todo.
 |---|---|
 | **Salgado Miranda Jorge** | Integración general, Docker Compose, automatización, QA, cierre técnico y repositorio |
 | Arellanes Conde Esteban | Demo en vivo y explicación del flujo end-to-end |
-| Ferreira Rojas Mauricio | privacyIDEA, FreeOTP y validación del segundo factor |
+| Ferreira Rojas Mauricio | privacyIDEA, app TOTP y validación del segundo factor |
 | López Segundo Luis Iván | Diseño del árbol LDAP y modelo de usuarios |
 | Olvera González Arely | Marco conceptual 2FA/OTP y documentación base |
 | Rufino López María Elena | OwnCloud, permisos, compartición y cifrado |
@@ -212,7 +212,7 @@ LDAP identifica y valida password; privacyIDEA valida posesión del token; OwnCl
 
 <span class="tag">OpenLDAP</span>
 <span class="tag">privacyIDEA</span>
-<span class="tag">FreeOTP</span>
+<span class="tag">App TOTP</span>
 <span class="tag">OwnCloud</span>
 <span class="tag">MariaDB</span>
 <span class="tag">Redis</span>
@@ -241,7 +241,7 @@ LDAP identifica y valida password; privacyIDEA valida posesión del token; OwnCl
 1. Usuario envía `uid + password`.
 2. OwnCloud hace bind LDAPS contra OpenLDAP.
 3. Si el password es correcto, OwnCloud pide segundo factor.
-4. Usuario escribe TOTP generado por FreeOTP.
+4. Usuario escribe TOTP generado por FreeOTP o Proton Authenticator.
 5. Plugin `twofactor_privacyidea` consulta `/validate/check`.
 6. Si privacyIDEA acepta, OwnCloud abre la sesión.
 
@@ -282,7 +282,7 @@ La cuenta de servicio no es usuario humano: queda fuera del filtro `(objectClass
 
 ---
 
-# privacyIDEA y FreeOTP
+# privacyIDEA y app TOTP
 
 privacyIDEA no duplica identidades. Lee a los usuarios desde LDAP mediante:
 
@@ -294,7 +294,7 @@ privacyIDEA no duplica identidades. Lee a los usuarios desde LDAP mediante:
 | API | `https://localhost:8443` |
 | Token | TOTP de 6 dígitos cada 30 s |
 
-FreeOTP solo guarda el secreto TOTP y muestra el código; no se conecta al servidor.
+La app TOTP solo guarda el secreto y muestra el código; no se conecta al servidor.
 
 ---
 
@@ -305,7 +305,7 @@ El script `privacyidea-enroll-test-token.sh` automatiza el flujo que normalmente
 1. Autentica al admin en privacyIDEA.
 2. Borra token de prueba anterior del usuario.
 3. Crea token TOTP con `genkey=1`.
-4. Imprime la URL `otpauth://` para FreeOTP.
+4. Imprime la URL `otpauth://` para FreeOTP o Proton Authenticator.
 5. Calcula el TOTP localmente en Python.
 6. Valida el código contra `/validate/check`.
 
@@ -440,7 +440,7 @@ La evidencia queda en `docs/auditoria.md`.
 |---|---|---|
 | Alta de usuarios LDAP | Cerrado | `ldap-verify.sh` |
 | Integración privacyIDEA | Cerrado | `privacyidea-verify.sh` |
-| Emisión OTP FreeOTP | Cerrado | `privacyidea-enroll-test-token.sh` |
+| Emisión OTP en app móvil | Cerrado | `privacyidea-enroll-test-token.sh` |
 | Implementación OwnCloud | Cerrado | `owncloud-verify.sh` |
 | 2FA LDAP + OTP | Cerrado | `owncloud-login-verify.sh` |
 | Compartición y cifrado | Cerrado | `owncloud-share-verify.sh` |
@@ -475,7 +475,7 @@ Si termina con `Listo`, el laboratorio quedó operativo.
 | Por qué LDAP y no usuarios locales | LDAP centraliza identidad; OwnCloud solo consume |
 | Dónde vive autorización | En OwnCloud: permisos y OCS Sharing |
 | Qué valida privacyIDEA | Posesión del secreto TOTP asociado al usuario |
-| Por qué FreeOTP no se conecta | TOTP se calcula localmente; solo el código se escribe |
+| Por qué la app TOTP no se conecta | TOTP se calcula localmente; solo el código se escribe |
 | Qué pasa si roban password | Sin OTP no se abre sesión |
 | Qué pasa si roban el servidor | Master key local no protege contra admin del servidor |
 
@@ -515,8 +515,8 @@ No clonamos en vivo. El repositorio ya está en la laptop.
 ```bash
 cd /Users/jorge/Documents/Escuela/SIA/Proyecto_Final
 ./scripts/bootstrap.sh --no-build
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
 
 Si el profesor pide ver la UI: abrir `https://localhost:9443`.

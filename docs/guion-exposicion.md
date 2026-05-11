@@ -7,7 +7,7 @@ Material de trabajo para el ensayo. La presentación primero vende la solución 
 | Bloque | Tiempo | Responsable | Tema |
 |---|---:|---|---|
 | 0. Apertura y promesa | 3 min | Salgado Miranda Jorge | Qué se construyó, qué evalúa el profesor y por qué el proyecto es defendible |
-| 1. Marco conceptual | 3 min | Olvera González Arely | 2FA, OTP, HOTP vs TOTP, rol de FreeOTP |
+| 1. Marco conceptual | 3 min | Olvera González Arely | 2FA, OTP, HOTP vs TOTP, rol de la app TOTP |
 | 2. Identidad LDAP | 4 min | López Segundo Luis Iván | Árbol LDAP, usuarios, cuenta de servicio, ACL y LDAPS |
 | 3. Segundo factor | 4 min | Ferreira Rojas Mauricio | privacyIDEA, resolver, realm, enrolamiento TOTP |
 | 4. OwnCloud | 4 min | Rufino López María Elena | LDAP, plugin 2FA, autorización, cifrado y shares |
@@ -47,7 +47,7 @@ Puntos:
 1. Autenticación por factores: conocimiento, posesión, inherencia.
 2. Por qué contraseña + OTP sí es 2FA.
 3. HOTP vs TOTP: TOTP usa tiempo, ventana de 30 s y secreto compartido.
-4. FreeOTP solo calcula el código; no se conecta al servidor.
+4. FreeOTP o Proton Authenticator solo calculan el código; no se conectan al servidor.
 
 Respuesta preparada:
 
@@ -70,7 +70,7 @@ Respuesta preparada:
 
 > LDAP autentica identidad y contraseña. La autorización de archivos no está en LDAP; vive en OwnCloud.
 
-## Bloque 3: privacyIDEA y FreeOTP - Mauricio (4 min)
+## Bloque 3: privacyIDEA y app TOTP - Mauricio (4 min)
 
 Objetivo: explicar segundo factor como sistema, no como "código mágico".
 
@@ -80,12 +80,12 @@ Puntos:
 2. Resolver `sia-ldap` lee usuarios por LDAPS.
 3. Realm `sia` agrupa el resolver.
 4. Token TOTP se enrola con `genkey=1`.
-5. La URL `otpauth://` es lo que FreeOTP escanea.
+5. La URL `otpauth://` es lo que FreeOTP o Proton Authenticator pueden escanear.
 6. El script calcula el TOTP localmente para probar emisión sin depender del teléfono.
 
 Respuesta preparada:
 
-> FreeOTP no valida contra privacyIDEA. Solo muestra un número; OwnCloud manda ese número a privacyIDEA para validarlo.
+> La app TOTP no valida contra privacyIDEA. Solo muestra un número; OwnCloud manda ese número a privacyIDEA para validarlo.
 
 ## Bloque 4: OwnCloud - María Elena (4 min)
 
@@ -127,18 +127,18 @@ Comandos principales:
 
 ```bash
 cd /Users/jorge/Documents/Escuela/SIA/Proyecto_Final
-./scripts/bootstrap.sh --no-build
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/bootstrap.sh --no-build --skip-tests
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
 
 Qué explicar mientras corre:
 
-1. `bootstrap.sh --no-build` confirma certificados, servicios, configuración y pruebas sin reconstruir la imagen.
+1. `bootstrap.sh --no-build --skip-tests` confirma certificados, servicios y configuración sin reconstruir la imagen ni rotar el token físico.
 2. `owncloud-login-verify.sh` prueba LDAP + OTP + cifrado de archivo real.
 3. `owncloud-share-verify.sh` prueba autorización por share y lectura descifrada por destinatario.
 4. Mostrar `HBEGIN` si el profesor pide evidencia visual del cifrado en disco.
-5. Abrir `https://localhost:9443` solo si pide ver la UI.
+5. Abrir `https://localhost:9443` para mostrar la UI con `usuario.desarrollo1` y el OTP actual de Proton Authenticator o FreeOTP.
 
 Frase de cierre de demo:
 
@@ -160,7 +160,7 @@ Puntos:
 | ¿Dónde se autentica el password? | En OpenLDAP, vía bind LDAPS. |
 | ¿Dónde se valida el OTP? | En privacyIDEA, endpoint `/validate/check`. |
 | ¿Dónde vive la autorización? | En OwnCloud, con permisos y OCS Sharing API. |
-| ¿FreeOTP se conecta al servidor? | No. Genera TOTP localmente a partir del secreto. |
+| ¿La app TOTP se conecta al servidor? | No. Genera TOTP localmente a partir del secreto. |
 | ¿Qué pasa si roban el password? | Sin OTP, OwnCloud no abre sesión. |
 | ¿Qué pasa si cae privacyIDEA? | El login 2FA falla; en producción se requeriría HA o política de break-glass. |
 | ¿El cifrado protege contra el admin? | No con master key local; para eso se requiere cifrado extremo a extremo. |

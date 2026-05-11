@@ -70,9 +70,11 @@ Se mantienen como comandos de diagnóstico cuando se quiere reconfigurar solo un
 ./scripts/ldap-verify.sh
 ./scripts/privacyidea-verify.sh
 ./scripts/owncloud-verify.sh
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
+
+No forzar `usuario.desarrollo1` en estas pruebas si ese usuario ya está enrolado en Proton Authenticator o FreeOTP para la demo manual. Los scripts de login/share generan tokens de prueba para el usuario indicado y podrían reemplazar el token del teléfono. `bootstrap.sh` ya usa usuarios alternos seguros.
 
 Salidas esperadas:
 
@@ -102,7 +104,7 @@ Antes de la presentación, abrir `https://localhost:9443` en una pestaña de inc
 
 1. El navegador muestra la advertencia de certificado (esperado: cert autofirmado de la CA local). Continuar y aceptar la excepción una vez.
 2. Login con `usuario.desarrollo1` y password `sia-user-2026`. Debe redirigir a `/login/selectchallenge`.
-3. Ingresar el OTP de 6 dígitos visible en FreeOTP o calculado por `scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1`. Debe abrir la vista de archivos en `/apps/files/`.
+3. Ingresar el OTP de 6 dígitos visible en Proton Authenticator o FreeOTP. Debe abrir la vista de archivos en `/apps/files/`.
 4. Subir un archivo desde la UI (drag-and-drop). Confirmar que aparece listado.
 5. Cerrar sesión.
 
@@ -114,7 +116,7 @@ Demostración importante para el bloque de cifrado:
 
 ```bash
 docker exec otpsec-owncloud-server head -c 80 \
-  /mnt/data/files/usuario.desarrollo1/files/demo-cifrado.txt
+  /mnt/data/files/usuario.desarrollo2/files/demo-cifrado.txt
 ```
 
 Salida (los primeros 80 bytes):
@@ -131,14 +133,20 @@ Lista a ejecutar el día anterior a la presentación, en la laptop que se usará
 
 ```bash
 git pull origin main
-./scripts/bootstrap.sh
+./scripts/ldap-verify.sh
+./scripts/privacyidea-verify.sh
+./scripts/owncloud-verify.sh
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
+
+En un clon limpio o en la laptop de la demo se puede correr `./scripts/bootstrap.sh`: las pruebas automáticas usan usuarios alternos y no rotan el token físico de `usuario.desarrollo1`. Si se quiere repetir solo la validación sin reconstruir, usar la cadena anterior.
 
 Verificaciones de presentación:
 
 - `docker compose -f compose/docker-compose.yml --env-file .env ps` muestra los 6 contenedores `Up` y `healthy`.
 - El navegador en modo incógnito tiene aceptada la excepción del cert de `https://localhost:9443`.
-- El teléfono con FreeOTP tiene un token enrolado para el usuario demo (ver `docs/manual-freeotp.md`).
+- El teléfono con Proton Authenticator o FreeOTP tiene un token enrolado para el usuario demo (ver `docs/manual-freeotp.md`).
 - Si se va a presentar el PDF: `./scripts/build-figures.sh` y `./scripts/build-pdf.sh` ejecutados con éxito.
 - El teléfono de la demo tiene batería suficiente.
 
@@ -156,12 +164,12 @@ Llegar al salón 20 minutos antes. Pasos:
    - Pestaña 2: `docker compose -f compose/docker-compose.yml --env-file .env logs -f` (no usar en vivo, solo por si algo falla).
    - Pestaña 3: para el comando `head -c 80` que demuestra cifrado en disco.
 3. Abrir el navegador en modo incógnito. Cargar `https://localhost:9443/login` y aceptar el cert de la CA local.
-4. Confirmar el estado del entorno antes de enrolar el teléfono físico:
+4. Confirmar salud del entorno sin tocar el token físico:
    ```bash
-   ./scripts/bootstrap.sh --no-build
+   ./scripts/bootstrap.sh --no-build --skip-tests
    ```
    Debe terminar con `Listo`.
-5. Enrolar o confirmar el token de FreeOTP para el usuario demo. Las pruebas automáticas rotan tokens de prueba, por eso este paso va después de `bootstrap.sh`.
+5. Enrolar o confirmar el token de Proton Authenticator o FreeOTP para el usuario demo. Las pruebas automáticas normales usan usuarios alternos; solo evitar pasar `usuario.desarrollo1` explícitamente a scripts que enrolan tokens.
 6. Abrir `docs/presentacion.md` en Marp (VS Code con extensión Marp, o `marp --pdf docs/presentacion.md`) o cargar el PDF generado.
 7. Si solo se quiere revisar salud sin volver a tocar tokens:
    ```bash
@@ -174,14 +182,14 @@ Bloque 5 del guion (`docs/guion-exposicion.md`). Salgado/Esteban (presentador) e
 
 ```bash
 # 1. Login con LDAP + OTP, archivo cifrado en disco
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
 
 # 2. Compartir archivo entre usuarios
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 
 # 3. Mostrar la cabecera de cifrado
 docker exec otpsec-owncloud-server head -c 80 \
-  /mnt/data/files/usuario.desarrollo1/files/demo-cifrado.txt
+  /mnt/data/files/usuario.desarrollo2/files/demo-cifrado.txt
 echo
 
 # 4. Auditoría reproducible (opcional, solo si el profesor pregunta)
@@ -195,6 +203,8 @@ sed -n '110,127p' docs/auditoria.md # login web 2FA exitoso
 sed -n '129,146p' docs/auditoria.md # login web con OTP rechazado
 ```
 
+La demo visual del teléfono se hace aparte en el navegador con `usuario.desarrollo1` y el OTP actual de Proton Authenticator o FreeOTP.
+
 Cada comando produce salida visible al público. Pausar 5 segundos después de cada `OK:` para que se lea. La parte de auditoría (puntos 4 y 5) se ejecuta solo si surge la pregunta del profesor; el bloque principal de la demo termina en el punto 3.
 
 ## 10. Plan B si la demo falla
@@ -202,7 +212,7 @@ Cada comando produce salida visible al público. Pausar 5 segundos después de c
 | Síntoma | Causa probable | Plan B |
 |---|---|---|
 | `Connection refused` en privacyIDEA | El contenedor no terminó de arrancar | Esperar 20 s y reintentar el script |
-| `wrong otp value. previous otp used again` | El OTP se reutilizó en la misma ventana de 30 s | Esperar al siguiente cambio de OTP en FreeOTP |
+| `wrong otp value. previous otp used again` | El OTP se reutilizó en la misma ventana de 30 s | Esperar al siguiente cambio de OTP en la app TOTP |
 | `401 Unauthorized` en WebDAV | Sesión 2FA expiró | Reejecutar el script desde el principio (es idempotente) |
 | Caddy no responde en `:9443` | Conflicto de puertos en el host | `docker compose -f compose/docker-compose.yml --env-file .env ps` y `lsof -i:9443` para diagnosticar |
 | Docker no levanta | Memoria insuficiente | Aumentar recursos en Docker Desktop o reiniciar la VM |
@@ -268,7 +278,7 @@ Buscar la última línea de error. Causas comunes: certificado expirado (regener
 | Integrante | Correo | Rol en la presentación |
 |---|---|---|
 | Arellanes Conde Esteban | esteban.arellanes@ingenieria.unam.edu | Demo en vivo |
-| Ferreira Rojas Mauricio | mauferreira183@gmail.com | privacyIDEA y FreeOTP |
+| Ferreira Rojas Mauricio | mauferreira183@gmail.com | privacyIDEA y app TOTP |
 | López Segundo Luis Iván | lopezsknd@gmail.com | Diseño del árbol LDAP |
 | Olvera González Arely | arely.olvera@ingenieria.unam.edu | Marco conceptual 2FA y OTP |
 | Rufino López María Elena | mariaelena.rufino424@gmail.com | OwnCloud y orquestación 2FA |

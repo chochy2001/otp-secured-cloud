@@ -163,8 +163,8 @@ if [[ "${RUN_TESTS}" == "true" ]]; then
   run_step "Validando OpenLDAP" ./scripts/ldap-verify.sh
   run_step "Validando privacyIDEA" ./scripts/privacyidea-verify.sh
   run_step "Validando OwnCloud" ./scripts/owncloud-verify.sh
-  run_step "Validando login LDAP + OTP y cifrado" ./scripts/owncloud-login-verify.sh usuario.desarrollo1
-  run_step "Validando carpetas compartidas" ./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+  run_step "Validando login LDAP + OTP y cifrado" ./scripts/owncloud-login-verify.sh usuario.desarrollo2
+  run_step "Validando carpetas compartidas" ./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 fi
 
 if [[ "${RUN_AUDIT}" == "true" ]]; then

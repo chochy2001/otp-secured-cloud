@@ -5,6 +5,9 @@
 #
 # Uso:
 #   ./scripts/owncloud-login-verify.sh [usuario]
+#
+# Default seguro: usuario.desarrollo2. El usuario.desarrollo1 se reserva
+# para la demo manual con el token físico del teléfono.
 
 set -euo pipefail
 
@@ -22,7 +25,7 @@ PI_URL="${PI_URL:-https://localhost:8443}"
 OC_URL="${OC_URL:-https://localhost:9443}"
 OC_CA_BUNDLE="${OC_CA_BUNDLE:-certs/ca.crt}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
-TEST_USER="${1:-usuario.desarrollo1}"
+TEST_USER="${1:-usuario.desarrollo2}"
 TEST_SERIAL="TOTP_$(printf '%s' "${TEST_USER}" | tr -c '[:alnum:]-_' '_')"
 TMP_DIR="$(mktemp -d)"
 
@@ -199,5 +202,5 @@ fi
 
 echo "OK: archivo subido y cifrado en el volumen."
 echo
-echo "URL para FreeOTP si se quiere usar el mismo token en demo manual:"
+echo "URL para app TOTP si se quiere usar el mismo token en demo manual:"
 echo "  ${OTPAUTH_URL}"

@@ -68,10 +68,10 @@ Valida:
 Para probar el flujo completo con sesión web real:
 
 ```bash
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
 ```
 
-Ese script crea un token TOTP de prueba, inicia sesión en OwnCloud con contraseña LDAP, envía el OTP al plugin de PrivacyIDEA, sube un archivo por WebDAV usando la sesión autenticada y comprueba que el archivo no queda en texto plano dentro del volumen.
+Ese script crea un token TOTP de prueba, inicia sesión en OwnCloud con contraseña LDAP, envía el OTP al plugin de PrivacyIDEA, sube un archivo por WebDAV usando la sesión autenticada y comprueba que el archivo no queda en texto plano dentro del volumen. `usuario.desarrollo1` queda reservado para la demo manual con el token físico del teléfono.
 
 ## Acceso web
 

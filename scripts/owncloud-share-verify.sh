@@ -15,7 +15,8 @@
 # Uso:
 #   ./scripts/owncloud-share-verify.sh [emisor] [destinatario]
 #
-# Defaults: emisor=usuario.desarrollo1, destinatario=usuario.seguridad1
+# Defaults seguros: emisor=usuario.desarrollo3, destinatario=usuario.seguridad1.
+# usuario.desarrollo1 se reserva para la demo manual con token físico.
 
 set -euo pipefail
 
@@ -33,7 +34,7 @@ PI_URL="${PI_URL:-https://localhost:8443}"
 OC_URL="${OC_URL:-https://localhost:9443}"
 OC_CA_BUNDLE_PATH="${ROOT_DIR}/${OC_CA_BUNDLE:-certs/ca.crt}"
 REALM_NAME="${PI_REALM_NAME:-sia}"
-SENDER="${1:-usuario.desarrollo1}"
+SENDER="${1:-usuario.desarrollo3}"
 RECIPIENT="${2:-usuario.seguridad1}"
 
 if [[ "${SENDER}" == "${RECIPIENT}" ]]; then

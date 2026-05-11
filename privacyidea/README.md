@@ -1,6 +1,6 @@
 # PrivacyIDEA
 
-Servicio de emisión y validación de tokens OTP. Actúa como segundo factor en el flujo 2FA: una vez que OpenLDAP valida usuario y contraseña, PrivacyIDEA valida el código generado por FreeOTP en el móvil.
+Servicio de emisión y validación de tokens OTP. Actúa como segundo factor en el flujo 2FA: una vez que OpenLDAP valida usuario y contraseña, PrivacyIDEA valida el código generado por FreeOTP, Proton Authenticator u otra app TOTP en el móvil.
 
 ## Archivos
 
@@ -103,16 +103,17 @@ También se puede hacer desde la interfaz web si se quiere revisar visualmente l
 
 Correr de nuevo `./scripts/privacyidea-verify.sh`. Debe terminar con `Todo OK` en los 6 pasos.
 
-## Enrolar un token TOTP con FreeOTP
+## Enrolar un token TOTP con app móvil
 
 El enrolamiento del token se hace una sola vez desde la interfaz web (porque produce un código QR que el usuario escanea con su teléfono). Después se valida desde la línea de comandos con `scripts/privacyidea-validate-otp.sh`, que usa el mismo endpoint `/validate/check` que invocará OwnCloud en la fase siguiente.
 
 ### Prerrequisito en el teléfono
 
-Instalar **FreeOTP Authenticator** en el móvil:
+Instalar **FreeOTP Authenticator**, **Proton Authenticator** u otra app TOTP compatible en el móvil:
 
 - Android: [Play Store](https://play.google.com/store/apps/details?id=org.fedorahosted.freeotp)
 - iOS: [App Store](https://apps.apple.com/us/app/freeotp-authenticator/id872559395)
+- Proton Authenticator: disponible para Android/iOS; escanea la misma URL `otpauth://`.
 
 ### Enrolar el token desde la UI
 
@@ -130,11 +131,11 @@ Instalar **FreeOTP Authenticator** en el móvil:
 | Time step | `30` |
 
 4. Hacer clic en *Enroll Token*. PrivacyIDEA genera un secreto, lo asocia al usuario y muestra un código QR.
-5. Abrir FreeOTP en el móvil, tocar el ícono de agregar y escanear el QR. El token queda agregado con el nombre del usuario y empieza a generar códigos de 6 dígitos que rotan cada 30 segundos.
+5. Abrir FreeOTP o Proton Authenticator en el móvil, tocar el ícono de agregar y escanear el QR. El token queda agregado con el nombre del usuario y empieza a generar códigos de 6 dígitos que rotan cada 30 segundos.
 
 ### Validar el primer código
 
-Desde la laptop del proyecto, con el código que muestra FreeOTP en el móvil:
+Desde la laptop del proyecto, con el código que muestra FreeOTP o Proton Authenticator en el móvil:
 
 ```bash
 ./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 287543
@@ -142,10 +143,10 @@ Desde la laptop del proyecto, con el código que muestra FreeOTP en el móvil:
 
 ### Prueba reproducible sin teléfono
 
-Para validar que el flujo de 2FA funciona de punta a punta sin depender de un teléfono (útil para CI, para un compañero del equipo que no tenga FreeOTP instalado, y para diagnosticar la integración cuando algo falla), está el script `scripts/privacyidea-enroll-test-token.sh`:
+Para validar que el flujo de 2FA funciona de punta a punta sin depender de un teléfono (útil para CI, para un compañero del equipo que no tenga una app TOTP instalada, y para diagnosticar la integración cuando algo falla), está el script `scripts/privacyidea-enroll-test-token.sh`:
 
 ```bash
-./scripts/privacyidea-enroll-test-token.sh            # usuario.desarrollo1 por defecto
+./scripts/privacyidea-enroll-test-token.sh            # usuario.desarrollo2 por defecto
 ./scripts/privacyidea-enroll-test-token.sh usuario.seguridad2
 ```
 
@@ -154,16 +155,16 @@ Qué hace:
 1. Se autentica como admin.
 2. Borra el token de prueba previo (serial `TOTP_<usuario>`) si existe.
 3. Llama a `POST /token/init` con `genkey=1`, de modo que la semilla la genera PrivacyIDEA (no hay secretos hardcodeados en el repo).
-4. Imprime la URL `otpauth://` para que el equipo pueda escanear el QR con FreeOTP si quiere usarla en la demo.
+4. Imprime la URL `otpauth://` para que el equipo pueda escanear el QR con FreeOTP, Proton Authenticator u otra app TOTP si quiere usarla en la demo.
 5. Calcula el TOTP actual con Python estándar (`hmac`, `hashlib`, `struct`, `time`) a partir de la misma semilla.
 6. Llama a `POST /validate/check` con `user`, `realm` y el OTP calculado. Si PrivacyIDEA acepta el código, el script termina con exit 0.
 
-**Atención:** cada ejecución genera una semilla nueva. Si ya escaneaste el QR con FreeOTP, no vuelvas a correr el script para ese mismo usuario, porque invalidará el token que tiene el teléfono.
+**Atención:** cada ejecución genera una semilla nueva. Si ya escaneaste el QR con FreeOTP o Proton Authenticator, no vuelvas a correr el script para ese mismo usuario, porque invalidará el token que tiene el teléfono. Para la demo, `usuario.desarrollo1` debe rotarse solo de forma intencional.
 
 Se espera:
 
 ```
-==> Validando OTP para 'usuario.desarrollo1@sia' contra https://localhost:8443
+==> Validando OTP para 'usuario.desarrollo2@sia' contra https://localhost:8443
 OK: PrivacyIDEA aceptó el OTP.
 ```
 

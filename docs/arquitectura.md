@@ -6,7 +6,7 @@
 |---|---|---|
 | OpenLDAP | `osixia/openldap:1.5.0` | Directorio de usuarios, autenticación de primer factor |
 | PrivacyIDEA | `privacyIDEA 3.10.2` | Emisión y validación de tokens OTP |
-| FreeOTP | App Android/iOS | Cliente que genera el código TOTP en el móvil del usuario |
+| App TOTP | FreeOTP o Proton Authenticator | Cliente que genera el código TOTP en el móvil del usuario |
 | OwnCloud | `owncloud/server:10.15` | Servicio de almacenamiento con integración LDAP y 2FA |
 | Caddy | `caddy:2-alpine` | Terminación TLS para OwnCloud en el puerto 9443 |
 | MariaDB | `mariadb:10.11` | Base de datos de OwnCloud |
@@ -26,7 +26,7 @@ OwnCloud
   v
 OpenLDAP
 
-FreeOTP
+App TOTP
   |
   | 3. genera TOTP
   v
@@ -50,7 +50,7 @@ OpenLDAP
 1. El usuario entrega usuario + contraseña al portal web de OwnCloud.
 2. OwnCloud hace `bind` contra OpenLDAP con esas credenciales. Si el bind es correcto queda validado el **primer factor** (capa *autenticación / conozco*).
 3. OwnCloud invoca el plugin `twofactor_privacyidea` y redirige al usuario a una pantalla de OTP.
-4. El usuario abre **FreeOTP** en el móvil, obtiene el código TOTP de 6 dígitos, y lo introduce.
+4. El usuario abre **FreeOTP o Proton Authenticator** en el móvil, obtiene el código TOTP de 6 dígitos, y lo introduce.
 5. `twofactor_privacyidea` llama a la API de PrivacyIDEA con (`user`, `otpvalue`).
 6. PrivacyIDEA resuelve al usuario contra su *resolver LDAP* (apunta al mismo OpenLDAP), localiza el token enrolado, y valida el código.
 7. Si PrivacyIDEA responde OK, OwnCloud inicia sesión y queda validado el **segundo factor** (capa *autenticación / tengo*).
@@ -85,7 +85,7 @@ Los diagramas de esta sección están en sintaxis Mermaid, que GitHub renderiza 
 graph LR
   subgraph host[Host del laboratorio]
     user[Usuario]
-    phone[Telefono con FreeOTP]
+    phone[Telefono con app TOTP]
   end
 
   subgraph docker[Red Docker otpsec]
@@ -115,7 +115,7 @@ sequenceDiagram
   participant OC as OwnCloud
   participant LD as OpenLDAP
   participant PI as privacyIDEA
-  participant FO as FreeOTP en teléfono
+  participant FO as App TOTP en teléfono
 
   U->>OC: usuario y password LDAP
   OC->>LD: bind LDAPS

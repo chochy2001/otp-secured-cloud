@@ -8,7 +8,8 @@
 #   2. Borra cualquier token previo con el mismo serial (idempotente).
 #   3. Crea un TOTP nuevo con /token/init y genkey=1 (PrivacyIDEA genera
 #      la semilla, no hay valor hardcodeado en el repo).
-#   4. Imprime la URL otpauth:// para que pueda escanearse con FreeOTP.
+#   4. Imprime la URL otpauth:// para que pueda escanearse con FreeOTP,
+#      Proton Authenticator o cualquier app TOTP equivalente.
 #   5. Calcula el TOTP actual localmente usando solo Python stdlib
 #      (hmac + hashlib + struct), sin oathtool ni pyotp.
 #   6. Valida ese código contra POST /validate/check.
@@ -19,7 +20,8 @@
 # Uso:
 #   ./scripts/privacyidea-enroll-test-token.sh [usuario]
 #
-# Si no se pasa usuario, se usa usuario.desarrollo1.
+# Si no se pasa usuario, se usa usuario.desarrollo2 para no tocar el token
+# físico de usuario.desarrollo1 durante pruebas automáticas.
 
 set -euo pipefail
 
@@ -39,12 +41,16 @@ PI_URL="${PI_URL:-https://localhost:8443}"
 source "$ROOT_DIR/scripts/lib-curl.sh"
 
 REALM_NAME="${PI_REALM_NAME:-sia}"
-TEST_USER="${1:-usuario.desarrollo1}"
+TEST_USER="${1:-usuario.desarrollo2}"
 # PrivacyIDEA exige serial con regex ^[0-9a-zA-Z\-_]+$ (sin puntos).
 # Se reemplazan caracteres no permitidos del username por guion bajo.
 TEST_SERIAL="TOTP_$(printf '%s' "${TEST_USER}" | tr -c '[:alnum:]-_' '_')"
 
 echo "==> 1. Autenticando admin contra ${PI_URL}"
+if [[ "${TEST_USER}" == "usuario.desarrollo1" ]]; then
+  echo "AVISO: se va a reemplazar el token TOTP de usuario.desarrollo1."
+  echo "Úsalo solo si vas a enrolar o rotar intencionalmente el token del teléfono."
+fi
 TOKEN_RESP="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/auth" \
   --data-urlencode "username=${PI_ADMIN_USERNAME}" \
   --data-urlencode "password=${PI_ADMIN_PASSWORD}")"
@@ -84,7 +90,7 @@ INIT_RESP="$(curl "${PI_CURL_OPTS[@]}" -fsS -X POST "${PI_URL}/token/init" \
   --data-urlencode "serial=${TEST_SERIAL}")"
 
 # El campo detail.otpkey.value viene en formato "seed://<hex>".
-# detail.googleurl.value trae la URL otpauth:// que se escanea con FreeOTP.
+# detail.googleurl.value trae la URL otpauth:// que se escanea con la app TOTP.
 OTPKEY_HEX="$(echo "$INIT_RESP" | python3 -c '
 import json, sys
 data = json.load(sys.stdin)
@@ -107,7 +113,7 @@ fi
 
 echo "OK: token '${TEST_SERIAL}' creado."
 echo
-echo "URL para escanear con FreeOTP (demo manual):"
+echo "URL para escanear con app TOTP (demo manual):"
 echo "  ${OTPAUTH_URL}"
 
 echo
@@ -153,5 +159,5 @@ echo "Fase 3 del proyecto cerrada de punta a punta:"
 echo "  Identificación + primer factor (LDAP)"
 echo "  + segundo factor (PrivacyIDEA TOTP validado)"
 echo
-echo "Para la demo con el teléfono, escanea la URL de arriba con FreeOTP:"
+echo "Para la demo con el teléfono, escanea la URL de arriba con FreeOTP o Proton Authenticator:"
 echo "  ${OTPAUTH_URL}"

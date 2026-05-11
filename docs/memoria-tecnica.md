@@ -79,7 +79,7 @@ El primer factor se valida durante el login web de OwnCloud. La aplicación hace
 
 Esto se prueba con `scripts/owncloud-login-verify.sh`, que primero ejecuta `POST /login` con usuario y contraseña LDAP y verifica que la respuesta sea `303 See Other` con `location: /login/selectchallenge` (lo cual implica que el primer factor pasó pero falta segundo factor).
 
-## 5. Autenticación segundo factor: privacyIDEA y FreeOTP
+## 5. Autenticación segundo factor: privacyIDEA y app TOTP
 
 Ver detalles de configuración en `privacyidea/README.md`.
 
@@ -96,15 +96,15 @@ Ver detalles de configuración en `privacyidea/README.md`.
 - `compose/docker-compose.yml`: servicio `privacyidea`.
 - `scripts/privacyidea-configure.sh`: crea/actualiza el resolver y el realm con la API.
 - `scripts/privacyidea-verify.sh`: 6 checks (servicio responde, admin bind, resolver, conteo de 6 usuarios, realm).
-- `scripts/privacyidea-enroll-test-token.sh`: enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP y valida el código localmente con Python contra `/validate/check`.
+- `scripts/privacyidea-enroll-test-token.sh`: enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP, Proton Authenticator u otra app TOTP, y valida el código localmente con Python contra `/validate/check`.
 - `scripts/privacyidea-validate-otp.sh`: valida un OTP arbitrario contra el endpoint que usa OwnCloud.
 
-### Cómo se enrola un token para un usuario humano (con FreeOTP)
+### Cómo se enrola un token para un usuario humano (con app TOTP)
 
 1. Ejecutar `./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1`. El script imprime una URL `otpauth://totp/...?secret=...`.
-2. Abrir FreeOTP en el teléfono. Tocar el botón "+" (agregar token).
-3. Escanear el QR generado por la URL anterior (puede usarse `qrencode` o un visor en línea como `qr-code-generator.com`, o convertirse a QR con cualquier app de escritorio). Alternativamente, FreeOTP acepta entrada manual del secreto (el valor `secret=` de la URL).
-4. FreeOTP empieza a generar un código de 6 dígitos cada 30 segundos.
+2. Abrir FreeOTP o Proton Authenticator en el teléfono. Tocar el botón "+" o el icono de cámara para agregar token.
+3. Escanear el QR generado por la URL anterior (puede usarse `qrencode` o un visor en línea como `qr-code-generator.com`, o convertirse a QR con cualquier app de escritorio). Alternativamente, la app acepta entrada manual del secreto (el valor `secret=` de la URL).
+4. La app empieza a generar un código de 6 dígitos cada 30 segundos.
 5. El primer código que el dispositivo genere se valida con `./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 <codigo>` para confirmar que el token quedó sincronizado.
 
 ## 6. OwnCloud y orquestación 2FA

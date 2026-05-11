@@ -33,7 +33,7 @@ Las combinaciones reciben nombres estándar:
 
 > Dos contraseñas distintas **no** son 2FA; los factores deben venir de familias diferentes.
 
-En este proyecto: primer factor = contraseña en LDAP (*conozco*), segundo factor = token TOTP generado por FreeOTP (*tengo*).
+En este proyecto: primer factor = contraseña en LDAP (*conozco*), segundo factor = token TOTP generado por FreeOTP, Proton Authenticator u otra app TOTP (*tengo*).
 
 ### 1.3 Autorización
 
@@ -70,7 +70,7 @@ El código se deriva del **tiempo actual**, típicamente en ventanas de 30 segun
 - Pro: nunca se desincroniza por uso; solo requiere relojes alineados.
 - Contra: sensible a desfase de reloj entre dispositivo y servidor.
 
-**Este proyecto usa TOTP**, que es el estándar actual y el modo por defecto en FreeOTP.
+**Este proyecto usa TOTP**, que es el estándar actual y el modo compatible con FreeOTP, Proton Authenticator, Google Authenticator y apps equivalentes.
 
 ### 2.3 Cómo funciona matemáticamente
 

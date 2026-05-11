@@ -110,7 +110,7 @@ Scripts relevantes:
 ```bash
 ./scripts/privacyidea-configure.sh
 ./scripts/privacyidea-verify.sh
-./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1
+./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo2
 ./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 <código>
 ```
 
@@ -136,7 +136,7 @@ El flujo de login es:
 7. privacyIDEA valida el token del usuario en el realm `sia`.
 8. Si el código es correcto, OwnCloud abre `/apps/files/`.
 
-La cuenta `admin` de OwnCloud es local y de mantenimiento. No existe en el realm LDAP `sia`, por lo tanto queda excluida del flujo OTP. La demo evaluable debe hacerse con usuarios LDAP, por ejemplo:
+La cuenta `admin` de OwnCloud es local y de mantenimiento. No existe en el realm LDAP `sia`, por lo tanto queda excluida explícitamente del flujo OTP con `piexclude=1` y `piexcludegroups=admin`. La demo evaluable debe hacerse con usuarios LDAP, por ejemplo:
 
 ```text
 usuario.desarrollo1 / sia-user-2026
@@ -187,6 +187,8 @@ Ese comando ejecuta:
 10. Prueba de cifrado local.
 11. Prueba de archivo compartido y lectura descifrada por destinatario.
 
+Las pruebas automáticas usan `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1` para no reemplazar el token físico de `usuario.desarrollo1`.
+
 Si termina con `Listo`, el laboratorio está operativo.
 
 Para una laptop donde el stack ya está construido:
@@ -195,7 +197,7 @@ Para una laptop donde el stack ya está construido:
 ./scripts/bootstrap.sh --no-build
 ```
 
-Para confirmar salud sin tocar tokens de prueba:
+Para confirmar salud sin correr las pruebas end-to-end:
 
 ```bash
 ./scripts/bootstrap.sh --no-build --skip-tests

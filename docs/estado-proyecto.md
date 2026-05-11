@@ -19,6 +19,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Carpetas compartidas | Funcional | `scripts/owncloud-share-verify.sh` automatiza emisor, share por OCS API y descarga descifrada por el destinatario |
 | Auditoría reproducible | Funcional, complemento académico no evaluable | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
 | Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
+| Documento final operativo | Redactado y completo | `docs/documento-final.md` resume arquitectura, funcionamiento, pruebas seguras, demo manual y respuestas de defensa |
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
 | Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 28 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
@@ -43,6 +44,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Diagrama detallado de la solución | 6 figuras en mermaid renderizadas a PNG y embebidas en el PDF | [`arquitectura.md`](arquitectura.md), [`arbol-ldap.md`](arbol-ldap.md), [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Auditoría con extractos reales de logs | Generada y versionada (complemento académico no evaluable, el profesor confirmó que esta capa queda fuera del alcance evaluado) | [`auditoria.md`](auditoria.md) |
+| Documento final operativo | Redactado | [`documento-final.md`](documento-final.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
 | Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200) | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
@@ -55,7 +57,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 |---|---|
 | Definir orden de intervenciones y tiempos por integrante | Redactado en [`guion-exposicion.md`](guion-exposicion.md) |
 | Guion de la demo en vivo | Redactado en [`guion-exposicion.md`](guion-exposicion.md), bloque 5 |
-| Manual para enrolar el TOTP demo en FreeOTP físico | Redactado | [`manual-freeotp.md`](manual-freeotp.md) |
+| Manual para enrolar el TOTP demo en FreeOTP o Proton Authenticator | Redactado | [`manual-freeotp.md`](manual-freeotp.md) |
 | Ensayo operativo | Guion y checklist listos | [`guion-exposicion.md`](guion-exposicion.md), [`como-probar.md`](como-probar.md) |
 | Respaldo del entorno | Reproducible por diseño | `scripts/bootstrap.sh` reconstruye y valida el stack desde clone |
 | Grabación de respaldo | Flujo documentado | [`como-probar.md`](como-probar.md), bloque de demo en vivo |
@@ -66,7 +68,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 |---|---|---|
 | i. Alta de usuarios en LDAP | Hecho | 6 usuarios + 1 cuenta de servicio, verificado |
 | ii. Integración con PrivacyIDEA | Hecho | Resolver LDAP `sia-ldap` y realm `sia` configurados |
-| iii. Emisión de token OTP desde FreeOTP | Hecho | `scripts/privacyidea-enroll-test-token.sh` enrola con `genkey=1`, calcula TOTP local y valida vía API; flujo con FreeOTP documentado para la demo |
+| iii. Emisión de token OTP desde FreeOTP o Proton Authenticator | Hecho | `scripts/privacyidea-enroll-test-token.sh` enrola con `genkey=1`, calcula TOTP local y valida vía API; flujo con app móvil documentado para la demo |
 | iv. Implementación de OwnCloud | Hecho | OwnCloud 10.15 con Caddy TLS, MariaDB, Redis, LDAP y encryption activos |
 | v. Integración 2FA LDAP + OTP | Hecho | `owncloud-login-verify.sh` valida login web con LDAP + OTP contra PrivacyIDEA |
 
@@ -96,9 +98,9 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 - [x] Validación de servicio, admin, resolver, conteo de 6 usuarios y realm con `scripts/privacyidea-verify.sh`
 - [x] Documentar el how-to en `privacyidea/README.md` (requisitos, arranque, verificación, configuración automatizada y alternativa por UI)
 - [x] Script `scripts/privacyidea-validate-otp.sh` que valida un OTP contra `POST /validate/check`, el mismo endpoint que usará OwnCloud
-- [x] Documentar el flujo de enrolamiento del token TOTP desde la UI y el escaneo del QR con FreeOTP
+- [x] Documentar el flujo de enrolamiento del token TOTP desde la UI y el escaneo del QR con FreeOTP o Proton Authenticator
 - [x] Script `scripts/privacyidea-enroll-test-token.sh` que enrola con `genkey=1`, imprime la URL `otpauth://` y calcula+valida el TOTP localmente con Python stdlib, sin depender de un teléfono
-- [x] Manual para enrolar un token en un móvil real con FreeOTP usando la URL que imprime el script
+- [x] Manual para enrolar un token en un móvil real con FreeOTP o Proton Authenticator usando la URL que imprime el script
 
 ### Fase 4: Certificados TLS (CA propia)
 - [x] `scripts/generate-certs.sh` genera CA local + certs de servidor para `openldap`, `privacyidea` y `owncloud` (idempotente, con `--force` para regenerar)
@@ -122,6 +124,7 @@ El profesor confirmó por correo las cuatro preguntas abiertas (ver [`preguntas-
 - [x] Hook `owncloud/10-trust-project-ca.sh` registra la CA local en el trust store del contenedor antes del arranque
 - [x] `scripts/owncloud-login-verify.sh` valida login web LDAP + OTP, subida WebDAV y archivo cifrado en disco
 - [x] `scripts/owncloud-share-verify.sh` automatiza el flujo emisor + destinatario con OCS Sharing API y valida lectura cifrada por el destinatario
+- [x] Cuenta local `admin` de OwnCloud excluida del challenge OTP porque no existe en el realm LDAP `sia`; los usuarios LDAP siguen obligados a usar segundo factor
 
 ### Fase 6: Cifrado de archivos compartidos (cerrada)
 - [x] Activar módulo *Server Side Encryption* con `OC_DEFAULT_MODULE`
@@ -142,12 +145,13 @@ El profesor confirmó por correo las cuatro preguntas abiertas (ver [`preguntas-
 - [x] Bibliografía en [`bibliografia.md`](bibliografia.md) con RFCs y docs oficiales
 - [x] Índice de figuras en [`indice-figuras.md`](indice-figuras.md), 6 figuras en mermaid
 - [x] Memoria técnica consolidada en [`memoria-tecnica.md`](memoria-tecnica.md)
+- [x] Documento final operativo en [`documento-final.md`](documento-final.md)
 - [x] PNG de las 6 figuras renderizadas con `./scripts/build-figures.sh` (mermaid-cli + tectonic instalados)
 - [x] PDF, HTML y DOCX ensamblados con `./scripts/build-pdf.sh` en `build/`
 
 ### Fase 9: Presentación (guion, checklist y respaldo reproducible)
 - [x] Guion de 30 min con división por integrante en [`guion-exposicion.md`](guion-exposicion.md)
-- [x] Manual del enrolamiento físico en FreeOTP en [`manual-freeotp.md`](manual-freeotp.md)
+- [x] Manual del enrolamiento físico en FreeOTP o Proton Authenticator en [`manual-freeotp.md`](manual-freeotp.md)
 - [x] Checklist operativo de la demo en [`como-probar.md`](como-probar.md)
 - [x] Reconstrucción reproducible desde clone con `scripts/bootstrap.sh`
 - [x] Flujo completo documentado para grabación o repetición en vivo
@@ -187,7 +191,7 @@ La fuente de verdad técnica es el repositorio `chochy2001/otp-secured-cloud`. L
 - PrivacyIDEA agregado al `docker-compose.yml` con imagen propia, configuración reproducible y resolver LDAP funcional.
 
 ### 2026-04-25
-- Script `scripts/privacyidea-enroll-test-token.sh` que enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP y valida el código localmente con Python stdlib contra `POST /validate/check`. Cierra técnicamente la validación iii (emisión de OTP) sin depender de un teléfono.
+- Script `scripts/privacyidea-enroll-test-token.sh` que enrola un TOTP con `genkey=1`, imprime la URL `otpauth://` para FreeOTP, Proton Authenticator u otra app TOTP y valida el código localmente con Python stdlib contra `POST /validate/check`. Cierra técnicamente la validación iii (emisión de OTP) sin depender de un teléfono.
 - Script `scripts/privacyidea-validate-otp.sh` para probar OTPs reales contra la API; mismo endpoint que usará OwnCloud en la Fase 5.
 - Fase 4 (TLS) completa: CA local del proyecto + certs de servidor con SANs adecuadas, LDAPS publicado en 6636, HTTPS de privacyIDEA publicado en 8443, resolver LDAP interno usando LDAPS y scripts adaptados para confiar en la CA con `--cacert`.
 
@@ -206,7 +210,14 @@ La fuente de verdad técnica es el repositorio `chochy2001/otp-secured-cloud`. L
 - Documentación del entregable redactada: portada, introducción, memoria técnica, conclusión de equipo, glosario, bibliografía, índice y índice de figuras.
 - 6 figuras del entregable migradas a `mermaid` en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli`.
 - `scripts/build-pdf.sh` ensambla el PDF final con `pandoc` y un motor LaTeX.
-- Guion de exposición de 30 min repartido por integrante con plan B y manual para enrolar el TOTP demo en un teléfono real con FreeOTP.
+- Guion de exposición de 30 min repartido por integrante con plan B y manual para enrolar el TOTP demo en un teléfono real con FreeOTP o Proton Authenticator.
+
+### 2026-05-11
+- Se corrigió el caso de OwnCloud local `admin`: queda excluido del plugin OTP porque no existe en el realm LDAP `sia`; los usuarios LDAP siguen con 2FA obligatorio.
+- Se confirmó el flujo manual con Proton Authenticator para `usuario.desarrollo1`.
+- Se actualizó la documentación para no correr pruebas automáticas con `usuario.desarrollo1` cuando se quiera conservar el token físico del teléfono.
+- Se creó `docs/documento-final.md` como documento operativo de cierre: arquitectura, funcionamiento, pruebas, demo, mapeo al profesor, respuestas de defensa y limitaciones.
+- La validación segura de cierre usa `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1` para no rotar el token del teléfono.
 
 ## 6. Estado de cierre técnico
 
@@ -216,7 +227,11 @@ La verificación final para cualquier laptop de demo es:
 
 ```bash
 git pull origin main
-./scripts/bootstrap.sh
+./scripts/ldap-verify.sh
+./scripts/privacyidea-verify.sh
+./scripts/owncloud-verify.sh
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
 
-Si el comando termina con `Listo`, el entorno cumple el flujo funcional exigido por el proyecto: alta LDAP, integración con PrivacyIDEA, emisión/validación OTP, OwnCloud operativo, 2FA LDAP + OTP, autorización por carpetas compartidas y cifrado de archivos.
+Si todos terminan con `Todo OK` u `OK`, el entorno cumple el flujo funcional exigido por el proyecto: alta LDAP, integración con PrivacyIDEA, emisión/validación OTP, OwnCloud operativo, 2FA LDAP + OTP, autorización por carpetas compartidas y cifrado de archivos. También se puede usar `./scripts/bootstrap.sh`; ese comando ya usa usuarios alternos para no rotar el token físico de `usuario.desarrollo1`.

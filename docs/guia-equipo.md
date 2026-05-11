@@ -72,9 +72,11 @@ El flujo normal no necesita comandos adicionales: `./scripts/bootstrap.sh` ya co
 ./scripts/ldap-verify.sh
 ./scripts/privacyidea-verify.sh
 ./scripts/owncloud-verify.sh
-./scripts/owncloud-login-verify.sh usuario.desarrollo1
-./scripts/owncloud-share-verify.sh usuario.desarrollo1 usuario.seguridad1
+./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
+
+`usuario.desarrollo1` se reserva para la demo visual con el teléfono. Las pruebas automáticas generan tokens TOTP nuevos, por eso usan usuarios alternos.
 
 Opcional (complemento académico, el profesor confirmó que la auditoría no se evalúa):
 
