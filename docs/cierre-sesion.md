@@ -1,6 +1,6 @@
 # Cierre de sesión de trabajo
 
-**Fecha:** 2026-05-11
+**Fecha:** 2026-05-13
 
 Este documento resume el estado exacto para retomar el proyecto sin depender de memoria de sesiones anteriores.
 
@@ -27,6 +27,31 @@ La base técnica, el arranque automatizado, las pruebas end-to-end y el material
 | Manual para enrolar TOTP físico | Redactado | `docs/manual-freeotp.md` cubre FreeOTP y Proton Authenticator |
 | Guía operativa de la demo | Redactada | `docs/como-probar.md` con pre-flight, demo y plan B |
 | Arranque completo desde clone | Listo | `./scripts/bootstrap.sh` genera certs, levanta Compose, configura servicios y corre pruebas |
+
+## Cierre validado del 2026-05-13
+
+Se hizo una revisión final de consistencia, documentación y operación. La rama local es `main`, está sincronizada con `origin/main`, y el flujo principal fue probado con el comando que debe ejecutar cualquier integrante o evaluador:
+
+```bash
+./scripts/bootstrap.sh
+```
+
+Resultado esperado y observado: `Listo: el laboratorio quedó levantado, configurado y validado.`
+
+Validaciones ejecutadas durante el cierre:
+
+| Validación | Resultado |
+|---|---|
+| Sintaxis de scripts (`bash -n`) | OK |
+| ShellCheck sobre scripts operativos | OK |
+| Configuración de Docker Compose (`docker compose config --quiet`) | OK |
+| Revisión de whitespace (`git diff --check`) | OK |
+| Búsqueda de instrucciones antiguas que usaran `usuario.desarrollo1` para pruebas automáticas | Sin resultados |
+| Build del entregable (`./scripts/build-pdf.sh`) | OK, generó HTML, DOCX y PDF en `build/` |
+| Arranque completo con build (`./scripts/bootstrap.sh`) | OK |
+| Estado Docker final | 6 contenedores `healthy` |
+
+No quedaron pendientes técnicos automatizables. Las únicas acciones humanas antes de exponer son abrir el PDF generado para una última revisión visual, ensayar el guion y confirmar que el teléfono tenga el token TOTP de `usuario.desarrollo1` vigente.
 
 ## Servicios del proyecto
 

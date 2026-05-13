@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-05-11 (cierre técnico validado)
+**Última actualización:** 2026-05-13 (cierre final validado y publicado en `main`)
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -25,6 +25,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
 | Arranque completo desde clone | Funcional | `scripts/bootstrap.sh` genera certs, levanta Compose, configura servicios y ejecuta pruebas end-to-end |
 | Cierre de sesión | Documentado | [`cierre-sesion.md`](cierre-sesion.md) resume estado, comando único de arranque, puertos y credenciales |
+| Publicación en GitHub | Sincronizada | Rama `main` alineada con `origin/main` después de validar documentación, scripts y arranque completo |
 
 Los estados son descriptivos y se actualizan conforme avanza cada bloque.
 
@@ -219,9 +220,17 @@ La fuente de verdad técnica es el repositorio `chochy2001/otp-secured-cloud`. L
 - Se creó `docs/documento-final.md` como documento operativo de cierre: arquitectura, funcionamiento, pruebas, demo, mapeo al profesor, respuestas de defensa y limitaciones.
 - La validación segura de cierre usa `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1` para no rotar el token del teléfono.
 
+### 2026-05-13
+- Se hizo una revisión final de documentación y consistencia para cierre de sesión.
+- Se confirmó que las guías y scripts mantienen `usuario.desarrollo1` reservado para la demo con teléfono, mientras las pruebas automáticas usan `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1`.
+- Se ejecutaron validaciones estáticas: `bash -n`, `shellcheck`, `docker compose config --quiet`, `git diff --check` y búsqueda de instrucciones antiguas de prueba con `usuario.desarrollo1`.
+- Se regeneraron los artefactos del entregable con `./scripts/build-pdf.sh` en `build/` (HTML, DOCX y PDF locales).
+- Se ejecutó el flujo principal `./scripts/bootstrap.sh` completo, incluyendo build/cache de la imagen de privacyIDEA, configuración, healthchecks y pruebas end-to-end.
+- Se verificó que los 6 contenedores quedaran `healthy`.
+
 ## 6. Estado de cierre técnico
 
-Todo lo automatizable está cerrado y validado: controles i a v, carpetas compartidas, cifrado en disco, auditoría como complemento, documentación redactada, profesor en portada, conclusiones, figuras renderizadas y PDF/HTML/DOCX ensamblados en `build/`.
+Todo lo automatizable está cerrado y validado: controles i a v, carpetas compartidas, cifrado en disco, auditoría como complemento, documentación redactada, profesor en portada, conclusiones, figuras renderizadas, PDF/HTML/DOCX ensamblados en `build/` y comando único `./scripts/bootstrap.sh` probado completo el 2026-05-13.
 
 La verificación final para cualquier laptop de demo es:
 

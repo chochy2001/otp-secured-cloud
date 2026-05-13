@@ -1,8 +1,8 @@
 # Documento final operativo del proyecto
 
-**Proyecto:** otp-secured-cloud  
-**Materia:** Seguridad Informática Avanzada, FI-UNAM, semestre 2026-2  
-**Fecha de cierre:** 2026-05-11  
+**Proyecto:** otp-secured-cloud\
+**Materia:** Seguridad Informática Avanzada, FI-UNAM, semestre 2026-2\
+**Fecha de cierre:** 2026-05-13\
 **Estado:** funcional, validado y reproducible desde el repositorio
 
 ## 1. Resumen ejecutivo
