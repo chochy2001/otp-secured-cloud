@@ -206,6 +206,7 @@ El PDF queda en `build/entregable-otp-secured-cloud.pdf` y las figuras en `docs/
 Para profundizar en un área específica:
 
 - [`como-probar.md`](como-probar.md): guía operativa para el día de la presentación, incluye pre-flight checklist y plan B.
+- [`continuidad.md`](continuidad.md): estado consolidado, pendientes reales y mejoras futuras fuera del alcance.
 - [`guion-exposicion.md`](guion-exposicion.md): bloques por integrante para los 30 minutos de exposición.
 - [`presentacion.md`](presentacion.md): slides en formato Marp listas para abrir con la extensión correspondiente.
 - [`manual-freeotp.md`](manual-freeotp.md): cómo enrolar el TOTP demo en un teléfono real.

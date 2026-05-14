@@ -1,6 +1,6 @@
 # Cierre de sesión de trabajo
 
-**Fecha:** 2026-05-13
+**Fecha:** 2026-05-14
 
 Este documento resume el estado exacto para retomar el proyecto sin depender de memoria de sesiones anteriores.
 
@@ -22,6 +22,7 @@ La base técnica, el arranque automatizado, las pruebas end-to-end y el material
 | Auditoría reproducible (complemento académico, el profesor confirmó que no se evalúa) | Listo | `./scripts/audit-capture.sh` produce `docs/auditoria.md` |
 | Documentación del entregable (40% nota) | Redactada | Portada, introducción, memoria técnica, glosario, bibliografía, conclusiones, índices |
 | Documento final operativo | Redactado | `docs/documento-final.md` resume arquitectura, pruebas, demo y defensa |
+| Continuidad del proyecto | Redactada | `docs/continuidad.md` resume lo hecho, lo pendiente y las mejoras futuras |
 | Guion de exposición de 30 min | Redactado | `docs/guion-exposicion.md` con división por integrante |
 | Slides en formato Marp | Redactados | `docs/presentacion.md`, 30 diapositivas separadas por `---` |
 | Manual para enrolar TOTP físico | Redactado | `docs/manual-freeotp.md` cubre FreeOTP y Proton Authenticator |
@@ -52,6 +53,10 @@ Validaciones ejecutadas durante el cierre:
 | Estado Docker final | 6 contenedores `healthy` |
 
 No quedaron pendientes técnicos automatizables. Las únicas acciones humanas antes de exponer son abrir el PDF generado para una última revisión visual, ensayar el guion y confirmar que el teléfono tenga el token TOTP de `usuario.desarrollo1` vigente.
+
+## Continuidad documentada del 2026-05-14
+
+Se agregó `docs/continuidad.md` para dejar claro qué ya está implementado, qué falta realmente y qué mejoras podrían hacerse después sin confundirlas con requisitos de entrega. El estado técnico sigue siendo funcional: el repositorio estaba limpio al inicio de la actualización, los servicios Docker estaban `healthy`, y las pruebas automáticas siguen documentadas con usuarios seguros para no rotar el token físico de `usuario.desarrollo1`.
 
 ## Servicios del proyecto
 

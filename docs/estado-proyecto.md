@@ -2,7 +2,7 @@
 
 Documento vivo. Se actualiza en cada commit que cambie el avance.
 
-**Última actualización:** 2026-05-13 (cierre final validado y publicado en `main`)
+**Última actualización:** 2026-05-14 (continuidad documentada)
 **Fecha de entrega:** 2026-05-29 (viernes)
 **Duración de la exposición:** 30 minutos, todos los integrantes participan.
 
@@ -20,6 +20,7 @@ Documento vivo. Se actualiza en cada commit que cambie el avance.
 | Auditoría reproducible | Funcional, complemento académico no evaluable | `scripts/audit-capture.sh` dispara 8 eventos clave y produce `docs/auditoria.md` con extractos reales de logs |
 | Documentación del entregable | Redactada y completa | Portada con el profesor (César Sanabria Pineda), introducción, memoria técnica, conclusiones (de equipo y los 6 individuales), glosario, bibliografía e índices viven en `docs/`. Cada integrante puede afinar el suyo si quiere |
 | Documento final operativo | Redactado y completo | `docs/documento-final.md` resume arquitectura, funcionamiento, pruebas seguras, demo manual y respuestas de defensa |
+| Continuidad del proyecto | Documentada | `docs/continuidad.md` separa lo terminado, los pendientes humanos y las mejoras futuras fuera del alcance |
 | Diagramas para el PDF | Renderizados | 6 figuras en `mermaid` distribuidas en `docs/arquitectura.md`, `docs/arbol-ldap.md` y `docs/memoria-tecnica.md`. `scripts/build-figures.sh` las exporta a PNG con `mermaid-cli` y se embeben en el PDF |
 | Ensamblado del entregable | Funcional | `scripts/build-pdf.sh` produce PDF (con tectonic), HTML y DOCX en `build/`. PDF de 28 páginas con las 6 figuras embebidas, primera página con la portada del proyecto, validado |
 | Presentación de 30 min | Guion redactado | `docs/guion-exposicion.md` reparte tiempos por integrante, plan B con respaldo y logística |
@@ -46,6 +47,7 @@ Según el PDF oficial del proyecto, el entregable consta de tres bloques:
 | Memoria técnica paso a paso | Redactada de extremo a extremo | [`memoria-tecnica.md`](memoria-tecnica.md) |
 | Auditoría con extractos reales de logs | Generada y versionada (complemento académico no evaluable, el profesor confirmó que esta capa queda fuera del alcance evaluado) | [`auditoria.md`](auditoria.md) |
 | Documento final operativo | Redactado | [`documento-final.md`](documento-final.md) |
+| Documento de continuidad | Redactado | [`continuidad.md`](continuidad.md) |
 | Conclusión por equipo | Redactada | [`conclusiones.md`](conclusiones.md) |
 | Conclusiones individuales (6) | Redactadas y proporcionadas (Salgado 304 palabras, los demás cerca de 200) | [`conclusiones.md`](conclusiones.md) |
 | Bibliografía | Redactada | [`bibliografia.md`](bibliografia.md) |
@@ -227,6 +229,11 @@ La fuente de verdad técnica es el repositorio `chochy2001/otp-secured-cloud`. L
 - Se regeneraron los artefactos del entregable con `./scripts/build-pdf.sh` en `build/` (HTML, DOCX y PDF locales).
 - Se ejecutó el flujo principal `./scripts/bootstrap.sh` completo, incluyendo build/cache de la imagen de privacyIDEA, configuración, healthchecks y pruebas end-to-end.
 - Se verificó que los 6 contenedores quedaran `healthy`.
+
+### 2026-05-14
+- Se agregó `docs/continuidad.md` para documentar todo lo que ya existe, los pendientes reales y las mejoras futuras opcionales.
+- Se enlazó la continuidad desde README, guía de equipo, cierre de sesión y estado del proyecto.
+- Se separaron explícitamente los pendientes humanos de la entrega de las mejoras técnicas fuera de alcance para evitar confundirlos con errores del proyecto.
 
 ## 6. Estado de cierre técnico
 

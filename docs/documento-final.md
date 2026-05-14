@@ -2,7 +2,7 @@
 
 **Proyecto:** otp-secured-cloud\
 **Materia:** Seguridad Informática Avanzada, FI-UNAM, semestre 2026-2\
-**Fecha de cierre:** 2026-05-13\
+**Fecha de cierre:** 2026-05-14\
 **Estado:** funcional, validado y reproducible desde el repositorio
 
 ## 1. Resumen ejecutivo
