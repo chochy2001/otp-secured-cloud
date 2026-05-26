@@ -36,26 +36,37 @@ if ! command -v pandoc >/dev/null 2>&1; then
 fi
 
 # Orden del entregable. Mantener consistencia con docs/indice.md.
-# El primer archivo (portada.md) actúa como cubierta del documento y va
-# antes de cualquier índice automático. docs/indice.md viene justo
-# después como tabla de contenidos manual.
-# Nota: docs/auditoria.md no se incluye porque el profesor confirmó que la
-# capa de auditoría no se evalúa, y los logs JSON crudos generan páginas
-# extensas con líneas largas. La memoria técnica ya describe el flujo y
+# Si la variable de entorno ENTREGABLE_MD esta definida, usa ese archivo
+# unico (modo "documento unificado"). Si no, usa el comportamiento
+# historico de concatenar 10 archivos. El segundo modo se preserva
+# para no romper invocaciones existentes.
+# Nota: docs/auditoria.md no se incluye porque el profesor confirmo que la
+# capa de auditoria no se evalua, y los logs JSON crudos generan paginas
+# extensas con lineas largas. La memoria tecnica ya describe el flujo y
 # referencia el archivo para quien quiera profundizar.
-DOC_ORDER=(
-  "${ROOT_DIR}/docs/portada.md"
-  "${ROOT_DIR}/docs/indice.md"
-  "${ROOT_DIR}/docs/introduccion.md"
-  "${ROOT_DIR}/docs/conceptos-basicos.md"
-  "${ROOT_DIR}/docs/arbol-ldap.md"
-  "${ROOT_DIR}/docs/arquitectura.md"
-  "${ROOT_DIR}/docs/memoria-tecnica.md"
-  "${ROOT_DIR}/docs/conclusiones.md"
-  "${ROOT_DIR}/docs/glosario.md"
-  "${ROOT_DIR}/docs/bibliografia.md"
-  "${ROOT_DIR}/docs/indice-figuras.md"
-)
+if [[ -n "${ENTREGABLE_MD:-}" ]]; then
+  if [[ ! -f "${ENTREGABLE_MD}" ]]; then
+    echo "ERROR: ENTREGABLE_MD=${ENTREGABLE_MD} no existe."
+    exit 1
+  fi
+  DOC_ORDER=( "${ENTREGABLE_MD}" )
+  echo "Modo: documento unico (ENTREGABLE_MD=${ENTREGABLE_MD})"
+else
+  DOC_ORDER=(
+    "${ROOT_DIR}/docs/portada.md"
+    "${ROOT_DIR}/docs/indice.md"
+    "${ROOT_DIR}/docs/introduccion.md"
+    "${ROOT_DIR}/docs/conceptos-basicos.md"
+    "${ROOT_DIR}/docs/arbol-ldap.md"
+    "${ROOT_DIR}/docs/arquitectura.md"
+    "${ROOT_DIR}/docs/memoria-tecnica.md"
+    "${ROOT_DIR}/docs/conclusiones.md"
+    "${ROOT_DIR}/docs/glosario.md"
+    "${ROOT_DIR}/docs/bibliografia.md"
+    "${ROOT_DIR}/docs/indice-figuras.md"
+  )
+  echo "Modo: concatenacion historica de 10 archivos"
+fi
 
 for doc in "${DOC_ORDER[@]}"; do
   if [[ ! -f "${doc}" ]]; then

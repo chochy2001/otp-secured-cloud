@@ -1,6 +1,7 @@
 # Índice
 
 1. Portada
+*Prefacio*
 2. Introducción
 3. Conceptos básicos de 2FA mediante tokens OTP
 4. Diseño del árbol LDAP del proyecto

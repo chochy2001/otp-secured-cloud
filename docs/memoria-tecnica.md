@@ -189,7 +189,7 @@ sequenceDiagram
 
 ## 8. Auditoría (complemento académico, no evaluable)
 
-El profesor confirmó por correo que esta capa no será revisada en la evaluación. Se mantiene en la memoria técnica porque el propio profesor presentó en clase el marco de control de acceso de cuatro capas y omitirla dejaría incompleta la descripción.
+Esta capa no es evaluable (ver "Prefacio" para el contexto de alcance). Se mantiene en la memoria tecnica para no dejar incompleta la descripcion del marco de cuatro capas.
 
 Ver `docs/auditoria.md` para los extractos reales de logs.
 
