@@ -108,6 +108,64 @@ Estos scripts usan usuarios de prueba y no tocan tus tokens del teléfono. Pausa
 
 Termina con `Todo OK.` (8 checks).
 
+### 8b. Dar de alta un usuario nuevo en vivo (punto i, si el profesor lo pide)
+
+Muestra cómo se crea un usuario directamente en el directorio LDAP. Cambia el
+nombre en las primeras líneas y pega el bloque completo.
+
+```bash
+NUEVO_UID="usuario.desarrollo4"          # nombre de la nueva cuenta
+NUEVO_OU="Desarrollo"                     # Desarrollo o Seguridad
+NUEVO_CN="Usuario Desarrollo 4"           # nombre para mostrar
+NUEVO_PASS="sia-user-2026"                # contraseña (primer factor)
+
+HASH=$(docker exec otpsec-openldap slappasswd -s "$NUEVO_PASS")
+docker exec -i otpsec-openldap ldapadd -x -H ldap://localhost \
+  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" <<LDIF
+dn: uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: top
+uid: ${NUEVO_UID}
+cn: ${NUEVO_CN}
+sn: ${NUEVO_UID}
+mail: ${NUEVO_UID}@sia.unam.mx
+userPassword: ${HASH}
+LDIF
+```
+
+Debe imprimir `adding new entry "uid=usuario.desarrollo4,..."`.
+
+Confirmar que existe y que su contraseña sirve (primer factor):
+
+```bash
+docker exec otpsec-openldap ldapsearch -x -LLL -H ldap://localhost \
+  -b "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx" \
+  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" uid cn mail
+docker exec otpsec-openldap ldapwhoami -x \
+  -D "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx" -w "${NUEVO_PASS}"
+```
+
+El `ldapsearch` muestra la entrada y el `ldapwhoami` devuelve su DN: el primer
+factor del usuario nuevo ya funciona. OwnCloud reconoce al usuario nuevo
+automáticamente al iniciar sesión (consulta LDAP en cada login). Para que pueda
+entrar con doble factor, enrólale un token:
+
+```bash
+./scripts/privacyidea-enroll-test-token.sh ${NUEVO_UID}
+```
+
+Borrar el usuario de prueba al terminar (deja el directorio en 6 usuarios):
+
+```bash
+docker exec otpsec-openldap ldapdelete -x -H ldap://localhost \
+  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" \
+  "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx"
+```
+
+Nota: mientras el usuario nuevo exista, `ldap-verify.sh` reportará 7 usuarios en
+lugar de 6 (su comprobación de conteo exacto). Haz esta demostración después del
+paso 8, o borra el usuario antes de volver a correr `ldap-verify.sh`.
+
 ### 9. privacyIDEA integrado con LDAP (punto ii)
 
 ```bash
