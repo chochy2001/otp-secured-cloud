@@ -53,8 +53,10 @@ desktop.ini
 *.log
 logs/
 
-# PDF ensamblado por scripts/build-pdf.sh (no se versiona el binario)
-build/
+# Artefactos de build/ generados por los scripts. Por defecto no se versionan,
+# salvo el PDF entregable final, que sí queremos disponible en el repo.
+build/*
+!build/entregable-otp-secured-cloud.pdf
 
 # Figuras renderizadas por scripts/build-figures.sh (binarios derivados
 # del mermaid en docs/arquitectura.md)
