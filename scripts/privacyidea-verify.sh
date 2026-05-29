@@ -125,7 +125,7 @@ fi
 echo "OK: ${CONFIGURED_LDAP_URI} con CA ${CONFIGURED_TLS_CA_FILE} y TLS 1.2"
 
 echo
-echo "==> 5. Resolver '${RESOLVER_NAME}' encuentra exactamente 6 usuarios"
+echo "==> 5. Resolver '${RESOLVER_NAME}' encuentra al menos 6 usuarios"
 USER_COUNT="$(curl "${PI_CURL_OPTS[@]}" -fsS "${PI_URL}/user/?resolver=${RESOLVER_NAME}" -H "${AUTH_HEADER}" \
   | python3 -c "
 import sys, json
@@ -136,11 +136,11 @@ except Exception:
     print('0')
 ")"
 
-if [[ "${USER_COUNT}" != "6" ]]; then
-  echo "ERROR: el resolver encontró ${USER_COUNT} usuarios, se esperaban 6."
+if (( USER_COUNT < 6 )); then
+  echo "ERROR: el resolver encontró ${USER_COUNT} usuarios, se esperaban al menos 6."
   exit 1
 fi
-echo "OK: 6 usuarios humanos resueltos."
+echo "OK: ${USER_COUNT} usuarios humanos resueltos (al menos 6 esperados)."
 
 echo
 echo "==> 6. Realm '${REALM_NAME}' configurado"

@@ -33,3 +33,15 @@ sn: Seguridad
 givenName: Usuario Tres
 mail: usuario.seguridad3@sia.unam.mx
 userPassword: {SSHA}rIYPDgeXp5wADkRnIW9xtZn4cAzuZKra
+
+dn: uid=usuario.seguridad4,ou=Seguridad,ou=Usuarios,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.seguridad4
+cn: Luis
+sn: Seguridad
+givenName: Luis
+mail: usuario.seguridad4@sia.unam.mx
+userPassword: {SSHA}f2jrhR20SmDjI32D9jxNPW2W0NbriTGt

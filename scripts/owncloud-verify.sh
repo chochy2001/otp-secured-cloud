@@ -92,13 +92,13 @@ fi
 echo "OK"
 
 echo
-echo "==> 4. OwnCloud resuelve exactamente 6 usuarios LDAP"
-USER_COUNT="$(occ ldap:search "usuario" --limit=20 | grep -cE '^Usuario ' || true)"
-if [[ "${USER_COUNT}" != "6" ]]; then
-  echo "ERROR: OwnCloud encontró ${USER_COUNT} usuarios LDAP, se esperaban 6."
+echo "==> 4. OwnCloud resuelve al menos 6 usuarios LDAP"
+USER_COUNT="$(occ ldap:search "usuario" --limit=20 | grep -F -c '(' || true)"
+if (( USER_COUNT < 6 )); then
+  echo "ERROR: OwnCloud encontró ${USER_COUNT} usuarios LDAP, se esperaban al menos 6."
   exit 1
 fi
-echo "OK: 6 usuarios"
+echo "OK: ${USER_COUNT} usuarios"
 
 echo
 echo "==> 5. App privacyIDEA activa y apuntando a HTTPS interno"

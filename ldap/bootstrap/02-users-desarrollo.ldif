@@ -33,3 +33,15 @@ sn: Desarrollo
 givenName: Usuario Tres
 mail: usuario.desarrollo3@sia.unam.mx
 userPassword: {SSHA}JZu8ia3s5dbqcwkNzVi9MBkCxF67VLgr
+
+dn: uid=usuario.desarrollo4,ou=Desarrollo,ou=Usuarios,dc=sia,dc=unam,dc=mx
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: usuario.desarrollo4
+cn: Usuario Desarrollo Cuatro
+sn: Desarrollo
+givenName: Usuario Desarrollo Cuatro
+mail: usuario.desarrollo4@sia.unam.mx
+userPassword: {SSHA}GyJxHQGjnANA6fWmb/yEMWmIyxbxO4HB

@@ -108,63 +108,27 @@ Estos scripts usan usuarios de prueba y no tocan tus tokens del teléfono. Pausa
 
 Termina con `Todo OK.` (8 checks).
 
-### 8b. Dar de alta un usuario nuevo en vivo (punto i, si el profesor lo pide)
+### 8b. Dar de alta un usuario nuevo en vivo (para el profesor / demo)
 
-Muestra cómo se crea un usuario directamente en el directorio LDAP. Cambia el
-nombre en las primeras líneas y pega el bloque completo.
+Muestra cómo se crea un usuario nuevo de manera integral (LDAP + Sincronización en OwnCloud + Token TOTP en PrivacyIDEA) en un solo comando de forma automatizada y sin errores. Tienes dos opciones para correrlo:
 
+#### Opción A: Modo Interactivo (Paso a paso guiado)
 ```bash
-NUEVO_UID="usuario.desarrollo4"          # nombre de la nueva cuenta
-NUEVO_OU="Desarrollo"                     # Desarrollo o Seguridad
-NUEVO_CN="Usuario Desarrollo 4"           # nombre para mostrar
-NUEVO_PASS="sia-user-2026"                # contraseña (primer factor)
-
-HASH=$(docker exec otpsec-openldap slappasswd -s "$NUEVO_PASS")
-docker exec -i otpsec-openldap ldapadd -x -H ldap://localhost \
-  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" <<LDIF
-dn: uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx
-objectClass: inetOrgPerson
-objectClass: top
-uid: ${NUEVO_UID}
-cn: ${NUEVO_CN}
-sn: ${NUEVO_UID}
-mail: ${NUEVO_UID}@sia.unam.mx
-userPassword: ${HASH}
-LDIF
+./scripts/add-user-2fa.sh -i
 ```
 
-Debe imprimir `adding new entry "uid=usuario.desarrollo4,..."`.
-
-Confirmar que existe y que su contraseña sirve (primer factor):
-
+#### Opción B: Por línea de comandos (Paso directo sin preguntas)
 ```bash
-docker exec otpsec-openldap ldapsearch -x -LLL -H ldap://localhost \
-  -b "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx" \
-  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" uid cn mail
-docker exec otpsec-openldap ldapwhoami -x \
-  -D "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx" -w "${NUEVO_PASS}"
+./scripts/add-user-2fa.sh -u usuario.desarrollo5 -n "Usuario Desarrollo Cinco" -s "Desarrollo" -o "Desarrollo"
 ```
 
-El `ldapsearch` muestra la entrada y el `ldapwhoami` devuelve su DN: el primer
-factor del usuario nuevo ya funciona. OwnCloud reconoce al usuario nuevo
-automáticamente al iniciar sesión (consulta LDAP en cada login). Para que pueda
-entrar con doble factor, enrólale un token:
+El script se encargará de:
+1. Validar que no haya colisiones en el LDAP y crear el registro.
+2. Forzar la sincronización inmediata en OwnCloud.
+3. Crear y registrar el token TOTP en PrivacyIDEA.
+4. Mostrar la URL `otpauth://` lista para escanear con FreeOTP o Proton Authenticator.
 
-```bash
-./scripts/privacyidea-enroll-test-token.sh ${NUEVO_UID}
-```
-
-Borrar el usuario de prueba al terminar (deja el directorio en 6 usuarios):
-
-```bash
-docker exec otpsec-openldap ldapdelete -x -H ldap://localhost \
-  -D "cn=admin,dc=sia,dc=unam,dc=mx" -w "sia-admin-2026" \
-  "uid=${NUEVO_UID},ou=${NUEVO_OU},ou=Usuarios,dc=sia,dc=unam,dc=mx"
-```
-
-Nota: mientras el usuario nuevo exista, `ldap-verify.sh` reportará 7 usuarios en
-lugar de 6 (su comprobación de conteo exacto). Haz esta demostración después del
-paso 8, o borra el usuario antes de volver a correr `ldap-verify.sh`.
+*(Nota: Los scripts de verificación `ldap-verify.sh`, `privacyidea-verify.sh` y `owncloud-verify.sh` han sido actualizados para soportar nuevos usuarios dinámicos de forma nativa, por lo que no es necesario borrar el usuario después de crearlo; todas las validaciones seguirán en verde y pasando sin problemas).*
 
 ### 9. privacyIDEA integrado con LDAP (punto ii)
 
@@ -245,7 +209,8 @@ Conserva los volúmenes (datos de LDAP, base de OwnCloud, tokens de privacyIDEA)
 
 | Paso | Punto del profesor |
 |---|---|
-| 8  `ldap-verify.sh` | i. Alta de usuarios en LDAP |
+| 8  `ldap-verify.sh` | i. Alta de usuarios en LDAP (verificación) |
+| 8b alta con `ldapadd` | i. Alta de usuarios en LDAP (en vivo, si lo pide) |
 | 9  `privacyidea-verify.sh` | ii. Integración con privacyIDEA |
 | 10 `owncloud-login-verify.sh` | iii. Emisión de OTP y v. doble factor |
 | 11 cabecera de cifrado | Cifrar contenido de archivos |

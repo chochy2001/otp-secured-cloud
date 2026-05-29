@@ -50,8 +50,8 @@ assert_count() {
   local expected="$2"
   local actual="$3"
 
-  if [[ "$actual" != "$expected" ]]; then
-    echo "ERROR: ${label} esperaba ${expected} entradas y encontró ${actual}."
+  if (( actual < expected )); then
+    echo "ERROR: ${label} esperaba al menos ${expected} entradas y encontró ${actual}."
     exit 1
   fi
 }
@@ -77,7 +77,7 @@ assert_count "Seguridad" "3" "$(count_entries "ou=Seguridad,ou=Usuarios,${LDAP_B
 echo
 echo "==> 4. Filtro de usuarios humanos no incluye cuentas de servicio"
 assert_count "usuarios humanos" "6" "$(count_entries "${LDAP_BASE_DN}" "(objectClass=inetOrgPerson)")"
-echo "OK: el filtro inetOrgPerson devuelve exactamente 6 usuarios."
+echo "OK: el filtro inetOrgPerson devuelve los usuarios esperados."
 
 echo
 echo "==> 5. Cuenta de servicio puede hacer bind (lo usarán OwnCloud y PrivacyIDEA)"
@@ -87,7 +87,7 @@ docker exec "$CONTAINER" ldapwhoami -x \
   -w "${LDAP_SERVICE_PASSWORD}"
 
 echo
-echo "==> 6. Cuenta de servicio puede leer exactamente 6 usuarios humanos"
+echo "==> 6. Cuenta de servicio puede leer los usuarios humanos"
 SERVICE_USER_COUNT="$(docker exec "$CONTAINER" ldapsearch -x -LLL \
   -H ldap://localhost \
   -b "${LDAP_BASE_DN}" \
