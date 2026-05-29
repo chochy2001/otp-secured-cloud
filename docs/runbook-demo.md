@@ -1,259 +1,206 @@
-# Runbook de la demo: lista explícita de comandos
+# Runbook de la demo: copiar y pegar
 
-Guía para correr la demo del Proyecto Final de principio a fin, comando por
-comando. Pensada para seguirse el día de la presentación sin tener que recordar
-nada de memoria.
+Guía para correr la demo de principio a fin. Cada paso es un bloque para copiar
+y pegar tal cual. Sigue el orden de arriba hacia abajo.
 
-Regla base: todos los comandos se ejecutan desde la raíz del repositorio.
+## Referencia rápida
+
+Todos los comandos se corren desde la raíz del repositorio. Empieza siempre con:
 
 ```bash
 cd /Users/jorge/Documents/Escuela/SIA/Proyecto_Final
 ```
 
-Credenciales que vas a usar:
+Usuarios y para qué se usan:
 
-- Usuarios de demo: `usuario.desarrollo1` ... `usuario.seguridad3`, contraseña `sia-user-2026`.
-- El teléfono con FreeOTP se enrola para `usuario.desarrollo1`.
-- Los scripts automáticos usan `usuario.desarrollo2`, `usuario.desarrollo3` y `usuario.seguridad1` para no tocar el token del teléfono.
+- Teléfono (FreeOTP, manual): `usuario.desarrollo1` y `usuario.desarrollo2`. Contraseña `sia-user-2026`.
+- Pruebas automáticas (scripts, sin teléfono): `usuario.seguridad2`, `usuario.desarrollo3`, `usuario.seguridad1`.
+
+Regla: los scripts automáticos nunca tocan a `desarrollo1` ni `desarrollo2`, así que sus tokens del teléfono no se rotan.
 
 ---
 
-## Bloque 0: Arrancar el laboratorio (al llegar al salón)
+## Bloque 0: Arrancar el laboratorio
 
-### Comando 1: arrancar Docker Desktop
+### 1. Arrancar Docker y esperar a que esté listo
 
 ```bash
 open -a Docker
+until docker info >/dev/null 2>&1; do sleep 2; done; echo "Docker listo"
 ```
 
-Qué hace: lanza el daemon de Docker. Sin esto, ningún contenedor puede correr.
-Espera de 30 a 90 segundos a que el ícono de Docker en la barra de menú deje de
-animarse. Para confirmar que el daemon respondió:
-
-```bash
-docker info
-```
-
-Si imprime información del servidor (no un error de conexión), Docker está listo.
-
-### Comando 2: levantar el stack y confirmar salud
+### 2. Levantar el stack (sin reconstruir, sin pruebas)
 
 ```bash
 ./scripts/bootstrap.sh --no-build --skip-tests
 ```
 
-Qué hace: levanta los seis contenedores (reusa las imágenes ya construidas,
-por eso `--no-build`), espera a que los seis estén `healthy`, y reaplica la
-configuración de PrivacyIDEA y OwnCloud (es idempotente). `--skip-tests` evita
-correr la batería de pruebas en este momento, porque esas pruebas las vas a
-correr tú en vivo en el Bloque 2. Termina con la palabra `Listo`.
+Levanta los seis contenedores, espera a que estén `healthy` y reaplica la configuración. Termina con `Listo`.
 
-Por qué no `--build`: las imágenes ya están construidas de la primera vez, no
-hace falta reconstruir y así arranca en menos de un minuto.
-
-### Comando 3: ver los seis contenedores arriba
+### 3. Confirmar los seis contenedores arriba
 
 ```bash
 docker compose -f compose/docker-compose.yml --env-file .env ps
 ```
 
-Qué hace: lista los seis contenedores. Los seis deben decir `Up` y `healthy`:
-`otpsec-openldap`, `otpsec-privacyidea`, `otpsec-owncloud-db`,
-`otpsec-owncloud-redis`, `otpsec-owncloud-server`, `otpsec-owncloud-proxy`.
+Los seis deben decir `Up` y `healthy`.
 
 ---
 
-## Bloque 1: Preparar el teléfono (segundo factor en vivo)
+## Bloque 1: Teléfono (segundo factor en vivo)
 
-Si ya tienes el token enrolado en FreeOTP de un ensayo anterior y el volumen de
-PrivacyIDEA no se borró, puedes saltarte el Comando 4 e ir directo al Comando 6
-para confirmar. Si no, empieza en el Comando 4.
+Enrolas dos usuarios en FreeOTP con el mismo procedimiento. Para cada uno:
+enrolar + QR en un bloque, escanear, validar.
 
-### Comando 4: enrolar el token y generar el QR (en un solo bloque)
-
-Importante: enrola y genera el QR en el MISMO bloque. El secreto que queda en
-PrivacyIDEA y el secreto dentro del QR deben ser el mismo; este bloque lo
-garantiza porque el QR se arma con la URL del enrolamiento que acaba de correr.
+### 4. usuario.desarrollo1: enrolar y generar QR
 
 ```bash
 URL=$(./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo1 2>&1 | grep -oE 'otpauth://[^ ]+' | head -1)
 echo "URL activa: $URL"
-qrencode -o /tmp/otp-qr.png -s 10 "$URL"
-open /tmp/otp-qr.png
+qrencode -o /tmp/otp-qr1.png -s 10 "$URL"
+open /tmp/otp-qr1.png
 ```
 
-Qué hace: enrola un token TOTP nuevo para `usuario.desarrollo1` (PrivacyIDEA
-genera la semilla con `genkey=1` y borra cualquier token previo), captura la URL
-`otpauth://` de esa misma corrida, la convierte en un PNG con el QR y lo abre en
-Vista Previa.
+Enrola el token, arma el QR con la URL de esa misma corrida y lo abre en Vista Previa. El secreto del QR y el de privacyIDEA quedan iguales porque salen del mismo enrolamiento.
 
-Trampa a evitar: no pegues por separado una URL ni un secreto de otra corrida.
-Si el QR trae un secreto distinto al que quedó en PrivacyIDEA, la validación
-falla con `wrong otp value`. Corre solo este bloque, de una vez.
+### 5. usuario.desarrollo1: escanear y validar
 
-### Comando 5: escanear el QR con FreeOTP
-
-No es un comando de terminal. En el teléfono:
-
-1. Si ya habías escaneado un token `TOTP_usuario_desarrollo1` antes, bórralo de
-   FreeOTP primero para no confundir un código viejo con el nuevo.
-2. Abre FreeOTP, toca el botón "+" o el icono de cámara.
-3. Apunta al QR abierto en Vista Previa. FreeOTP crea la entrada
-   `TOTP_usuario_desarrollo1` y muestra un código de seis dígitos que cambia
-   cada 30 segundos.
-
-### Comando 6: confirmar que el teléfono está sincronizado
+En FreeOTP toca "+", escanea el QR. Si ya había una entrada `TOTP_usuario_desarrollo1`, bórrala antes. Luego, con los 6 dígitos que muestre el teléfono:
 
 ```bash
-./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 CODIGO_DE_6_DIGITOS
+./scripts/privacyidea-validate-otp.sh usuario.desarrollo1 LOS_6_DIGITOS
 ```
 
-Reemplaza `CODIGO_DE_6_DIGITOS` por el número que muestra FreeOTP en ese momento.
-Qué hace: envía ese código a PrivacyIDEA. Debe responder `OK: PrivacyIDEA aceptó
-el OTP.`. Si dice `RECHAZADO`, el reloj del teléfono está desfasado: actívale la
-hora automática (NTP) y reintenta con el siguiente código.
+Debe decir `OK: PrivacyIDEA aceptó el OTP.`.
+
+### 6. usuario.desarrollo2: enrolar y generar QR
+
+```bash
+URL=$(./scripts/privacyidea-enroll-test-token.sh usuario.desarrollo2 2>&1 | grep -oE 'otpauth://[^ ]+' | head -1)
+echo "URL activa: $URL"
+qrencode -o /tmp/otp-qr2.png -s 10 "$URL"
+open /tmp/otp-qr2.png
+```
+
+### 7. usuario.desarrollo2: escanear y validar
+
+En FreeOTP toca "+", escanea el QR (queda la entrada `TOTP_usuario_desarrollo2`). Luego, con los 6 dígitos del teléfono:
+
+```bash
+./scripts/privacyidea-validate-otp.sh usuario.desarrollo2 LOS_6_DIGITOS
+```
+
+Debe decir `OK: PrivacyIDEA aceptó el OTP.`.
+
+Trampa a evitar: pega cada bloque de enrolar+QR completo y de una vez. No mezcles una URL o un secreto de otra corrida; si el QR trae un secreto distinto al de privacyIDEA, la validación falla con `wrong otp value`.
 
 ---
 
-## Bloque 2: Demo en la terminal (los cinco puntos que evalúa el profesor)
+## Bloque 2: Demo en la terminal (los puntos del profesor, sin teléfono)
 
-Cada comando imprime su resultado en pantalla. Pausa unos segundos tras cada
-`OK` o `Todo OK` para que el grupo lo lea.
+Estos scripts usan usuarios de prueba y no tocan tus tokens del teléfono. Pausa unos segundos tras cada `OK` o `Todo OK` para que el grupo lo lea.
 
-### Comando 7: usuarios dados de alta en LDAP (punto i)
+### 8. Usuarios dados de alta en LDAP (punto i)
 
 ```bash
 ./scripts/ldap-verify.sh
 ```
 
-Qué demuestra: que el directorio LDAP tiene las dos unidades organizacionales
-(Desarrollo y Seguridad) con tres usuarios cada una, que la cuenta de servicio
-puede leerlos, que una contraseña incorrecta se rechaza, y que LDAPS funciona
-con el certificado de la CA del proyecto. Termina con `Todo OK.` (ocho checks).
+Termina con `Todo OK.` (8 checks).
 
-### Comando 8: PrivacyIDEA integrado con LDAP (punto ii)
+### 9. privacyIDEA integrado con LDAP (punto ii)
 
 ```bash
 ./scripts/privacyidea-verify.sh
 ```
 
-Qué demuestra: que PrivacyIDEA usa el LDAP como resolver por LDAPS, que el realm
-`sia` existe, y que resuelve exactamente los seis usuarios. PrivacyIDEA no tiene
-usuarios propios: los lee de LDAP. Termina con `Todo OK.` (seis checks).
+Termina con `Todo OK.` (6 checks).
 
-### Comando 9: login con LDAP mas OTP y cifrado en disco (puntos iii y v)
+### 10. Login LDAP + OTP y cifrado en disco (puntos iii y v)
 
 ```bash
-./scripts/owncloud-login-verify.sh usuario.desarrollo2
+./scripts/owncloud-login-verify.sh usuario.seguridad2
 ```
 
-Qué demuestra: el flujo completo de doble factor contra OwnCloud. Hace el primer
-factor (usuario y contraseña contra LDAP), genera un OTP de prueba, lo envía al
-plugin `twofactor_privacyidea`, OwnCloud abre la sesión, sube un archivo y
-confirma que en disco quedó cifrado. Termina con
-`OK: archivo subido y cifrado en el volumen.`.
+Hace el login web completo de doble factor, sube un archivo y confirma que quedó cifrado. Termina con `OK: archivo subido y cifrado en el volumen.`.
 
-### Comando 10: mostrar la cabecera de cifrado en disco
+### 11. Mostrar la cabecera de cifrado en disco
 
 ```bash
-docker exec otpsec-owncloud-server head -c 80 \
-  /mnt/data/files/usuario.desarrollo2/files/demo-cifrado.txt
+docker exec otpsec-owncloud-server head -c 97 \
+  /mnt/data/files/usuario.seguridad2/files/demo-cifrado.txt; echo
 ```
 
-Qué demuestra: lee los primeros 80 bytes del archivo que subió el Comando 9,
-directamente del volumen del servidor. Debe verse la cabecera de cifrado, no el
-texto original:
+Debe verse la cabecera de cifrado, no el texto original. La salida completa es:
 
 ```
-HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:HEND
+HBEGIN:oc_encryption_module:OC_DEFAULT_MODULE:cipher:AES-256-CTR:signed:true:encoding:binary:HEND
 ```
 
-Si vieras el texto legible, el cifrado no estaría activo. Esto prueba el
-requisito de cifrar el contenido de los archivos.
+Lo que prueba el cifrado es `HBEGIN ... cipher:AES-256-CTR`. El `echo` final solo agrega un salto de línea para que el prompt no quede pegado a la salida.
 
-### Comando 11: compartir un archivo cifrado entre usuarios
+### 12. Compartir archivo cifrado entre usuarios
 
 ```bash
 ./scripts/owncloud-share-verify.sh usuario.desarrollo3 usuario.seguridad1
 ```
 
-Qué demuestra: `usuario.desarrollo3` sube un archivo, lo comparte con
-`usuario.seguridad1`, el archivo queda cifrado en disco, y el destinatario lo
-descarga y lo lee en claro. Termina con
-`OK: usuario.seguridad1 descifró y leyó el archivo compartido.`.
+`desarrollo3` comparte con `seguridad1`; queda cifrado en disco y el destinatario lo lee en claro. Termina con `OK: usuario.seguridad1 descifró y leyó el archivo compartido.`.
 
-### Comando 12 (opcional): OwnCloud operando (punto iv)
+### 13. OwnCloud operando (punto iv, opcional)
 
 ```bash
 ./scripts/owncloud-verify.sh
 ```
 
-Qué demuestra: que OwnCloud responde por HTTPS, está instalado, tiene el backend
-LDAP activo, el plugin 2FA y el cifrado del lado servidor. Termina con
-`Todo OK.` (seis checks). El punto iv (OwnCloud implementado) ya queda implícito
-en los comandos 9 a 11, este es el cierre formal si el profesor lo pide.
+Termina con `Todo OK.` (6 checks).
 
 ---
 
-## Bloque 3: Demo en el navegador (el segundo factor con el teléfono)
+## Bloque 3: Demo en el navegador (login con el teléfono)
 
-Esto es lo más vistoso: el login real con tu teléfono. No hay comandos de
-terminal, son pasos en el navegador.
+Sin comandos. En el navegador, modo incógnito:
 
-1. Abre el navegador en modo incógnito.
-2. Entra a `https://localhost:9443`.
-3. Acepta la advertencia de certificado (es el certificado autofirmado de la CA
-   local, esperado en un laboratorio).
-4. Login con usuario `usuario.desarrollo1` y contraseña `sia-user-2026`.
-5. OwnCloud redirige a la pantalla de segundo factor (`/login/selectchallenge`).
-6. Escribe el código de seis dígitos que muestra FreeOTP en ese momento.
-7. La sesión abre en la vista de archivos (`/apps/files/`).
-8. Sube un archivo arrastrándolo a la ventana para mostrar que funciona.
+1. Ir a `https://localhost:9443`.
+2. Aceptar la advertencia de certificado (cert autofirmado de la CA local, esperado).
+3. Login: usuario `usuario.desarrollo1` (o `usuario.desarrollo2`), contraseña `sia-user-2026`.
+4. En la pantalla de segundo factor, escribir los 6 dígitos de FreeOTP del usuario correspondiente.
+5. Entra a la vista de archivos. Sube un archivo arrastrándolo para mostrar que funciona.
 
-Consejo: deja FreeOTP abierto en pantalla para que el grupo vea el contador de
-30 segundos bajando.
+Tienes dos usuarios en el teléfono, así que puedes mostrar el login con ambos.
 
 ---
 
 ## Bloque 4: Apagar al terminar
 
-### Comando 13: apagar sin borrar datos
+### 14. Apagar sin borrar datos
 
 ```bash
 docker compose -f compose/docker-compose.yml --env-file .env down
 ```
 
-Qué hace: detiene y elimina los contenedores, pero conserva los volúmenes (los
-datos de LDAP, la base de OwnCloud, el token de PrivacyIDEA). La próxima vez
-basta el Comando 2 para volver a levantar todo.
-
-No corras `down -v` salvo que quieras borrar todos los datos y empezar de cero,
-porque eso elimina el token enrolado y obliga a repetir el Bloque 1.
+Conserva los volúmenes (datos de LDAP, base de OwnCloud, tokens de privacyIDEA). Mañana basta el paso 2 para volver a levantar. No uses `down -v` salvo que quieras borrar todo y re-enrolar los teléfonos desde cero.
 
 ---
 
-## Mapa rápido: comando contra punto evaluable
+## Mapa: comando contra punto evaluable
 
-| Comando | Punto del profesor |
+| Paso | Punto del profesor |
 |---|---|
-| 7  `ldap-verify.sh` | i. Alta de usuarios en LDAP |
-| 8  `privacyidea-verify.sh` | ii. Integración con PrivacyIDEA |
-| 9  `owncloud-login-verify.sh` | iii. Emisión de OTP y v. doble factor |
-| 10 `head -c` cabecera de cifrado | Cifrar contenido de archivos |
-| 11 `owncloud-share-verify.sh` | Compartir archivos entre usuarios |
-| 12 `owncloud-verify.sh` | iv. Implementación de OwnCloud |
+| 8  `ldap-verify.sh` | i. Alta de usuarios en LDAP |
+| 9  `privacyidea-verify.sh` | ii. Integración con privacyIDEA |
+| 10 `owncloud-login-verify.sh` | iii. Emisión de OTP y v. doble factor |
+| 11 cabecera de cifrado | Cifrar contenido de archivos |
+| 12 `owncloud-share-verify.sh` | Compartir archivos entre usuarios |
+| 13 `owncloud-verify.sh` | iv. Implementación de OwnCloud |
 | Bloque 3 navegador | iii y v en vivo con el teléfono |
 
 ---
 
 ## Si algo falla
 
-- `Connection refused` en PrivacyIDEA: el contenedor no terminó de arrancar.
-  Espera 20 segundos y reintenta.
-- `wrong otp value` o `RECHAZADO`: el OTP se reusó o el reloj del teléfono está
-  desfasado. Espera al siguiente código de FreeOTP y reintenta.
-- Un contenedor no llega a `healthy`: revisa sus logs con
-  `docker logs NOMBRE_DEL_CONTENEDOR --tail 30`.
-- Caso extremo: vuelve a correr `./scripts/bootstrap.sh` completo (sin flags).
-  Tarda más porque reconstruye, pero deja todo validado. Las pruebas internas
-  usan usuarios alternos, no tocan el token del teléfono.
+- `wrong otp value` o `RECHAZADO`: el OTP se reusó, el reloj del teléfono está desfasado, o el QR tiene un secreto distinto al de privacyIDEA. Espera al siguiente código y reintenta; si persiste, re-enrola con el bloque del paso 4 o 6 y vuelve a escanear.
+- Reloj desfasado: compara `date -u` con `docker exec otpsec-privacyidea date -u`. Si difieren más de 30 segundos, activa la hora automática (NTP) en el teléfono.
+- `Connection refused` en privacyIDEA: el contenedor no terminó de arrancar. Espera 20 segundos y reintenta.
+- Un contenedor no llega a `healthy`: `docker logs NOMBRE_DEL_CONTENEDOR --tail 30`.
+- Reinicio total: `./scripts/bootstrap.sh` completo (sin flags). Tarda más, pero deja todo validado; las pruebas internas usan usuarios alternos.
