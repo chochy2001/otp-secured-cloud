@@ -133,7 +133,7 @@ Ver detalles de configuración en `privacyidea/README.md`.
 sequenceDiagram
   participant U as Usuario autenticado
   participant OC as OwnCloud
-  participant ENC as Modulo encryption
+  participant ENC as Módulo encryption
   participant FS as Disco /mnt/data/files
   participant DB as MariaDB metadatos
 
@@ -175,13 +175,13 @@ sequenceDiagram
   participant D as Destinatario usuario.seguridad1
 
   E->>OC: login LDAP + OTP
-  OC-->>E: cookie de sesion 2FA
+  OC-->>E: cookie de sesión 2FA
   E->>OC: PUT webdav demo-compartido.txt
   OC->>FS: guarda con cabecera HBEGIN
   E->>OC: POST OCS shares con cookie y requesttoken
   OC-->>E: share id creado para destinatario
   D->>OC: login LDAP + OTP
-  OC-->>D: cookie de sesion 2FA
+  OC-->>D: cookie de sesión 2FA
   D->>OC: GET webdav demo-compartido.txt
   OC->>FS: lee bloque cifrado
   OC-->>D: contenido en claro descifrado por OwnCloud
@@ -189,7 +189,7 @@ sequenceDiagram
 
 ## 8. Auditoría (complemento académico, no evaluable)
 
-Esta capa no es evaluable (ver "Prefacio" para el contexto de alcance). Se mantiene en la memoria tecnica para no dejar incompleta la descripcion del marco de cuatro capas.
+Esta capa no es evaluable (ver "Prefacio" para el contexto de alcance). Se mantiene en la memoria técnica para no dejar incompleta la descripción del marco de cuatro capas.
 
 Ver `docs/auditoria.md` para los extractos reales de logs.
 

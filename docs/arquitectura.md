@@ -85,7 +85,7 @@ Los diagramas de esta sección están en sintaxis Mermaid, que GitHub renderiza 
 graph LR
   subgraph host[Host del laboratorio]
     user[Usuario]
-    phone[Telefono con app TOTP]
+    phone[Teléfono con app TOTP]
   end
 
   subgraph docker[Red Docker otpsec]

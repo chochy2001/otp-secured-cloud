@@ -50,7 +50,7 @@ Registrar toda la actividad del usuario dentro del sistema: inicios de sesión, 
 
 En este proyecto: los logs de OpenLDAP (bind exitoso/fallido), PrivacyIDEA (validación de token) y OwnCloud (acceso a archivos) conforman la bitácora.
 
-> Nota: la cuarta capa (auditoria) no es evaluable en este proyecto. Se mantiene en este capitulo para no romper el marco conceptual de cuatro capas. Ver "Prefacio" para el contexto completo de alcance y `docs/auditoria.md` para los logs capturados.
+> Nota: la cuarta capa (auditoría) no es evaluable en este proyecto. Se mantiene en este capítulo para no romper el marco conceptual de cuatro capas. Ver "Prefacio" para el contexto completo de alcance y `docs/auditoria.md` para los logs capturados.
 
 ## 2. One Time Password (OTP)
 
